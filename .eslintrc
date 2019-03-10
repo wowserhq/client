@@ -1,0 +1,12 @@
+{
+  "extends": "@wowserhq/eslint-config",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "quotes": ["error", "single", {
+      "avoidEscape": true
+    }]
+  }
+}
