@@ -1,0 +1,25 @@
+{
+  "name": "@wowserhq/client",
+  "version": "0.0.1",
+  "description": "Web client for Wowser",
+  "author": "Wowser Contributors",
+  "repository": "wowserhq/client",
+  "license": "MIT",
+  "files": [
+    "AUTHORS",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {},
+  "keywords": [
+    "world of warcraft",
+    "warcraft",
+    "blizzard",
+    "wow"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": "10.15.x"
+  }
+}
