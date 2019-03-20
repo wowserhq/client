@@ -6,6 +6,7 @@
     "node": true
   },
   "rules": {
+    "camelcase": "off",
     "quotes": ["error", "single", {
       "avoidEscape": true
     }]
