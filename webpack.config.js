@@ -14,9 +14,6 @@ module.exports = {
     extensions: ['.js', '.mjs'],
   },
   devtool: 'source-map',
-  node: {
-    fs: 'empty',
-  },
   plugins: [
     new HtmlWebpackPlugin({
       hash: true,
@@ -24,6 +21,8 @@ module.exports = {
       template: './src/index.html',
     }),
     new webpack.DefinePlugin({
+      // Prevent Fengari from loading Node-only libraries
+      // See: https://github.com/fengari-lua/fengari/blob/master/src/loslib.js#L480-L489
       'typeof process':  JSON.stringify('undefined'),
     }),
   ],
