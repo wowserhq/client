@@ -1,10 +1,10 @@
-import Scripting from './Scripting';
-import UI from './UI';
+import ScriptContext from './script/Context';
+import UIContext from './ui/Context';
 
 class Client {
   constructor() {
-    this.scripting = new Scripting(this);
-    this.ui = new UI();
+    this.script = new ScriptContext(this);
+    this.ui = new UIContext(this);
   }
 }
 
