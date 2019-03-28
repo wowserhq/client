@@ -73,7 +73,7 @@ export const CreateFrame = (L) => {
 
   // Ensure the instance is registered within the Lua context
   if (!frame.registered) {
-    frame.register(L, 0);
+    frame.register();
   }
 
   // Return a reference to the instance
