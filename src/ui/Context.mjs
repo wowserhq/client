@@ -124,15 +124,15 @@ class UIContext {
         // Other frame nodes
         default: {
           const { attributes: { name, virtual } } = child;
-          if (virtual !== 'true') {
-            this.createFrame(child, null, status);
-            // TODO: Re-layout
-          } else {
+          if (virtual === 'true') {
             if (name) {
               this.templates.store(child, name, null, status);
             } else {
               status.warn('unnamed virtual node at top level');
             }
+          } else {
+            this.createFrame(child, null, status);
+            // TODO: Re-layout
           }
         }
       }
