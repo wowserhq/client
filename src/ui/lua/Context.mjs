@@ -1,33 +1,38 @@
 import {
   LUA_REGISTRYINDEX,
+  lua_atnativeerror,
   lua_call,
   lua_createtable,
   lua_gc,
   lua_insert,
   lua_isstring,
+  lua_isuserdata,
   lua_pcall,
   lua_pushcclosure,
   lua_pushstring,
   lua_rawgeti,
   lua_setglobal,
+  lua_settable,
   lua_settop,
   lua_tolstring,
+  lua_touserdata,
   luaL_loadbuffer,
   luaL_newstate,
   luaL_openlibs,
   luaL_ref,
   to_jsstring,
   to_luastring,
-} from './lua';
+} from './api';
 
 import bitLua from './vendor/bit.lua';
 import compatLua from './vendor/compat.lua';
 
 import * as extraScriptFunctions from './globals/extra';
+import * as frameScriptFunctions from './globals/frame';
 import * as sharedScriptFunctions from './globals/shared';
 import * as systemScriptFunctions from './globals/system';
 
-class ScriptContext {
+class LuaContext {
   constructor(client) {
     this.client = client;
 
@@ -36,7 +41,10 @@ class ScriptContext {
 
     const L = luaL_newstate();
     this.state = L;
+    // TODO: Is this a terrible idea?
+    this.state.client = client;
 
+    lua_atnativeerror(L, this.onNativeError);
     lua_pushcclosure(L, this.onError.bind(this), 0);
 
     this.errorHandlerRef = luaL_ref(L, LUA_REGISTRYINDEX);
@@ -51,6 +59,7 @@ class ScriptContext {
 
     // TODO: Is it legit to load these script functions on boot?
     this.registerFunctions(extraScriptFunctions);
+    this.registerFunctions(frameScriptFunctions);
     this.registerFunctions(sharedScriptFunctions);
     this.registerFunctions(systemScriptFunctions);
 
@@ -80,15 +89,29 @@ class ScriptContext {
     } else if (lua_pcall(L, 1, 0, 0)) {
       lua_settop(L, -2);
     }
+
+    return true;
+  }
+
+  onNativeError() {
+    // onError is invoked with the Error object still on the stack
+    return 1;
   }
 
   onError(L) {
+    if (lua_isuserdata(L, -1)) {
+      const e = lua_touserdata(L, -1);
+      console.error(e);
+      return 0;
+    }
+
     if (!lua_isstring(L, -1)) {
       lua_pushstring(L, 'UNKNOWN ERROR');
       lua_insert(L, -1);
     }
 
     const msg = lua_tolstring(L, -1, 0);
+
     // TODO: Handle current object related errors
 
     // Invoke the Lua-side error handler (if any)
@@ -118,6 +141,23 @@ class ScriptContext {
     lua_pushcclosure(L, func, 0);
     lua_setglobal(L, name);
   }
+
+  createMetaTable(scriptFunctions = {}) {
+    const L = this.state;
+
+    lua_createtable(L, 0, 0);
+    lua_pushstring(L, '__index');
+    lua_createtable(L, 0, 0);
+
+    for (const [name, func] of Object.entries(scriptFunctions)) {
+      lua_pushstring(L, name);
+      lua_pushcclosure(L, func, 0);
+      lua_settable(L, -3);
+    }
+
+    lua_settable(L, -3);
+    return luaL_ref(L, LUA_REGISTRYINDEX);
+  }
 }
 
-export default ScriptContext;
+export default LuaContext;
