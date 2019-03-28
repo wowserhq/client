@@ -1,0 +1,40 @@
+{
+  "name": "@wowserhq/client",
+  "version": "0.0.1",
+  "description": "Web client for Wowser",
+  "author": "Wowser Contributors",
+  "repository": "wowserhq/client",
+  "license": "MIT",
+  "files": [
+    "AUTHORS",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "webpack",
+    "lint": "eslint --ext js,mjs .",
+    "start:dev": "webpack-dev-server"
+  },
+  "keywords": [
+    "world of warcraft",
+    "warcraft",
+    "blizzard",
+    "wow"
+  ],
+  "dependencies": {
+    "fengari": "^0.1.4"
+  },
+  "devDependencies": {
+    "@wowserhq/eslint-config": "^0.3.1",
+    "eslint": "^5.15.1",
+    "eslint-plugin-import": "^2.16.0",
+    "html-webpack-plugin": "^3.2.0",
+    "raw-loader": "^2.0.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.2.1"
+  },
+  "engines": {
+    "node": "10.15.x"
+  }
+}
