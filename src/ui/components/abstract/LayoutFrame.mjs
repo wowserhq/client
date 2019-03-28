@@ -3,7 +3,7 @@ class LayoutFrame {
     this.ui = ui;
 
     // TODO: Risk of flags prop clashing with other classes in hierarchy?
-    this.flags = 16;
+    this.flags = 0;
   }
 
   set deferredResize(enable) {
