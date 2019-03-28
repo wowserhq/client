@@ -11,6 +11,7 @@ class XMLNode {
     const parser = new DOMParser();
     const document = parser.parseFromString(source, 'application/xml');
 
+    // TODO: Case insensitivity
     const transform = (element, parent = null) => {
       const attributes = {};
       for (const { name, value } of element.attributes) {
