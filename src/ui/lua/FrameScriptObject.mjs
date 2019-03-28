@@ -16,11 +16,11 @@ import {
 const metaTables = new Map();
 const objectTypes = new Map();
 
-class LuaScriptObject {
+class FrameScriptObject {
   constructor(ui) {
     this.ui = ui;
 
-    this.luaRegistered = false;
+    this.luaRegistered = 0;
     this.luaRef = null;
   }
 
@@ -42,7 +42,7 @@ class LuaScriptObject {
       this.luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
     }
 
-    this.luaRegistered = true;
+    ++this.luaRegistered;
 
     if (name) {
       lua_getglobal(L, name);
@@ -80,4 +80,4 @@ class LuaScriptObject {
   }
 }
 
-export default LuaScriptObject;
+export default FrameScriptObject;

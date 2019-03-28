@@ -1,6 +1,6 @@
-import BaseScriptObject from '../../lua/ScriptObject';
+import FrameScriptObject from '../../lua/FrameScriptObject';
 
-class ScriptObject extends BaseScriptObject {
+class ScriptObject extends FrameScriptObject {
   constructor() {
     super();
 
