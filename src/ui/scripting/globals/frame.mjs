@@ -8,7 +8,7 @@ import {
   lua_tojsstring,
   lua_type,
   luaL_error,
-} from '../api';
+} from '../lua';
 import { Status } from '../../../utils/logging';
 
 export const GetText = () => {
@@ -36,30 +36,32 @@ export const CreateFrame = (L) => {
 
   const frameType = lua_tojsstring(L, 1, 0);
   const name = lua_tojsstring(L, 2, 0);
+  const parent = lua_tojsstring(L, 3, 0);
   const inherits = lua_tojsstring(L, 4, 0);
 
-  // TODO: Rest of CreateFrame implementation
+  // TODO: Validate parent and inherits
 
   const node = new XMLNode(null, frameType);
+  const { attributes } = node;
 
   if (name) {
-    node.attributes.name = name;
+    attributes.set('name', name);
   }
 
   if (parent) {
-    node.attributes.parent = '';
+    attributes.set('parent', '');
   }
 
   if (inherits) {
-    node.attributes.inherits = inherits;
+    attributes.set('inherits', inherits);
   }
 
   if (lua_isstring(L, 5)) {
     const id = lua_tojsstring(L, 5, 0);
-    node.attributes.id = id;
+    attributes.set('id', id);
   } else if (lua_isnumber(L, 5)) {
     // TODO: Calculate numeric ID properly
-    node.attributes.id = Math.random();
+    attributes.set('id', Math.random());
   }
 
   const status = new Status();
@@ -77,7 +79,7 @@ export const CreateFrame = (L) => {
   }
 
   // Return a reference to the instance
-  lua_rawgeti(L, LUA_REGISTRYINDEX, frame.objectRef);
+  lua_rawgeti(L, LUA_REGISTRYINDEX, frame.luaRef);
 
   return 1;
 };

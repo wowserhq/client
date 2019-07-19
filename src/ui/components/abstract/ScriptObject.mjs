@@ -1,4 +1,4 @@
-import FrameScriptObject from '../../lua/FrameScriptObject';
+import FrameScriptObject from '../../scripting/FrameScriptObject';
 
 class ScriptObject extends FrameScriptObject {
   constructor() {

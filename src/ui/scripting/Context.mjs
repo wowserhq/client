@@ -1,9 +1,14 @@
 import {
   LUA_REGISTRYINDEX,
+  LUA_TTABLE,
+  lua_Debug,
   lua_atnativeerror,
   lua_call,
   lua_createtable,
   lua_gc,
+  lua_getinfo,
+  lua_getlocal,
+  lua_getstack,
   lua_insert,
   lua_isstring,
   lua_isuserdata,
@@ -11,18 +16,19 @@ import {
   lua_pushcclosure,
   lua_pushstring,
   lua_rawgeti,
+  lua_replace,
   lua_setglobal,
-  lua_settable,
   lua_settop,
   lua_tolstring,
   lua_touserdata,
+  lua_type,
   luaL_loadbuffer,
   luaL_newstate,
   luaL_openlibs,
   luaL_ref,
   to_jsstring,
   to_luastring,
-} from './api';
+} from './lua';
 
 import bitLua from './vendor/bit.lua';
 import compatLua from './vendor/compat.lua';
@@ -32,17 +38,15 @@ import * as frameScriptFunctions from './globals/frame';
 import * as sharedScriptFunctions from './globals/shared';
 import * as systemScriptFunctions from './globals/system';
 
-class LuaContext {
-  constructor(client) {
-    this.client = client;
+class ScriptingContext {
+  constructor() {
+    this.constructor.instance = this;
 
     this.errorHandlerFunc = null;
-    this.handlingError = 0;
+    this.handlingError = false;
 
     const L = luaL_newstate();
     this.state = L;
-    // TODO: Is this a terrible idea?
-    this.state.client = client;
 
     lua_atnativeerror(L, this.onNativeError);
     lua_pushcclosure(L, this.onError.bind(this), 0);
@@ -66,11 +70,35 @@ class LuaContext {
     this.execute(compatLua, 'compat.lua');
   }
 
-  execute(source, filename = '<inline>') {
-    console.info('executing', filename);
-    console.info('source: ', source.slice(0, 100));
+  compileFunction(source, name = '<unknown>') {
+    const L = this.state;
 
-    // TODO: Overloaded version
+    lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerRef);
+
+    const lsource = to_luastring(source);
+    const length = source.length;
+    const lname = to_luastring(name);
+
+    if (luaL_loadbuffer(L, lsource, length, lname)) {
+      // TODO: Status handling
+      if (lua_pcall(L, 1, 0, 0)) {
+        lua_settop(L, -2);
+      }
+      return -1;
+    } else if (lua_pcall(L, 0, 1, -2)) {
+      // TODO: Status handling
+      lua_settop(L, -3);
+      return -1;
+    }
+
+    const luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
+    lua_settop(L, -2);
+    return luaRef;
+  }
+
+  execute(source, filename = '<inline>') {
+    console.groupCollapsed('executing', filename);
+    console.log(source.slice(0, 500));
 
     const L = this.state;
 
@@ -90,7 +118,74 @@ class LuaContext {
       lua_settop(L, -2);
     }
 
+    console.groupEnd('executing', filename);
+
     return true;
+  }
+
+  executeFunction(functionRef, thisArg, givenArgsCount, unk, event) {
+    const L = this.state;
+
+    let argsCount = givenArgsCount;
+
+    // TODO: Global 'this', 'event' and 'argX'
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerRef);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, functionRef);
+
+    if (thisArg) {
+      if (!thisArg.luaRegistered) {
+        thisArg.register();
+      }
+
+      lua_rawgeti(L, LUA_REGISTRYINDEX, thisArg.luaRef);
+      argsCount++;
+    }
+
+    // TODO: Arguments
+
+    if (lua_pcall(L, argsCount, 0, -2 - argsCount)) {
+      lua_settop(L, -2);
+    }
+
+    lua_settop(L, -2);
+
+    // TODO: Clean-up
+
+    lua_settop(L, -1 - givenArgsCount);
+  }
+
+  getObjectAt(index) {
+    const L = this.state;
+
+    const info = new lua_Debug();
+    if (!lua_getstack(L, index, info)) {
+      return null;
+    }
+
+    lua_getinfo(L, 'Sln', info);
+
+    const source = to_jsstring(info.source);
+    const calltype = to_jsstring(info.namewhat);
+
+    if (source[0] !== '*' && calltype !== 'method') {
+      return null;
+    }
+
+    if (!lua_getlocal(L, info, 1)) {
+      return null;
+    }
+
+    let object = null;
+    if (lua_type(L, -1) === LUA_TTABLE) {
+      lua_rawgeti(L, -1, 0);
+      object = lua_touserdata(L, -1);
+      lua_settop(L, -2);
+    }
+
+    lua_settop(L, -2);
+
+    return object;
   }
 
   onNativeError() {
@@ -110,21 +205,28 @@ class LuaContext {
       lua_insert(L, -1);
     }
 
-    const msg = lua_tolstring(L, -1, 0);
+    let msg = to_jsstring(lua_tolstring(L, -1, 0));
 
-    // TODO: Handle current object related errors
+    const object = this.getObjectAt(1);
+    if (object) {
+      const name = object.name || '<unnamed>';
+      // TODO: Is this correctly implemented?
+      msg = msg.replace('*', name);
+      lua_pushstring(L, msg);
+      lua_replace(L, -2);
+    }
 
     // Invoke the Lua-side error handler (if any)
     if (this.errorHandlerFunc) {
-      this.handlingError = 1;
+      this.handlingError = true;
 
       lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerFunc);
       lua_insert(L, -2);
       lua_call(L, 1, 1);
 
-      this.handlingError = 0;
+      this.handlingError = false;
     } else {
-      console.error(to_jsstring(msg));
+      console.error(msg);
     }
 
     return 1;
@@ -141,23 +243,6 @@ class LuaContext {
     lua_pushcclosure(L, func, 0);
     lua_setglobal(L, name);
   }
-
-  createMetaTable(scriptFunctions = {}) {
-    const L = this.state;
-
-    lua_createtable(L, 0, 0);
-    lua_pushstring(L, '__index');
-    lua_createtable(L, 0, 0);
-
-    for (const [name, func] of Object.entries(scriptFunctions)) {
-      lua_pushstring(L, name);
-      lua_pushcclosure(L, func, 0);
-      lua_settable(L, -3);
-    }
-
-    lua_settable(L, -3);
-    return luaL_ref(L, LUA_REGISTRYINDEX);
-  }
 }
 
-export default LuaContext;
+export default ScriptingContext;
