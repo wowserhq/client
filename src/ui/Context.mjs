@@ -133,7 +133,7 @@ class UIContext {
           const virtual = attributes.get('virtual');
           if (stringToBoolean(virtual)) {
             if (name) {
-              this.templates.store(child, name, null, status);
+              this.templates.register(child, name, null, status);
             } else {
               status.warning('unnamed virtual node at top level');
             }

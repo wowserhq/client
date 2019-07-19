@@ -22,7 +22,7 @@ class TemplateRegistry extends HashMap {
     // TODO
   }
 
-  store(node, name, tainted, status) {
+  register(node, name, tainted, status) {
     let entry = this.get(name);
     if (entry) {
       if (!entry.tainted || tainted) {
