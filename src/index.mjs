@@ -1,12 +1,15 @@
 import Client from './Client';
-import { Button, Frame } from './ui/components';
 
 const client = new Client();
 
-console.log('Lift off!', client);
-
 
 (async () => {
+  console.time('Client load time');
+
   await client.ui.load('Interface\\GlueXML\\GlueXML.toc');
-  console.log('Done!');
+  // await client.ui.load('Interface\\FrameXML\\FrameXML.toc');
+
+  console.timeLog('Client load time', client);
 })();
+
+client.screen.attach(document.querySelector('canvas'));
