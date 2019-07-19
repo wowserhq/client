@@ -1,3 +1,6 @@
+import { Rect } from '../../../math';
+import { extractDimensionsFrom } from '../../utils';
+
 class LayoutFrame {
   constructor() {
     this.layoutFlags = 0;
@@ -30,6 +33,39 @@ class LayoutFrame {
     if (this.layoutFlags & 0x4) {
       this.resize(true);
     }
+  }
+
+  loadXML(node) {
+    const size = node.getChildByName('Size');
+    if (size) {
+      const dimensions = extractDimensionsFrom(size);
+      if (dimensions) {
+        this.width = dimensions.x;
+        this.height = dimensions.y;
+      }
+    }
+
+    // TODO: Anchors, positioning++
+  }
+
+  get width() {
+    return this._width;
+  }
+
+  set width(width) {
+    this.layoutFlags &= ~0x8;
+    this._width = width;
+    this.resize(false);
+  }
+
+  get height() {
+    return this._height;
+  }
+
+  set height(height) {
+    this.layoutFlags &= ~0x8;
+    this._height = height;
+    this.resize(false);
   }
 
   resize(force = false) {
