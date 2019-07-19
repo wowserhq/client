@@ -23,9 +23,33 @@ class ScriptObject extends FrameScriptObject {
     }
   }
 
+  // Fully qualifies given name, replacing $parent (if any) with parent's name
+  // Example: <FontString name="$parentCategory" />
   fullyQualifyName(name) {
-    // TODO: Handle $parent references
+    const keyword = '$parent';
+    if (name.includes(keyword)) {
+      let parentName = '';
+
+      let node = this;
+      while (node = node.parent) {
+        parentName = node.name;
+        if (parentName) {
+          break;
+        }
+      }
+
+      const fqname = name.replace(keyword, parentName);
+      return fqname;
+    }
     return name;
+  }
+
+  preLoadXML(node) {
+    const name = node.attributes.get('name');
+
+    if (name) {
+      this.name = name;
+    }
   }
 }
 
