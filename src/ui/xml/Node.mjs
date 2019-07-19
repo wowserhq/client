@@ -9,6 +9,17 @@ class XMLNode {
     this.text = null;
   }
 
+  get firstChild() {
+    return this.children[0];
+  }
+
+  getChildByName(name) {
+    const iname = name.toLowerCase();
+    return this.children.find(child => (
+      child.name.toLowerCase() === iname
+    ));
+  }
+
   static parse(source) {
     const parser = new DOMParser();
     const document = parser.parseFromString(source, 'application/xml');
