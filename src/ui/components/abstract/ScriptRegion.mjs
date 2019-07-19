@@ -1,3 +1,4 @@
+import Root from '../Root';
 import { multipleClasses } from '../../../utils';
 
 import LayoutFrame from './LayoutFrame';
@@ -20,6 +21,9 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
   }
 
   get layoutParent() {
+    if (this.width === 0.0 || !this.parent) {
+      return Root.instance;
+    }
     return this.parent;
   }
 
