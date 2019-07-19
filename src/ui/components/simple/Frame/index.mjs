@@ -1,8 +1,13 @@
 import ScriptRegion from '../../abstract/ScriptRegion';
+import * as scriptFunctions from './script';
 
 class Frame extends ScriptRegion {
-  constructor(ui, parent) {
-    super(ui);
+  static get scriptFunctions() {
+    return scriptFunctions;
+  }
+
+  constructor(parent) {
+    super();
 
     this.loading = false;
     this.shown = false;
