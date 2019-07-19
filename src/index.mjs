@@ -1,7 +1,10 @@
 import Client from './Client';
+import * as glueScriptFunctions from './ui/scripting/globals/glue';
 
 const client = new Client();
 
+// TODO: Part of GlueMgr
+client.ui.scripting.registerFunctions(glueScriptFunctions);
 
 (async () => {
   console.time('Client load time');
