@@ -6,6 +6,8 @@ const DEFAULT_FACTORIES = [
   'Button',
   'EditBox',
   'Frame',
+  'Model',
+  'Slider',
 ];
 
 class FactoryNode {
