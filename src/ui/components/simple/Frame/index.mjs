@@ -372,9 +372,115 @@ class Frame extends ScriptRegion {
   show() {
     if (this.protectedFunctionsAllowed) {
       this.shown = true;
-      // TODO
+      this.showThis();
     } else {
       // TODO
+    }
+  }
+
+  showThis() {
+    if (!this.shown) {
+      return false;
+    }
+
+    if (this.parent && !this.parent.visible) {
+      return false;
+    }
+
+    if (this.visible) {
+      return true;
+    }
+
+    if (!this.loading) {
+      this.deferredResize = false;
+
+      // TODO: Is this correct?
+      if (this.titleRegion) {
+        this.titleRegion.deferredResize = false;
+      }
+    }
+
+    const root = Root.instance;
+
+    this.visible = true;
+
+    root.showFrame(this, 0);
+
+    for (const region of this.regions) {
+      region.showThis();
+    }
+
+    for (const child of this.children) {
+      child.frame.showThis();
+    }
+
+    if (this.flags & 0x1) {
+      root.raiseFrame(this, 1);
+    }
+
+    this.onLayerShow();
+
+    return true;
+  }
+
+  hide() {
+    if (this.protectedFunctionsAllowed) {
+      this.shown = false;
+      this.hideThis();
+    } else {
+      // TODO
+    }
+  }
+
+  hideThis() {
+    if (!this.visible) {
+      return true;
+    }
+
+    if (!this.loading) {
+      this.deferredResize = true;
+
+      if (this.titleRegion) {
+        this.titleRegion.deferredResize = true;
+      }
+    }
+
+    this.visible = false;
+    Root.instance.hideFrame(this, false);
+
+    for (const region of this.regions) {
+      region.hideThis();
+    }
+
+    for (const child of this.children) {
+      child.frame.hideThis();
+    }
+
+    this.onLayerHide();
+
+    return true;
+  }
+
+  onLayerShow() {
+    this.runOnShowScript();
+  }
+
+  onLayerHide() {
+    this.runOnHideScript();
+  }
+
+  onLayerUpdate(elapsedSecs) {
+    // TODO: Run update script
+
+    // TODO: Run PreOnAnimUpdate hooks
+
+    // TODO: Implement ScriptRegion.onLayerUpdate
+    // super.onLayerUpdate(elapsedSecs);
+
+    console.log(this.name, this.regions.head);
+
+    for (const region of this.regions) {
+      region.onLayerUpdate(elapsedSecs);
     }
   }
 
