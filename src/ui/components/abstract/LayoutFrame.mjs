@@ -25,6 +25,10 @@ class LayoutFrame {
   resize(force = false) {
     // TODO
   }
+
+  static resizePending() {
+    // TOOD: Mark frames as resized
+  }
 }
 
 export default LayoutFrame;
