@@ -1,6 +1,8 @@
+import { HashMap, HashStrategy } from '../../utils';
+
 import * as frameTypes from '.';
 
-const DEFAULTS = [
+const DEFAULT_FACTORIES = [
   'Button',
   'EditBox',
   'Frame',
@@ -13,32 +15,23 @@ class FactoryNode {
     this.unique = unique;
   }
 
-  build(ui, parent) {
-    return new this.ctor(ui, parent);
-  }
-
-  static keyFor(name) {
-    return name.toUpperCase();
+  build(parent) {
+    return new this.ctor(parent);
   }
 }
 
-class FactoryRegistry {
+class FactoryRegistry extends HashMap {
   constructor() {
-    this.registry = {};
+    super(HashStrategy.UPPERCASE);
 
-    for (const name of DEFAULTS) {
+    for (const name of DEFAULT_FACTORIES) {
       this.register(name, frameTypes[name]);
     }
   }
 
-  get(name) {
-    const key = FactoryNode.keyFor(name);
-    return this.registry[key];
-  }
-
   register(name, ctor, unique = false) {
-    const key = FactoryNode.keyFor(name);
-    this.registry[key] = new FactoryNode(name, ctor, unique);
+    const node = new FactoryNode(name, ctor, unique);
+    this.set(name, node);
   }
 }
 
