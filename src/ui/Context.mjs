@@ -1,17 +1,21 @@
-import { Status, path } from '../utils';
+import { Status, path, stringToBoolean } from '../utils';
 
+import Client from '../Client';
 import FactoryRegistry from './components/FactoryRegistry';
-import LuaContext from './lua/Context';
+import Root from './components/Root';
+import ScriptingContext from './scripting/Context';
 import TemplateRegistry from './TemplateRegistry';
 import XMLNode from './xml/Node';
 
 class UIContext {
-  constructor(client) {
-    this.client = client;
+  constructor() {
+    this.constructor.instance = this;
 
-    this.lua = new LuaContext(client);
+    this.scripting = new ScriptingContext();
     this.factories = new FactoryRegistry();
     this.templates = new TemplateRegistry();
+
+    this.root = new Root();
   }
 
   findParentNameFor(node) {
@@ -19,8 +23,8 @@ class UIContext {
     return null;
   }
 
-  createFrame(node, parent, status) {
-    const { name } = node.attributes;
+  createFrame(node, parent, status = new Status()) {
+    const name = node.attributes.get('name');
     if (name) {
       status.info(`creating ${node.name} named ${name}`);
     } else {
@@ -36,10 +40,10 @@ class UIContext {
     const parentName = this.findParentNameFor(node);
     if (parentName) {
       // TODO: Handle given parent name
-      console.error('finding parent', parentName);
+      console.error('TODO: finding parent', parentName);
     }
 
-    const frame = factory.build(this, parent);
+    const frame = factory.build(parent);
     if (!frame) {
       status.warning(`unable to create frame type: ${node.name}`);
       return null;
@@ -58,7 +62,7 @@ class UIContext {
 
     const dirPath = path.dirname(tocPath);
 
-    const toc = await this.client.fetch(tocPath);
+    const toc = await Client.instance.fetch(tocPath);
     if (!toc) {
       status.error(`could not open ${tocPath}`);
       return;
@@ -79,11 +83,11 @@ class UIContext {
   async loadFile(filePath, status = new Status()) {
     status.info('loading file', filePath);
 
-    const source = await this.client.fetch(filePath);
+    const source = await Client.instance.fetch(filePath);
 
     // Handle Lua files
     if (filePath.endsWith('.lua')) {
-      return this.lua.execute(source, filePath);
+      return this.scripting.execute(source, filePath);
     }
 
     // Assume rest are XML files
@@ -94,41 +98,44 @@ class UIContext {
     const dirPath = path.dirname(filePath);
 
     for (const child of node.children) {
-      switch (child.name) {
-        case 'Include': {
-          const { attributes: { file } } = child;
+      const { attributes, body } = child;
+
+      const iname = child.name.toLowerCase();
+      switch (iname) {
+        case 'include': {
+          const file = attributes.get('file');
           if (file) {
             // TODO
-            console.warn("element 'Include' not yet supported");
+            console.error("TODO: 'Include' node", child);
           } else {
             status.error("element 'Include' without file attribute");
           }
         } break;
 
-        case 'Script': {
-          const { attributes: { file }, text } = child;
+        case 'script': {
+          const file = attributes.get('file');
           if (file) {
             // TODO: Is this legit?
             const luaPath = path.join(dirPath, file);
             await this.loadFile(luaPath);
-          } else if (text) {
-            this.lua.execute(text, `${filePath}:<Scripts>`);
+          } else if (body) {
+            this.scripting.execute(body, `${filePath}:<Scripts>`);
           }
         } break;
 
-        // TODO: Font support
-        case 'Font': {
-          console.warn("element 'Font' not yet supported");
+        case 'font': {
+          // TODO: Font support
         } break;
 
         // Other frame nodes
         default: {
-          const { attributes: { name, virtual } } = child;
-          if (virtual === 'true') {
+          const name = attributes.get('name');
+          const virtual = attributes.get('virtual');
+          if (stringToBoolean(virtual)) {
             if (name) {
               this.templates.store(child, name, null, status);
             } else {
-              status.warn('unnamed virtual node at top level');
+              status.warning('unnamed virtual node at top level');
             }
           } else {
             this.createFrame(child, null, status);
