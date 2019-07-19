@@ -1,10 +1,12 @@
 import Client from './Client';
+import { ModelFFX } from './ui/components';
 import * as glueScriptFunctions from './ui/scripting/globals/glue';
 
 const client = new Client();
 
 // TODO: Part of GlueMgr
 client.ui.scripting.registerFunctions(glueScriptFunctions);
+client.ui.factories.register('ModelFFX', ModelFFX);
 
 (async () => {
   console.time('Client load time');
