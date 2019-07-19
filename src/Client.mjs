@@ -4,6 +4,8 @@ import { fetch } from './utils';
 
 class Client {
   constructor() {
+    this.constructor.instance = this;
+
     this.fetch = fetch;
 
     this.screen = new Screen();
