@@ -7,6 +7,10 @@ class TemplateNode {
     this.tainted = false;
     this.locked = false;
   }
+
+  release() {
+    this.locked = false;
+  }
 }
 
 class TemplateRegistry extends HashMap {
@@ -14,12 +18,18 @@ class TemplateRegistry extends HashMap {
     super(HashStrategy.UPPERCASE);
   }
 
-  acquire(...args) {
-    // TODO
+  acquireWithLock(name) {
+    const entry = this.get(name);
+    if (entry) {
+      entry.locked = true;
+    }
+    return entry;
   }
 
-  release(...args) {
-    // TODO
+  acquireByList(list) {
+    return list.split(',').map(name => (
+      this.acquireWithLock(name.trim())
+    ));
   }
 
   register(node, name, tainted, status) {
