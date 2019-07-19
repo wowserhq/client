@@ -1,3 +1,5 @@
+import { HashMap, HashStrategy } from '../utils';
+
 class TemplateNode {
   constructor(name, node) {
     this.name = name;
@@ -5,15 +7,11 @@ class TemplateNode {
     this.tainted = false;
     this.locked = false;
   }
-
-  static keyFor(name) {
-    return name.toUpperCase();
-  }
 }
 
-class TemplateRegistry {
+class TemplateRegistry extends HashMap {
   constructor() {
-    this.registry = {};
+    super(HashStrategy.UPPERCASE);
   }
 
   acquire(...args) {
@@ -25,12 +23,10 @@ class TemplateRegistry {
   }
 
   store(node, name, tainted, status) {
-    const key = TemplateNode.keyFor(name);
-
-    let entry = this.registry[key];
+    let entry = this.get(name);
     if (entry) {
       if (!entry.tainted || tainted) {
-        status.warn(`virtual frame named ${name} already exists`);
+        status.warning(`virtual frame named ${name} already exists`);
         return;
       }
 
@@ -38,10 +34,10 @@ class TemplateRegistry {
     } else {
       entry = new TemplateNode(name, node);
       entry.tainted = tainted;
-      this.registry[key] = entry;
+      this.set(name, entry);
     }
 
-    status.info(`added virtual frame ${name}`);
+    status.info(`registered virtual frame ${name}`);
   }
 }
 
