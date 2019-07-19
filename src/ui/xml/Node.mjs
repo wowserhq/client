@@ -6,7 +6,7 @@ class XMLNode {
     this.name = name;
     this.attributes = attributes;
     this.children = [];
-    this.text = null;
+    this.body = null;
   }
 
   get firstChild() {
@@ -38,7 +38,7 @@ class XMLNode {
       } else {
         const trimmed = element.textContent.trim();
         if (trimmed) {
-          node.text = trimmed;
+          node.body = trimmed;
         }
       }
       return node;
