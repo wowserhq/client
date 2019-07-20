@@ -1,3 +1,4 @@
+import UIContext from '../../Context';
 import XMLNode from '../../xml/Node';
 import {
   LUA_REGISTRYINDEX,
@@ -67,7 +68,7 @@ export const CreateFrame = (L) => {
   const status = new Status();
 
   // Create an instance of Frame or a descendant class
-  const frame = L.client.ui.createFrame(node, parent, status);
+  const frame = UIContext.instance.createFrame(node, parent, status);
   if (!frame) {
     luaL_error(L, "CreateFrame: Unknown frame type '%s'", frameType);
     return 0;
