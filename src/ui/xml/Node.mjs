@@ -1,10 +1,10 @@
 import { HashMap, HashStrategy } from '../../utils';
 
 class XMLNode {
-  constructor(parent, name, attributes) {
+  constructor(parent, name) {
     this.parent = parent;
     this.name = name;
-    this.attributes = attributes;
+    this.attributes = new HashMap(HashStrategy.UPPERCASE);
     this.children = [];
     this.body = null;
   }
@@ -25,12 +25,13 @@ class XMLNode {
     const document = parser.parseFromString(source, 'application/xml');
 
     const transform = (element, parent = null) => {
-      const attributes = Array.from(element.attributes).reduce((map, attr) => {
-        map.set(attr.name, attr.value);
-        return map;
-      }, new HashMap(HashStrategy.UPPERCASE));
+      const node = new this(parent, element.tagName);
 
-      const node = new this(parent, element.tagName, attributes);
+      const { attributes } = node;
+      for (const attr of element.attributes) {
+        attributes.set(attr.name, attr.value);
+      }
+
       if (element.children.length) {
         for (const child of element.children) {
           node.children.push(transform(child, node));
