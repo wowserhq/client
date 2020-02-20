@@ -15,6 +15,8 @@ class UIContext {
     this.factories = new FactoryRegistry();
     this.templates = new TemplateRegistry();
 
+    this.frames = {};
+
     this.root = new Root();
   }
 
@@ -53,6 +55,10 @@ class UIContext {
     frame.preLoadXML(node);
     frame.loadXML(node);
     frame.postLoadXML(node);
+
+    if (frame.name) {
+      this.frames[frame.name] = frame;
+    }
 
     return frame;
   }
