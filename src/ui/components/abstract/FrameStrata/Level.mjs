@@ -4,7 +4,9 @@ import RenderBatch from '../../../../gfx/RenderBatch';
 import { LinkedList } from '../../../../utils';
 
 class FrameStrataLevel {
-  constructor(...args) {
+  constructor(index) {
+    this.index = index;
+
     this.pendingFrames = LinkedList.of(Frame, 'strataLink');
     this.frames = LinkedList.of(Frame, 'strataLink');
 
