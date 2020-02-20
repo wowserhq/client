@@ -35,14 +35,14 @@ class FrameScriptObject {
     );
   }
 
-  get luaRegistered() {
+  get isLuaRegistered() {
     return this.luaRef !== null;
   }
 
   register(name = null) {
     const L = ScriptingContext.instance.state;
 
-    if (!this.luaRegistered) {
+    if (!this.isLuaRegistered) {
       // TODO: Tainted code handling
 
       lua_createtable(L, 0, 0);

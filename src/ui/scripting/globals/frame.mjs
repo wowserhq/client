@@ -109,7 +109,7 @@ export const CreateFrame = (L) => {
   }
 
   // Ensure the instance is registered within the Lua context
-  if (!frame.registered) {
+  if (!frame.isLuaRegistered) {
     frame.register();
   }
 
