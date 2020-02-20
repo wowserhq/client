@@ -1,3 +1,4 @@
+import Frame from '../../components/simple/Frame';
 import UIContext from '../../Context';
 import XMLNode from '../../xml/Node';
 import {
@@ -6,7 +7,10 @@ import {
   lua_isnumber,
   lua_isstring,
   lua_rawgeti,
+  lua_settop,
   lua_tojsstring,
+  lua_tonumber,
+  lua_touserdata,
   lua_type,
   luaL_error,
 } from '../lua';
@@ -37,10 +41,40 @@ export const CreateFrame = (L) => {
 
   const frameType = lua_tojsstring(L, 1, 0);
   const name = lua_tojsstring(L, 2, 0);
-  const parent = lua_tojsstring(L, 3, 0);
   const inherits = lua_tojsstring(L, 4, 0);
 
-  // TODO: Validate parent and inherits
+  let parent = null;
+
+  // Verify parent argument (if any)
+  if (lua_type(L, 3) === LUA_TTABLE) {
+    lua_rawgeti(L, 3, 0);
+    parent = lua_touserdata(L, -1);
+    lua_settop(L, -2);
+
+    if (!parent) {
+      luaL_error(L, "CreateFrame: Couldn't find 'this' in parent object");
+      return 0;
+    }
+
+    if (!(parent instanceof Frame)) {
+      luaL_error(L, 'CreateFrame: Wrong parent object type, expected frame');
+      return 0;
+    }
+  }
+
+  // Verify all inherited templates exist
+  if (inherits) {
+    const templates = UIContext.instance.templates.filterByList(inherits);
+    for (const template of templates) {
+      if (!template) {
+        luaL_error(L, `CreateFrame: Could not find inherited node '${template.name}'`);
+      }
+
+      if (template.locked) {
+        luaL_error(L, `CreateFrame: Recursively inherited node '${template.name}'`);
+      }
+    }
+  }
 
   const node = new XMLNode(null, frameType);
   const { attributes } = node;
@@ -61,8 +95,8 @@ export const CreateFrame = (L) => {
     const id = lua_tojsstring(L, 5, 0);
     attributes.set('id', id);
   } else if (lua_isnumber(L, 5)) {
-    // TODO: Calculate numeric ID properly
-    attributes.set('id', Math.random());
+    const id = lua_tonumber(L, 5);
+    attributes.set('id', id);
   }
 
   const status = new Status();
