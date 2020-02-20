@@ -8,6 +8,10 @@ class TemplateNode {
     this.locked = false;
   }
 
+  lock() {
+    this.locked = true;
+  }
+
   release() {
     this.locked = false;
   }
@@ -18,17 +22,9 @@ class TemplateRegistry extends HashMap {
     super(HashStrategy.UPPERCASE);
   }
 
-  acquireWithLock(name) {
-    const entry = this.get(name);
-    if (entry) {
-      entry.locked = true;
-    }
-    return entry;
-  }
-
-  acquireByList(list) {
+  filterByList(list) {
     return list.split(',').map(name => (
-      this.acquireWithLock(name.trim())
+      this.get(name.trim())
     ));
   }
 
