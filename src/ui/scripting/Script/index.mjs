@@ -1,10 +1,10 @@
 import ScriptingContext from '../Context';
-
 import {
   LUA_REGISTRYINDEX,
   lua_getglobal,
   lua_rawgeti,
   luaL_ref,
+  luaL_unref,
 } from '../lua';
 
 class Script {
@@ -27,7 +27,7 @@ class Script {
     const L = scripting.state;
 
     if (this.luaRef) {
-      console.error('TODO: Script already bound, unbind');
+      luaL_unref(L, LUA_REGISTRYINDEX, this.luaRef);
       this.luaRef = null;
     }
 
