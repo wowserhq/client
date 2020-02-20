@@ -1,11 +1,9 @@
 import DrawLayerType from '../../../../gfx/DrawLayerType';
-import FontString from '../FontString';
 import FrameStrataType from '../../abstract/FrameStrata/Type';
 import Region from '../Region';
 import Root from '../../Root';
 import Script from '../../../scripting/Script';
 import ScriptRegion from '../../abstract/ScriptRegion';
-import Texture from '../Texture';
 import UIContext from '../../../Context';
 import {
   LinkedList,
@@ -190,12 +188,13 @@ class Frame extends ScriptRegion {
     const toplevel = node.attributes.get('toplevel');
 
     if (inherits) {
-      const templates = UIContext.instance.templates.acquireByList(inherits);
+      const templates = UIContext.instance.templates.filterByList(inherits);
       for (const template of templates) {
         if (template) {
           if (template.locked) {
             // TODO: Error handling
           } else {
+            template.lock();
             this.loadXML(template.node);
             template.release();
           }
@@ -280,6 +279,8 @@ class Frame extends ScriptRegion {
   }
 
   loadXMLLayers(node) {
+    const ui = UIContext.instance;
+
     for (const layer of node.children) {
       if (layer.name.toLowerCase() !== 'layer') {
         // TODO: Error handling
@@ -287,17 +288,19 @@ class Frame extends ScriptRegion {
       }
 
       const level = layer.attributes.get('level');
+
+      // TODO: Case sensitivity
       const drawLayerType = DrawLayerType[level] || DrawLayerType.ARTWORK;
 
       for (const layerChild of layer.children) {
         const iname = layerChild.name.toLowerCase();
         switch (iname) {
           case 'texture':
-            const texture = Texture.fromXMLNode(layerChild, this);
+            const texture = ui.createTexture(layerChild, this);
             texture.setFrame(this, drawLayerType, texture.shown);
             break;
           case 'fontstring':
-            const fontstring = FontString.fromXMLNode(layerChild, this);
+            const fontstring = ui.createFontString(layerChild, this);
             fontstring.setFrame(this, drawLayerType, fontstring.shown);
             break;
           default:
@@ -316,6 +319,7 @@ class Frame extends ScriptRegion {
         // TODO: Register for events
       } else {
         // TOOD: Error handling
+        console.error(`frame ${this.name}: unknown script element ${child.name}`);
       }
     }
   }
@@ -353,7 +357,7 @@ class Frame extends ScriptRegion {
 
     const inherits = node.attributes.get('inherits');
     if (inherits) {
-      const templates = ui.templates.acquireByList(inherits);
+      const templates = ui.templates.filterByList(inherits);
       for (const template of templates) {
         if (template && !template.locked) {
           this.postLoadXMLFrames(template.node);
@@ -476,8 +480,6 @@ class Frame extends ScriptRegion {
 
     // TODO: Implement ScriptRegion.onLayerUpdate
     // super.onLayerUpdate(elapsedSecs);
-
-    console.log(this.name, this.regions.head);
 
     for (const region of this.regions) {
       region.onLayerUpdate(elapsedSecs);
