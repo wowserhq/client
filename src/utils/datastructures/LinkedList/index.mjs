@@ -31,6 +31,16 @@ class LinkedList {
     return this.tailLink.entity;
   }
 
+  get size() {
+    let link = this.headLink;
+    let count = 0;
+    while (link !== this.sentinel) {
+      count++;
+      link = link.next;
+    }
+    return count;
+  }
+
   add(entity) {
     this.linkToTail(entity);
   }
