@@ -1,4 +1,5 @@
 export { default as Button } from './simple/Button';
+export { default as CheckButton } from './simple/CheckBox';
 export { default as EditBox } from './simple/EditBox';
 export { default as Frame } from './simple/Frame';
 export { default as Model } from './simple/Model';

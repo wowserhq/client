@@ -4,6 +4,7 @@ import * as frameTypes from '.';
 
 const DEFAULT_FACTORIES = [
   'Button',
+  'CheckButton',
   'EditBox',
   'Frame',
   'Model',
