@@ -326,6 +326,10 @@ export const IsOtherPlatformClient = () => {
   return 0;
 };
 
+export const IsMacClient = IsOtherPlatformClient;
+
+export const IsLinuxClient = IsOtherPlatformClient;
+
 export const SetRealmSplitState = () => {
   return 0;
 };
