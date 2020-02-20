@@ -4,6 +4,7 @@ import DrawLayerType from '../gfx/DrawLayerType';
 
 import FactoryRegistry from './components/FactoryRegistry';
 import FontString from './components/simple/FontString';
+import Frame from './components/simple/Frame';
 import Root from './components/Root';
 import ScriptingContext from './scripting/Context';
 import TemplateRegistry from './TemplateRegistry';
@@ -23,9 +24,24 @@ class UIContext {
     this.root = new Root();
   }
 
-  findParentNameFor(node) {
-    // TODO: Implement parent finding logic
-    return null;
+  getParentNameFor(node) {
+    let parentName = node.attributes.get('parent');
+    if (parentName) {
+      return parentName;
+    }
+
+    const inherits = node.attributes.get('inherits');
+    if (inherits) {
+      const templates = this.templates.filterByList(inherits);
+      for (const template of templates) {
+        // TODO: Does this bit require lock/release of templates?
+        if (template && !template.locked) {
+          parentName = node.attributes.get('parent');
+        }
+      }
+    }
+
+    return parentName;
   }
 
   createFrame(node, parent, status = new Status()) {
@@ -42,10 +58,12 @@ class UIContext {
       return null;
     }
 
-    const parentName = this.findParentNameFor(node);
+    const parentName = this.getParentNameFor(node);
     if (parentName) {
-      // TODO: Handle given parent name
-      console.error('TODO: finding parent', parentName);
+      parent = Frame.getObjectByName(parentName);
+      if (!parent) {
+        status.warning(`could not find frame parent: ${parentName}`);
+      }
     }
 
     const frame = factory.build(parent);
