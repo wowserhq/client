@@ -15,6 +15,11 @@ client.ui.factories.register('ModelFFX', ModelFFX);
   // await client.ui.load('Interface\\FrameXML\\FrameXML.toc');
 
   console.timeLog('Client load time', client);
+
+  // TODO: Should be handled by GlueMgr
+  client.ui.scripting.execute('SetGlueScreen("login")');
+
+  client.screen.render();
 })();
 
 client.screen.attach(document.querySelector('canvas'));
