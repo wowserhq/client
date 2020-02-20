@@ -7,6 +7,8 @@ const DEFAULT_FACTORIES = [
   'EditBox',
   'Frame',
   'Model',
+  'ScrollFrame',
+  'SimpleHTML',
   'Slider',
 ];
 
