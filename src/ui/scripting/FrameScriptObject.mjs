@@ -1,8 +1,9 @@
 import ScriptingContext from './Context';
+import Script from './Script';
 import ScriptRegistry from './Script/Registry';
-
 import {
   LUA_REGISTRYINDEX,
+  LUA_TTABLE,
   lua_createtable,
   lua_getglobal,
   lua_pushcclosure,
@@ -15,7 +16,9 @@ import {
   lua_setmetatable,
   lua_settable,
   lua_settop,
+  lua_touserdata,
   lua_type,
+  luaL_error,
   luaL_ref,
 } from './lua';
 
@@ -27,6 +30,9 @@ class FrameScriptObject {
     this.luaRef = null;
 
     this.scripts = new ScriptRegistry();
+    this.scripts.register(
+      new Script('OnEvent', ['event', '...']),
+    );
   }
 
   get luaRegistered() {
@@ -74,6 +80,48 @@ class FrameScriptObject {
       // TODO: Pass in remaining arguments
       ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount);
     }
+  }
+
+  static getObjectByName(name) {
+    const L = ScriptingContext.instance.state;
+
+    lua_getglobal(L, name);
+
+    if (lua_type(L, -1) === LUA_TTABLE) {
+      lua_rawgeti(L, -1, 0);
+      const object = lua_touserdata(L, -1);
+      lua_settop(L, -3);
+      if (object && object instanceof this) {
+        return object;
+      }
+    } else {
+      lua_settop(L, -2);
+    }
+    return null;
+  }
+
+  static getObjectFromStack(L) {
+    if (lua_type(L, 1) !== LUA_TTABLE) {
+      luaL_error(L, "Attempt to find 'this' in non-table object (used '.' instead of ':' ?)");
+      return null;
+    }
+
+    lua_rawgeti(L, 1, 0);
+    const object = lua_touserdata(L, -1);
+    lua_settop(L, -2);
+
+    if (!object) {
+      luaL_error(L, "Attempt to find 'this' in non-framescript object");
+      return null;
+    }
+
+    // TODO: Will this work in all scenarios?
+    if (!(object instanceof this)) {
+      luaL_error(L, 'Wrong object type for member function');
+      return null;
+    }
+
+    return object;
   }
 
   static get scriptFunctions() {
