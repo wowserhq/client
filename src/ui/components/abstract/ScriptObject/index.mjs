@@ -1,6 +1,12 @@
-import FrameScriptObject from '../../scripting/FrameScriptObject';
+import FrameScriptObject from '../../../scripting/FrameScriptObject';
+
+import * as scriptFunctions from './script';
 
 class ScriptObject extends FrameScriptObject {
+  static get scriptFunctions() {
+    return scriptFunctions;
+  }
+
   constructor() {
     super();
 
