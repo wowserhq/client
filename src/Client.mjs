@@ -9,7 +9,7 @@ class Client {
     this.fetch = fetch;
 
     this.screen = new Screen();
-    this.ui = new UIContext(this);
+    this.ui = new UIContext();
   }
 }
 
