@@ -1,5 +1,5 @@
 import FrameStrataType from './Type';
-import FrameStrataLevel from './Level.mjs';
+import FrameStrataLevel from './Level';
 
 class FrameStrata {
   constructor(type) {
@@ -9,6 +9,12 @@ class FrameStrata {
     // TODO: Should these be booleans?
     this.levelsDirty = 0;
     this.batchDirty = 0;
+  }
+
+  get name() {
+    const lookup = Object.keys(FrameStrataType);
+    const name = lookup[this.type];
+    return name;
   }
 
   get topLevel() {
