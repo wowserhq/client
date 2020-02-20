@@ -1,4 +1,5 @@
 import Frame from '../Frame';
+import Script from '../../../scripting/Script';
 
 import * as scriptFunctions from './script';
 
@@ -8,6 +9,16 @@ class ScrollFrame extends Frame {
       ...super.scriptFunctions,
       ...scriptFunctions,
     };
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    this.scripts.register(
+      new Script('OnHorizontalScroll', ['offset']),
+      new Script('OnVerticalScroll', ['offset']),
+      new Script('OnScrollRangeChanged', ['xrange', 'yrange']),
+    );
   }
 }
 
