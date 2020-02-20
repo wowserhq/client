@@ -148,8 +148,9 @@ class UIContext {
         case 'include': {
           const file = attributes.get('file');
           if (file) {
-            // TODO
-            console.error("TODO: 'Include' node", child);
+            // TODO: Is this legit?
+            const includePath = path.join(dirPath, file);
+            await this.loadFile(includePath);
           } else {
             status.error("element 'Include' without file attribute");
           }
