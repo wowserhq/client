@@ -1,10 +1,18 @@
-import Root from '../Root';
-import { multipleClasses } from '../../../utils';
+import LayoutFrame from '../LayoutFrame';
+import Root from '../../Root';
+import ScriptObject from '../ScriptObject';
+import { multipleClasses } from '../../../../utils';
 
-import LayoutFrame from './LayoutFrame';
-import ScriptObject from './ScriptObject';
+import * as scriptFunctions from './script';
 
 class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
+  static get scriptFunctions() {
+    return {
+      ...super.scriptFunctions,
+      ...scriptFunctions,
+    };
+  }
+
   constructor(...args) {
     super(...args);
 
