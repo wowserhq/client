@@ -9,7 +9,7 @@ class Region extends ScriptRegion {
     }
   }
 
-  setFrame(frame, drawLayerType, show) {
+  setFrame(frame, _drawLayerType, _show) {
     this._parent = frame;
 
     // TODO: Implementation

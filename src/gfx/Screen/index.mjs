@@ -19,7 +19,7 @@ class Screen {
     return this;
   }
 
-  setViewport(...viewport) {
+  setViewport(..._viewport) {
     // TODO: Set viewport
   }
 
@@ -53,7 +53,7 @@ class Screen {
       // TODO: Combinatory magic with base rect
     }
 
-    const viewport = this.viewport;
+    const _viewport = this.viewport;
 
     for (const layer of this.layers) {
       const { visibleRect } = layer;

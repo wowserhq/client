@@ -123,7 +123,7 @@ class ScriptingContext {
     return true;
   }
 
-  executeFunction(functionRef, thisArg, givenArgsCount, unk, event) {
+  executeFunction(functionRef, thisArg, givenArgsCount, _unk, _event) {
     const L = this.state;
 
     let argsCount = givenArgsCount;

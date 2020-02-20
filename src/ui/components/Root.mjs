@@ -36,7 +36,7 @@ class Root extends LayoutFrame {
     // TODO: Register for events
   }
 
-  hideFrame(frame, unknownBool) {
+  hideFrame(_frame, _unknownBool) {
     // TODO: Hide frame
   }
 
