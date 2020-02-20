@@ -1,339 +1,348 @@
-export const GetTitleRegion = (L) => {
+import { lua_pushnumber } from '../../../scripting/lua';
+
+import Frame from '.';
+
+export const GetTitleRegion = () => {
   return 0;
 };
 
-export const CreateTitleRegion = (L) => {
+export const CreateTitleRegion = () => {
   return 0;
 };
 
-export const CreateTexture = (L) => {
+export const CreateTexture = () => {
   return 0;
 };
 
-export const CreateFontString = (L) => {
+export const CreateFontString = () => {
   return 0;
 };
 
-export const GetBoundsRect = (L) => {
+export const GetBoundsRect = () => {
   return 0;
 };
 
-export const GetNumRegions = (L) => {
+export const GetNumRegions = () => {
   return 0;
 };
 
-export const GetRegions = (L) => {
+export const GetRegions = () => {
   return 0;
 };
 
-export const GetNumChildren = (L) => {
+export const GetNumChildren = () => {
   return 0;
 };
 
-export const GetChildren = (L) => {
+export const GetChildren = () => {
   return 0;
 };
 
-export const GetFrameStrata = (L) => {
+export const GetFrameStrata = () => {
   return 0;
 };
 
-export const SetFrameStrata = (L) => {
+export const SetFrameStrata = () => {
   return 0;
 };
 
 export const GetFrameLevel = (L) => {
+  const frame = Frame.getObjectFromStack(L);
+  lua_pushnumber(L, frame.level);
+  return 1;
+};
+
+export const SetFrameLevel = () => {
   return 0;
 };
 
-export const SetFrameLevel = (L) => {
+export const HasScript = () => {
   return 0;
 };
 
-export const HasScript = (L) => {
+export const GetScript = () => {
   return 0;
 };
 
-export const GetScript = (L) => {
+export const SetScript = () => {
   return 0;
 };
 
-export const SetScript = (L) => {
+export const HookScript = () => {
   return 0;
 };
 
-export const HookScript = (L) => {
+export const RegisterEvent = () => {
   return 0;
 };
 
-export const RegisterEvent = (L) => {
+export const UnregisterEvent = () => {
   return 0;
 };
 
-export const UnregisterEvent = (L) => {
+export const RegisterAllEvents = () => {
   return 0;
 };
 
-export const RegisterAllEvents = (L) => {
+export const UnregisterAllEvents = () => {
   return 0;
 };
 
-export const UnregisterAllEvents = (L) => {
+export const IsEventRegistered = () => {
   return 0;
 };
 
-export const IsEventRegistered = (L) => {
+export const AllowAttributeChanges = () => {
   return 0;
 };
 
-export const AllowAttributeChanges = (L) => {
+export const CanChangeAttribute = () => {
   return 0;
 };
 
-export const CanChangeAttribute = (L) => {
+export const GetAttribute = () => {
   return 0;
 };
 
-export const GetAttribute = (L) => {
+export const SetAttribute = () => {
   return 0;
 };
 
-export const SetAttribute = (L) => {
+export const GetEffectiveScale = () => {
   return 0;
 };
 
-export const GetEffectiveScale = (L) => {
+export const GetScale = () => {
   return 0;
 };
 
-export const GetScale = (L) => {
+export const SetScale = () => {
   return 0;
 };
 
-export const SetScale = (L) => {
+export const GetEffectiveAlpha = () => {
   return 0;
 };
 
-export const GetEffectiveAlpha = (L) => {
+export const GetAlpha = () => {
   return 0;
 };
 
-export const GetAlpha = (L) => {
-  return 0;
-};
-
-export const SetAlpha = (L) => {
+export const SetAlpha = () => {
   return 0;
 };
 
 export const GetID = (L) => {
+  const frame = Frame.getObjectFromStack(L);
+  const { id } = frame;
+  lua_pushnumber(L, id);
+  return 1;
+};
+
+export const SetID = () => {
   return 0;
 };
 
-export const SetID = (L) => {
+export const SetToplevel = () => {
   return 0;
 };
 
-export const SetToplevel = (L) => {
+export const IsToplevel = () => {
   return 0;
 };
 
-export const IsToplevel = (L) => {
+export const EnableDrawLayer = () => {
   return 0;
 };
 
-export const EnableDrawLayer = (L) => {
+export const DisableDrawLayer = () => {
   return 0;
 };
 
-export const DisableDrawLayer = (L) => {
+export const Show = () => {
   return 0;
 };
 
-export const Show = (L) => {
+export const Hide = () => {
   return 0;
 };
 
-export const Hide = (L) => {
+export const IsVisible = () => {
   return 0;
 };
 
-export const IsVisible = (L) => {
+export const IsShown = () => {
   return 0;
 };
 
-export const IsShown = (L) => {
+export const Raise = () => {
   return 0;
 };
 
-export const Raise = (L) => {
+export const Lower = () => {
   return 0;
 };
 
-export const Lower = (L) => {
+export const GetHitRectInsets = () => {
   return 0;
 };
 
-export const GetHitRectInsets = (L) => {
+export const SetHitRectInsets = () => {
   return 0;
 };
 
-export const SetHitRectInsets = (L) => {
+export const GetClampRectInsets = () => {
   return 0;
 };
 
-export const GetClampRectInsets = (L) => {
+export const SetClampRectInsets = () => {
   return 0;
 };
 
-export const SetClampRectInsets = (L) => {
+export const GetMinResize = () => {
   return 0;
 };
 
-export const GetMinResize = (L) => {
+export const SetMinResize = () => {
   return 0;
 };
 
-export const SetMinResize = (L) => {
+export const GetMaxResize = () => {
   return 0;
 };
 
-export const GetMaxResize = (L) => {
+export const SetMaxResize = () => {
   return 0;
 };
 
-export const SetMaxResize = (L) => {
+export const SetMovable = () => {
   return 0;
 };
 
-export const SetMovable = (L) => {
+export const IsMovable = () => {
   return 0;
 };
 
-export const IsMovable = (L) => {
+export const SetDontSavePosition = () => {
   return 0;
 };
 
-export const SetDontSavePosition = (L) => {
+export const GetDontSavePosition = () => {
   return 0;
 };
 
-export const GetDontSavePosition = (L) => {
+export const SetResizable = () => {
   return 0;
 };
 
-export const SetResizable = (L) => {
+export const IsResizable = () => {
   return 0;
 };
 
-export const IsResizable = (L) => {
+export const StartMoving = () => {
   return 0;
 };
 
-export const StartMoving = (L) => {
+export const StartSizing = () => {
   return 0;
 };
 
-export const StartSizing = (L) => {
+export const StopMovingOrSizing = () => {
   return 0;
 };
 
-export const StopMovingOrSizing = (L) => {
+export const SetUserPlaced = () => {
   return 0;
 };
 
-export const SetUserPlaced = (L) => {
+export const IsUserPlaced = () => {
   return 0;
 };
 
-export const IsUserPlaced = (L) => {
+export const SetClampedToScreen = () => {
   return 0;
 };
 
-export const SetClampedToScreen = (L) => {
+export const IsClampedToScreen = () => {
   return 0;
 };
 
-export const IsClampedToScreen = (L) => {
+export const RegisterForDrag = () => {
   return 0;
 };
 
-export const RegisterForDrag = (L) => {
+export const EnableKeyboard = () => {
   return 0;
 };
 
-export const EnableKeyboard = (L) => {
+export const IsKeyboardEnabled = () => {
   return 0;
 };
 
-export const IsKeyboardEnabled = (L) => {
+export const EnableMouse = () => {
   return 0;
 };
 
-export const EnableMouse = (L) => {
+export const IsMouseEnabled = () => {
   return 0;
 };
 
-export const IsMouseEnabled = (L) => {
+export const EnableMouseWheel = () => {
   return 0;
 };
 
-export const EnableMouseWheel = (L) => {
+export const IsMouseWheelEnabled = () => {
   return 0;
 };
 
-export const IsMouseWheelEnabled = (L) => {
+export const EnableJoystick = () => {
   return 0;
 };
 
-export const EnableJoystick = (L) => {
+export const IsJoystickEnabled = () => {
   return 0;
 };
 
-export const IsJoystickEnabled = (L) => {
+export const GetBackdrop = () => {
   return 0;
 };
 
-export const GetBackdrop = (L) => {
+export const SetBackdrop = () => {
   return 0;
 };
 
-export const SetBackdrop = (L) => {
+export const GetBackdropColor = () => {
   return 0;
 };
 
-export const GetBackdropColor = (L) => {
+export const SetBackdropColor = () => {
   return 0;
 };
 
-export const SetBackdropColor = (L) => {
+export const GetBackdropBorderColor = () => {
   return 0;
 };
 
-export const GetBackdropBorderColor = (L) => {
+export const SetBackdropBorderColor = () => {
   return 0;
 };
 
-export const SetBackdropBorderColor = (L) => {
+export const SetDepth = () => {
   return 0;
 };
 
-export const SetDepth = (L) => {
+export const GetDepth = () => {
   return 0;
 };
 
-export const GetDepth = (L) => {
+export const GetEffectiveDepth = () => {
   return 0;
 };
 
-export const GetEffectiveDepth = (L) => {
+export const IgnoreDepth = () => {
   return 0;
 };
 
-export const IgnoreDepth = (L) => {
-  return 0;
-};
-
-export const IsIgnoringDepth = (L) => {
+export const IsIgnoringDepth = () => {
   return 0;
 };

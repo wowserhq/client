@@ -25,12 +25,16 @@ class FrameNode extends LinkedListNode {
 
 class Frame extends ScriptRegion {
   static get scriptFunctions() {
-    return scriptFunctions;
+    return {
+      ...super.scriptFunctions,
+      ...scriptFunctions,
+    };
   }
 
   constructor(parent) {
     super();
 
+    this.id = 0;
     this.flags = 0;
 
     this.loading = false;
@@ -46,11 +50,6 @@ class Frame extends ScriptRegion {
     this.framesLink = LinkedListLink.for(this);
     this.destroyedLink = LinkedListLink.for(this);
     this.strataLink = LinkedListLink.for(this);
-
-    const root = Root.instance;
-    root.register(this);
-
-    this.parent = parent;
 
     this.scripts.register(
       new Script('OnLoad'),
@@ -73,6 +72,11 @@ class Frame extends ScriptRegion {
       new Script('OnEnable'),
       new Script('OnDisable'),
     );
+
+    const root = Root.instance;
+    root.register(this);
+
+    this.parent = parent;
 
     this.show();
   }
