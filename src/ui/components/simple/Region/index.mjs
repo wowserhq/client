@@ -4,6 +4,9 @@ class Region extends ScriptRegion {
   constructor(frame, drawLayerType, show) {
     super();
 
+    this.shown = false;
+    this.visible = false;
+
     if (frame) {
       this.setFrame(frame, drawLayerType, show);
     }
