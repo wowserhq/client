@@ -7,6 +7,11 @@
   },
   "rules": {
     "camelcase": "off",
+    "import/order": ["error"],
+    "no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+      "varsIgnorePattern": "^_"
+    }],
     "quotes": ["error", "single", {
       "avoidEscape": true
     }]
