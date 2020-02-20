@@ -1,10 +1,13 @@
 import { Status, path, stringToBoolean } from '../utils';
-
 import Client from '../Client';
+import DrawLayerType from '../gfx/DrawLayerType';
+
 import FactoryRegistry from './components/FactoryRegistry';
+import FontString from './components/simple/FontString';
 import Root from './components/Root';
 import ScriptingContext from './scripting/Context';
 import TemplateRegistry from './TemplateRegistry';
+import Texture from './components/simple/Texture';
 import XMLNode from './xml/Node';
 
 class UIContext {
@@ -61,6 +64,22 @@ class UIContext {
     }
 
     return frame;
+  }
+
+  createFontString(node, frame) {
+    const fontString = new FontString(frame, DrawLayerType.ARTWORK, true);
+    fontString.preLoadXML(node);
+    fontString.loadXML(node);
+    fontString.postLoadXML(node);
+    return fontString;
+  }
+
+  createTexture(node, frame) {
+    const texture = new Texture(frame, DrawLayerType.ARTWORK, true);
+    texture.preLoadXML(node);
+    texture.loadXML(node);
+    texture.postLoadXML(node);
+    return texture;
   }
 
   async load(tocPath, status = new Status()) {
