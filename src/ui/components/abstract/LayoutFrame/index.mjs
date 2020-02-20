@@ -1,3 +1,4 @@
+import ScriptRegion from '../ScriptRegion';
 import { Rect } from '../../../../math';
 import { extractDimensionsFrom, stringToBoolean } from '../../../../utils';
 
@@ -90,9 +91,10 @@ class LayoutFrame {
         let relativeTo = layoutParent;
         if (relativeToValue) {
           const fqname = this.fullyQualifyName(relativeToValue);
-          relativeTo = this.constructor.getObjectByName(fqname);
+          relativeTo = ScriptRegion.getObjectByName(fqname);
           if (!relativeTo) {
             // TODO: Error handling
+            console.warn(`could not find relative frame: ${fqname}`);
             continue;
           }
 

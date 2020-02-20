@@ -82,7 +82,7 @@ class FrameScriptObject {
     }
   }
 
-  static getObjectByName(name) {
+  static getObjectByName(name, type = this) {
     const L = ScriptingContext.instance.state;
 
     lua_getglobal(L, name);
@@ -91,7 +91,7 @@ class FrameScriptObject {
       lua_rawgeti(L, -1, 0);
       const object = lua_touserdata(L, -1);
       lua_settop(L, -3);
-      if (object && object instanceof this) {
+      if (object && object instanceof type) {
         return object;
       }
     } else {
