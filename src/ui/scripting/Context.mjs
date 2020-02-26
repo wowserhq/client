@@ -6,6 +6,7 @@ import {
   lua_call,
   lua_createtable,
   lua_gc,
+  lua_getglobal,
   lua_getinfo,
   lua_getlocal,
   lua_getstack,
@@ -155,6 +156,22 @@ class ScriptingContext {
     // TODO: Clean-up
 
     lua_settop(L, -1 - givenArgsCount);
+  }
+
+  getObjectByName(name) {
+    const L = this.state;
+
+    lua_getglobal(L, name);
+
+    if (lua_type(L, -1) === LUA_TTABLE) {
+      lua_rawgeti(L, -1, 0);
+      const object = lua_touserdata(L, -1);
+      lua_settop(L, -3);
+      return object;
+    } else {
+      lua_settop(L, -2);
+    }
+    return null;
   }
 
   getObjectAt(index) {
