@@ -162,3 +162,4 @@ class LayoutFrame {
 }
 
 export default LayoutFrame;
+export { Point as LayoutFramePoint };
