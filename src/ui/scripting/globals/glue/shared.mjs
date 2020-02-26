@@ -4,7 +4,11 @@ import {
   NDCtoDDCWidth,
   maxAspectCompensation,
 } from '../../../../utils';
-import { lua_pushnumber } from '../../../scripting/lua';
+import {
+  lua_pushboolean,
+  lua_pushnumber,
+  lua_pushstring,
+} from '../../../scripting/lua';
 
 export const IsShiftKeyDown = () => {
   return 0;
@@ -92,8 +96,10 @@ export const ShowTOSNotice = () => {
   return 0;
 };
 
-export const TOSAccepted = () => {
-  return 0;
+export const TOSAccepted = (L) => {
+  // TODO: Implementation
+  lua_pushboolean(L, 1);
+  return 1;
 };
 
 export const AcceptTOS = () => {
@@ -104,8 +110,10 @@ export const ShowEULANotice = () => {
   return 0;
 };
 
-export const EULAAccepted = () => {
-  return 0;
+export const EULAAccepted = (L) => {
+  // TODO: Implementation
+  lua_pushboolean(L, 1);
+  return 1;
 };
 
 export const AcceptEULA = () => {
@@ -314,8 +322,10 @@ export const ScanDLLContinueAnyway = () => {
   return 0;
 };
 
-export const IsScanDLLFinished = () => {
-  return 0;
+export const IsScanDLLFinished = (L) => {
+  // TODO: Implementation
+  lua_pushboolean(L, 1);
+  return 1;
 };
 
 export const IsWindowsClient = () => {
