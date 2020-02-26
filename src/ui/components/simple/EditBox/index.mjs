@@ -1,7 +1,16 @@
 import Frame from '../Frame';
 import Script from '../../../scripting/Script';
 
+import * as scriptFunctions from './script';
+
 class EditBox extends Frame {
+  static get scriptFunctions() {
+    return {
+      ...super.scriptFunctions,
+      ...scriptFunctions,
+    };
+  }
+
   constructor(...args) {
     super(...args);
 
