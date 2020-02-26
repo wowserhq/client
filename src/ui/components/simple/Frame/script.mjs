@@ -1,4 +1,7 @@
-import { lua_pushnumber } from '../../../scripting/lua';
+import {
+  lua_pushnil,
+  lua_pushnumber,
+} from '../../../scripting/lua';
 
 import Frame from '.';
 
@@ -159,11 +162,23 @@ export const DisableDrawLayer = () => {
   return 0;
 };
 
-export const Show = () => {
+export const Show = (L) => {
+  const frame = Frame.getObjectFromStack(L);
+  if (frame.protectedFunctionsAllowed) {
+    frame.show();
+  } else {
+    // TODO: Error handling
+  }
   return 0;
 };
 
-export const Hide = () => {
+export const Hide = (L) => {
+  const frame = Frame.getObjectFromStack(L);
+  if (frame.protectedFunctionsAllowed) {
+    frame.hide();
+  } else {
+    // TODO: Error handling
+  }
   return 0;
 };
 
@@ -171,8 +186,15 @@ export const IsVisible = () => {
   return 0;
 };
 
-export const IsShown = () => {
-  return 0;
+export const IsShown = (L) => {
+  const frame = Frame.getObjectFromStack(L);
+  if (frame.shown) {
+    lua_pushnumber(L, 1.0);
+  } else {
+    lua_pushnil(L);
+  }
+
+  return 1;
 };
 
 export const Raise = () => {
