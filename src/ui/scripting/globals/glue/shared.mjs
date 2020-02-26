@@ -38,8 +38,10 @@ export const SetUsesToken = () => {
   return 0;
 };
 
-export const GetSavedAccountList = () => {
-  return 0;
+export const GetSavedAccountList = (L) => {
+  // TODO: Implementation
+  lua_pushstring(L, '');
+  return 1;
 };
 
 export const SetSavedAccountList = () => {
