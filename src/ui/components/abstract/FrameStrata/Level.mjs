@@ -16,10 +16,28 @@ class FrameStrataLevel {
       new RenderBatch(type)
     ));
 
-    // TODO: Should this be a boolean?
     this.batchDirty = 0;
 
     this.renderBatches = LinkedList.of(RenderBatch, 'renderLink');
+  }
+
+  removeFrame(frame) {
+    if (!this.frames.linkFor(frame).isLinked) {
+      return 0;
+    }
+
+    if (frame === this.pendingFrame) {
+      this.pendingFrame = this.frames.linkFor(frame).next;
+    }
+
+    this.frames.linkFor(frame).unlink();
+
+    // TODO: Constantize frame flag
+    if (!(frame.flags & 0x2000)) {
+      this.batchDirty = -1;
+    }
+
+    return this.batchDirty !== 0;
   }
 
   onLayerUpdate(elapsedSecs) {

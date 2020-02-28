@@ -6,7 +6,6 @@ class FrameStrata {
     this.type = type;
     this.levels = [];
 
-    // TODO: Should these be booleans?
     this.levelsDirty = 0;
     this.batchDirty = 0;
   }
@@ -36,6 +35,7 @@ class FrameStrata {
       const frames = level.pendingFrame ? level.pendingFrames : level.frames;
       frames.add(frame);
 
+      // TODO: Constantize frame flag
       if (!(frame.flags & 0x2000)) {
         level.batchDirty = -1;
       }
