@@ -89,8 +89,32 @@ class Frame extends ScriptRegion {
     }
   }
 
-  setFrameLevel(level, shiftChildren) {
-    console.error('TODO: frame level', level, shiftChildren, 'for', this);
+  setFrameLevel(level, shiftChildren = false) {
+    level = Math.max(level, 0);
+
+    if (this.level === level) {
+      return;
+    }
+
+    const delta = Math.min(level - this.level, 128);
+
+    const root = Root.instance;
+
+    if (this.visible) {
+      root.hideFrame(this, true);
+    }
+
+    this.level += delta;
+
+    if (this.visible) {
+      root.showFrame(this, true);
+    }
+
+    if (shiftChildren) {
+      for (const child of this.children) {
+        child.frame.setFrameLevel(child.frame.level + delta, true);
+      }
+    }
   }
 
   setFrameStrataType(strataType) {
@@ -170,7 +194,6 @@ class Frame extends ScriptRegion {
     }
 
     this.loading = true;
-    this.shown = false;
 
     this.deferredResize = true;
 
@@ -412,7 +435,7 @@ class Frame extends ScriptRegion {
 
     this.visible = true;
 
-    root.showFrame(this, 0);
+    root.showFrame(this, false);
 
     for (const region of this.regions) {
       region.showThis();
@@ -422,8 +445,8 @@ class Frame extends ScriptRegion {
       child.frame.showThis();
     }
 
-    if (this.flags & 0x1) {
-      root.raiseFrame(this, 1);
+    if (this.flags & FrameFlag.TOPLEVEL) {
+      root.raiseFrame(this, true);
     }
 
     this.onLayerShow();
@@ -508,3 +531,4 @@ class Frame extends ScriptRegion {
 }
 
 export default Frame;
+export { FrameFlag };
