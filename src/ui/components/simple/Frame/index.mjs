@@ -387,7 +387,9 @@ class Frame extends ScriptRegion {
       const templates = ui.templates.filterByList(inherits);
       for (const template of templates) {
         if (template && !template.locked) {
+          template.lock();
           this.postLoadXMLFrames(template.node);
+          template.release();
         }
       }
     }
