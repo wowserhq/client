@@ -45,6 +45,15 @@ class FrameStrata {
     this.batchDirty |= (level.batchDirty !== 0);
   }
 
+  removeFrame(frame) {
+    if (frame.level < this.topLevel) {
+      const level = this.levels[frame.level];
+      const batchDirty = level.removeFrame(frame);
+      this.batchDirty |= batchDirty;
+      this.levelsDirty = 1;
+    }
+  }
+
   onLayerUpdate(elapsedSecs) {
     for (const level of this.levels) {
       level.onLayerUpdate(elapsedSecs);
