@@ -53,6 +53,27 @@ class Root extends LayoutFrame {
     this.strata[frame.strataType].removeFrame(frame);
   }
 
+  raiseFrame(frame, _checkOcclusion) {
+    while (frame && frame.flags & FrameFlag.TOPLEVEL) {
+      frame = frame.parent;
+    }
+
+    if (!frame) {
+      return false;
+    }
+
+    // TODO: Occlusion
+
+    if (frame.flags & FrameFlag.OCCLUDED) {
+      // TODO: Strata compression
+      // TODO: Check focus
+      const strata = this.strata[frame.strataType];
+      frame.setFrameLevel(strata.topLevel, true);
+    }
+
+    return true;
+  }
+
   onLayerUpdate(elapsedSecs) {
     // TODO: Clean-up destroyed frames
 
