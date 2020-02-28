@@ -1,15 +1,20 @@
 import Screen from '../../gfx/Screen';
 import { LinkedList } from '../../utils';
 
-import Frame from './simple/Frame';
+import Frame, { FrameFlag } from './simple/Frame';
 import FrameStrata, { FrameStrataType } from './abstract/FrameStrata';
-import LayoutFrame from './abstract/LayoutFrame';
+import LayoutFrame, { LayoutFramePoint } from './abstract/LayoutFrame';
 
 class Root extends LayoutFrame {
   constructor() {
     super();
 
     this.constructor.instance = this;
+
+    this.layout = {
+      frame: null,
+      anchor: LayoutFramePoint.TOPLEFT,
+    };
 
     this.strata = Object.values(FrameStrataType).map(type => (
       new FrameStrata(type)
@@ -18,7 +23,7 @@ class Root extends LayoutFrame {
     this.frames = LinkedList.of(Frame, 'framesLink');
     this.destroyedFrames = LinkedList.of(Frame, 'destroyedLink');
 
-    this.layoutFlags |= 0x1;
+    this.layoutFlags |= FrameFlag.TOPLEVEL;
 
     this.onPaintScreen = this.onPaintScreen.bind(this);
 
@@ -36,8 +41,16 @@ class Root extends LayoutFrame {
     // TODO: Register for events
   }
 
-  hideFrame(_frame, _unknownBool) {
-    // TODO: Hide frame
+  hideFrame(frame, _unknownBool) {
+    if (this.layout.frame === frame) {
+      // Unflatten (?) current layout frame
+
+      this.layout.frame = null;
+      this.layout.anchor = LayoutFramePoint.TOPLEFT;
+    }
+
+    // TODO: Unregister for events
+    this.strata[frame.strataType].removeFrame(frame);
   }
 
   onLayerUpdate(elapsedSecs) {

@@ -1,3 +1,4 @@
+// TODO: Are these shared between Frame and LayoutFrame flags?
 export default {
   TOPLEVEL: 0x1,
   MOVABLE: 0x100,
