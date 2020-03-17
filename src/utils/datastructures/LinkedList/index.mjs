@@ -1,8 +1,8 @@
 import LinkedListLink from './Link';
 
 const LinkStrategy = {
-  BEFORE: 1,
-  AFTER: 2,
+  AFTER: 1,
+  BEFORE: 2,
 };
 
 class LinkedList {
@@ -31,16 +31,26 @@ class LinkedList {
     return this.tailLink.entity;
   }
 
+  get size() {
+    let link = this.headLink;
+    let count = 0;
+    while (link !== this.sentinel) {
+      count++;
+      link = link.next;
+    }
+    return count;
+  }
+
   add(entity) {
     this.linkToTail(entity);
   }
 
   linkToHead(entity) {
-    this.link(entity, LinkStrategy.BEFORE, this.head);
+    this.link(entity, LinkStrategy.AFTER, this.head);
   }
 
   linkToTail(entity) {
-    this.link(entity, LinkStrategy.AFTER, this.tail);
+    this.link(entity, LinkStrategy.BEFORE, this.tail);
   }
 
   linkFor(entity) {

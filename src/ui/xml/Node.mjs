@@ -1,24 +1,37 @@
+import { HashMap, HashStrategy } from '../../utils';
+
 class XMLNode {
-  constructor(parent, name, attributes = {}) {
+  constructor(parent, name) {
     this.parent = parent;
     this.name = name;
-    this.attributes = attributes;
+    this.attributes = new HashMap(HashStrategy.UPPERCASE);
     this.children = [];
-    this.text = null;
+    this.body = null;
+  }
+
+  get firstChild() {
+    return this.children[0];
+  }
+
+  getChildByName(name) {
+    const iname = name.toLowerCase();
+    return this.children.find(child => (
+      child.name.toLowerCase() === iname
+    ));
   }
 
   static parse(source) {
     const parser = new DOMParser();
     const document = parser.parseFromString(source, 'application/xml');
 
-    // TODO: Case insensitivity
     const transform = (element, parent = null) => {
-      const attributes = {};
-      for (const { name, value } of element.attributes) {
-        attributes[name] = value;
+      const node = new this(parent, element.tagName);
+
+      const { attributes } = node;
+      for (const attr of element.attributes) {
+        attributes.set(attr.name, attr.value);
       }
 
-      const node = new this(parent, element.tagName, attributes);
       if (element.children.length) {
         for (const child of element.children) {
           node.children.push(transform(child, node));
@@ -26,7 +39,7 @@ class XMLNode {
       } else {
         const trimmed = element.textContent.trim();
         if (trimmed) {
-          node.text = trimmed;
+          node.body = trimmed;
         }
       }
       return node;

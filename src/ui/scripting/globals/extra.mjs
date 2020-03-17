@@ -1,3 +1,13 @@
+import ScriptingContext from '../Context';
+import {
+  LUA_REGISTRYINDEX,
+  LUA_TFUNCTION,
+  lua_type,
+  luaL_error,
+  luaL_ref,
+  luaL_unref,
+} from '../lua';
+
 export const setglobal = () => {
   return 0;
 };
@@ -86,8 +96,17 @@ export const debugprofilestop = () => {
   return 0;
 };
 
-export const seterrorhandler = () => {
-  // TODO: Implement Lua-side error handler
+export const seterrorhandler = (L) => {
+  if (lua_type(L, 1) !== LUA_TFUNCTION) {
+    luaL_error(L, 'Usage: seterrorhandler(errfunc)');
+    return 0;
+  }
+
+  const scripting = ScriptingContext.instance;
+  if (scripting.errorHandlerRef) {
+    luaL_unref(L, LUA_REGISTRYINDEX, scripting.errorHandlerRef);
+  }
+  scripting.errorHandlerRef = luaL_ref(L, LUA_REGISTRYINDEX);
   return 0;
 };
 

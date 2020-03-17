@@ -1,0 +1,7 @@
+export default {
+  BACKGROUND: 0,
+  BACKGROUND_BORDER: 1,
+  ARTWORK: 2,
+  ARTWORK_OVERLAY: 3,
+  HIGHLIGHT: 4,
+};
