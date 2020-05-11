@@ -5,6 +5,7 @@ import DrawLayerType from './DrawLayerType';
 import FactoryRegistry from './components/FactoryRegistry';
 import FontString from './components/simple/FontString';
 import Frame from './components/simple/Frame';
+import Renderer from './rendering/Renderer';
 import Root from './components/Root';
 import ScriptingContext from './scripting/Context';
 import TemplateRegistry from './TemplateRegistry';
@@ -17,6 +18,7 @@ class UIContext {
 
     this.scripting = new ScriptingContext();
     this.factories = new FactoryRegistry();
+    this.renderer = new Renderer();
     this.templates = new TemplateRegistry();
 
     this.root = new Root();
