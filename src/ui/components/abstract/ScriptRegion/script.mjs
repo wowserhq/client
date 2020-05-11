@@ -1,8 +1,17 @@
 import {
   DDCtoNDCWidth,
+  NDCtoDDCWidth,
+  luaValueToBoolean,
   maxAspectCompensation,
 } from '../../../../utils';
-import { lua_pushnumber } from '../../../scripting/lua';
+import {
+  luaL_error,
+  lua_isnumber,
+  lua_isstring,
+  lua_pushnumber,
+  lua_tojsstring,
+  lua_tonumber,
+} from '../../../scripting/lua';
 
 import ScriptRegion from '.';
 
@@ -44,9 +53,18 @@ export const GetBottom = () => {
 
 export const GetWidth = (L) => {
   const region = ScriptRegion.getObjectFromStack(L);
-  const { width } = region;
+  let { width } = region;
 
-  // TODO: Width === 0.0
+  if (width === 0.0 && !luaValueToBoolean(L, 2, 0)) {
+    if (region.isResizePending) {
+      region.resize(true);
+    }
+
+    const rect = region.getRect();
+    if (rect) {
+      width = (rect.maxX - rect.minX) / region.layoutScale;
+    }
+  }
 
   const ddcx = maxAspectCompensation * width;
   const ndcx = DDCtoNDCWidth(ddcx);
@@ -54,15 +72,38 @@ export const GetWidth = (L) => {
   return 1;
 };
 
-export const SetWidth = () => {
+export const SetWidth = (L) => {
+  const region = ScriptRegion.getObjectFromStack(L);
+
+  // TODO: Protected logic
+
+  if (!lua_isnumber(L, 2)) {
+    return luaL_error(L, 'Usage: %s:SetWidth(width)', region.displayName);
+  }
+
+  const width = lua_tonumber(L, 2);
+  const ndcWidth = width / maxAspectCompensation;
+  const ddcWidth = NDCtoDDCWidth(ndcWidth);
+
+  region.width = ddcWidth;
+
   return 0;
 };
 
 export const GetHeight = (L) => {
   const region = ScriptRegion.getObjectFromStack(L);
-  const { height } = region;
+  let { height } = region;
 
-  // TODO: Height === 0.0
+  if (height === 0.0 && !luaValueToBoolean(L, 2, 0)) {
+    if (region.isResizePending) {
+      region.resize(true);
+    }
+
+    const rect = region.getRect();
+    if (rect) {
+      height = (rect.maxY - rect.minY) / region.layoutScale;
+    }
+  }
 
   const ddcy = maxAspectCompensation * height;
   const ndcy = DDCtoNDCWidth(ddcy);
@@ -70,7 +111,21 @@ export const GetHeight = (L) => {
   return 1;
 };
 
-export const SetHeight = () => {
+export const SetHeight = (L) => {
+  const region = ScriptRegion.getObjectFromStack(L);
+
+  // TOOD: Protected logic
+
+  if (!lua_isnumber(L, 2)) {
+    return luaL_error(L, 'Usage: %s:SetHeight(height)', region.displayName);
+  }
+
+  const height = lua_tonumber(L, 2);
+  const ndcHeight = height / maxAspectCompensation;
+  const ddcHeight = NDCtoDDCWidth(ndcHeight);
+
+  region.height = ddcHeight;
+
   return 0;
 };
 
