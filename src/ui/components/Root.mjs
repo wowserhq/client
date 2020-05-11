@@ -1,5 +1,5 @@
 import Screen from '../../gfx/Screen';
-import { LinkedList } from '../../utils';
+import { LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
 import FramePointType from './abstract/FramePoint';
@@ -24,6 +24,10 @@ class Root extends LayoutFrame {
     this.frames = LinkedList.of(Frame, 'framesLink');
     this.destroyedFrames = LinkedList.of(Frame, 'destroyedLink');
 
+    this.rect.maxX = NDCtoDDCWidth(1);
+    this.rect.maxY = NDCtoDDCHeight(1);
+
+    // TODO: Is this frame flag constant correct?
     this.layoutFlags |= FrameFlag.TOPLEVEL;
 
     this.onPaintScreen = this.onPaintScreen.bind(this);
