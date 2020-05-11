@@ -1,13 +1,22 @@
 class Rect {
-  constructor(left = 0, bottom = 0, right = 0, top = 0) {
-    this.left = left;
-    this.bottom = bottom;
-    this.right = right;
-    this.top = top;
+  constructor({
+    minY = 0,
+    minX = 0,
+    maxY = 0,
+    maxX = 0,
+  } = {}) {
+    this.minY = minY;
+    this.minX = minX;
+    this.maxY = maxY;
+    this.maxX = maxX;
   }
 
-  get args() {
-    return [this.left, this.bottom, this.right, this.top];
+  copy(other) {
+    this.minY = other.minY;
+    this.minX = other.minX;
+    this.maxY = other.maxY;
+    this.maxX = other.maxX;
+    return this;
   }
 }
 
