@@ -1,4 +1,4 @@
-import DrawLayerType from '../../../../gfx/DrawLayerType';
+import DrawLayerType from '../../../DrawLayerType';
 import Frame from '../Frame';
 import Script from '../../../scripting/Script';
 import UIContext from '../../../Context';

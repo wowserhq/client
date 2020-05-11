@@ -1,4 +1,4 @@
-import DrawLayerType from '../../../../gfx/DrawLayerType';
+import DrawLayerType from '../../../DrawLayerType';
 import FrameStrataType from '../../abstract/FrameStrata/Type';
 import Region from '../Region';
 import Root from '../../Root';

@@ -2,8 +2,9 @@ import Screen from '../../gfx/Screen';
 import { LinkedList } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
+import FramePointType from './abstract/FramePoint';
 import FrameStrata, { FrameStrataType } from './abstract/FrameStrata';
-import LayoutFrame, { LayoutFramePoint } from './abstract/LayoutFrame';
+import LayoutFrame from './abstract/LayoutFrame';
 
 class Root extends LayoutFrame {
   constructor() {
@@ -13,7 +14,7 @@ class Root extends LayoutFrame {
 
     this.layout = {
       frame: null,
-      anchor: LayoutFramePoint.TOPLEFT,
+      anchor: FramePointType.TOPLEFT,
     };
 
     this.strata = Object.values(FrameStrataType).map(type => (
@@ -46,7 +47,7 @@ class Root extends LayoutFrame {
       // Unflatten (?) current layout frame
 
       this.layout.frame = null;
-      this.layout.anchor = LayoutFramePoint.TOPLEFT;
+      this.layout.anchor = FramePointType.TOPLEFT;
     }
 
     // TODO: Unregister for events

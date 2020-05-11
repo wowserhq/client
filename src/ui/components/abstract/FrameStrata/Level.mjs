@@ -1,4 +1,4 @@
-import DrawLayerType from '../../../../gfx/DrawLayerType';
+import DrawLayerType from '../../../DrawLayerType';
 import Frame from '../../simple/Frame';
 import RenderBatch from '../../../../gfx/RenderBatch';
 import { LinkedList } from '../../../../utils';

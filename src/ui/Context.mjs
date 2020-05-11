@@ -1,7 +1,7 @@
 import { Status, path, stringToBoolean } from '../utils';
 import Client from '../Client';
-import DrawLayerType from '../gfx/DrawLayerType';
 
+import DrawLayerType from './DrawLayerType';
 import FactoryRegistry from './components/FactoryRegistry';
 import FontString from './components/simple/FontString';
 import Frame from './components/simple/Frame';
