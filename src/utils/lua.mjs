@@ -19,7 +19,9 @@ import {
   lua_type,
 } from '../ui/scripting/lua';
 
-const stackToArray = (L) => {
+import { stringToBoolean } from '.';
+
+export const luaStackToArray = (L) => {
   const top = lua_gettop(L);
 
   const results = [];
@@ -64,6 +66,25 @@ const stackToArray = (L) => {
   return results;
 };
 
-export {
-  stackToArray,
+export const luaValueToBoolean = (L, index, standard) => {
+  let result;
+  switch (lua_type(L, index)) {
+    case LUA_TNIL:
+      result = false;
+      break;
+    case LUA_TBOOLEAN:
+      result = lua_toboolean(L, index);
+      break;
+    case LUA_TNUMBER:
+      result = lua_tonumber(L, index) !== 0;
+      break;
+    case LUA_TSTRING:
+      const str = lua_tojsstring(L, index);
+      result = stringToBoolean(str, standard);
+      break;
+    default:
+      result = standard;
+      break;
+  }
+  return result;
 };
