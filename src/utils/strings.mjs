@@ -37,3 +37,6 @@ export const stringToBoolean = (string, standard = false) => {
       return standard;
   }
 };
+
+// TODO: This may not cover all edge cases
+export const stringToFloat = (string) => parseFloat(string);
