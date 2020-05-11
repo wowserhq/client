@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
 import {
-  NDCtoDDCHeight,
   NDCtoDDCWidth,
   maxAspectCompensation,
 } from './coordinates';
@@ -19,7 +18,7 @@ export const extractDimensionsFrom = (node) => {
   let yValue = node.attributes.get('y');
   if (yValue != null) {
     const ndcy = parseFloat(yValue) / maxAspectCompensation;
-    y = NDCtoDDCHeight(ndcy);
+    y = NDCtoDDCWidth(ndcy);
   }
 
   const child = node.firstChild;
@@ -46,7 +45,7 @@ export const extractDimensionsFrom = (node) => {
         yValue = child.attributes.get('y');
         if (yValue != null) {
           const ndcy = parseFloat(yValue) / maxAspectCompensation;
-          y = NDCtoDDCHeight(ndcy);
+          y = NDCtoDDCWidth(ndcy);
         }
       default:
         // TODO: Error handling
