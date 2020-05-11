@@ -1,2 +1,5 @@
+..\Interface\GlueXML\GlueFonts.xml
+..\Interface\GlueXML\GlueFontStyles.xml
+
 WowserFrame.xml
 WowserParent.xml
