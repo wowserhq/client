@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-  <ModelFFX name="WowserFrame" parent="WowserParent" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+  <Frame name="WowserFrame" parent="WowserParent" toplevel="true" setAllPoints="true" hidden="true">
     <Frames>
       <Frame name="WowserUI" setAllPoints="true">
         <Layers>
@@ -83,5 +83,5 @@
         </Frames>
       </Frame>
     </Frames>
-  </ModelFFX>
+  </Frame>
 </Ui>
