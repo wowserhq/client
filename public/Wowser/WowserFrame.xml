@@ -1,0 +1,88 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <ModelFFX name="WowserFrame" parent="WowserParent" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
+    <Frames>
+      <Foobar />
+      <Frame name="WowserUI" setAllPoints="true">
+        <Layers>
+          <Layer level="ARTWORK">
+            <Texture name="Background" file="Interface\Glues\LoadingScreens\LOADSCREENNORTHREND">
+              <Size>
+                <AbsDimension x="1024" y="768" />
+              </Size>
+              <Anchors>
+                <Anchor point="TOPLEFT" />
+                <Anchor point="BOTTOMRIGHT" />
+              </Anchors>
+            </Texture>
+
+            <Texture name="BlizzardLogo" file="Interface\Glues\Mainmenu\Glues-BlizzardLogo">
+              <Size>
+                <AbsDimension x="100" y="100" />
+              </Size>
+              <Anchors>
+                <Anchor point="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="10" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </Texture>
+
+            <FontString name="Version" text="A small version text in the corner" inherits="GlueFontNormalSmall" justifyH="LEFT">
+              <Anchors>
+                <Anchor point="BOTTOMLEFT">
+                  <Offset>
+                    <AbsDimension x="10" y="10" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+
+        <Frames>
+          <Frame name="WowserBox">
+            <Size x="300" y="300" />
+            <Anchors>
+              <Anchor point="CENTER" />
+            </Anchors>
+            <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+              <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+              </BackgroundInsets>
+              <TileSize>
+                <AbsValue val="32"/>
+              </TileSize>
+              <EdgeSize>
+                <AbsValue val="32"/>
+              </EdgeSize>
+            </Backdrop>
+            <Layers>
+              <Layer level="ARTWORK">
+                <FontString name="Message" inherits="GlueFontNormalSmall" text="This is a Wowser test scene.">
+                  <Anchors>
+                    <Anchor point="CENTER">
+                      <Offset>
+                        <AbsDimension x="0" y="-80" />
+                      </Offset>
+                    </Anchor>
+                  </Anchors>
+                </FontString>
+
+                <Texture name="Logo" file="Interface\Glues\Common\Glues-WoW-WotLKLogo">
+                  <Size>
+                    <AbsDimension x="256" y="128" />
+                  </Size>
+                  <Anchors>
+                    <Anchor point="CENTER" />
+                  </Anchors>
+                </Texture>
+              </Layer>
+            </Layers>
+          </Frame>
+        </Frames>
+      </Frame>
+    </Frames>
+  </ModelFFX>
+</Ui>

@@ -1,2 +1,4 @@
 /node_modules/
-/public/
+/public/*
+!/public/Shaders
+!/public/Wowser

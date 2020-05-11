@@ -105,7 +105,7 @@ class UIContext {
       return;
     }
 
-    const lines = toc.split('\r\n');
+    const lines = toc.split(/\r?\n/g);
 
     for (const line of lines) {
       if (!line || line.startsWith('#')) {
