@@ -22,7 +22,7 @@ class FrameStrataLevel {
   }
 
   removeFrame(frame) {
-    if (!this.frames.linkFor(frame).isLinked) {
+    if (!this.frames.isLinked(frame)) {
       return 0;
     }
 
@@ -30,7 +30,7 @@ class FrameStrataLevel {
       this.pendingFrame = this.frames.linkFor(frame).next;
     }
 
-    this.frames.linkFor(frame).unlink();
+    this.frames.unlink(frame);
 
     // TODO: Constantize frame flag
     if (!(frame.flags & 0x2000)) {
