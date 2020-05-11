@@ -1,3 +1,4 @@
+import Backdrop from '../../Backdrop';
 import DrawLayerType from '../../../DrawLayerType';
 import FrameStrataType from '../../abstract/FrameStrata/Type';
 import Region from '../Region';
@@ -291,7 +292,12 @@ class Frame extends ScriptRegion {
     for (const child of node.children) {
       const iname = child.name.toLowerCase();
       switch (iname) {
-        // TODO: TitleRegion, ResizeBounds, Backdrop & HitRectInsects
+        // TODO: TitleRegion, ResizeBounds & HitRectInsects
+        case 'backdrop':
+          const backdrop = new Backdrop();
+          backdrop.loadXML(child);
+          this.setBackdrop(backdrop);
+          break;
         case 'layers':
           this.loadXMLLayers(child);
           break;
@@ -402,6 +408,17 @@ class Frame extends ScriptRegion {
     }
   }
 
+  setBackdrop(backdrop) {
+    if (this.backdrop) {
+      // TODO: Destructor
+    }
+
+    if (backdrop) {
+      backdrop.setOutput(this);
+    }
+    this.backdrop = backdrop;
+  }
+
   show() {
     if (this.protectedFunctionsAllowed) {
       this.shown = true;
@@ -492,6 +509,18 @@ class Frame extends ScriptRegion {
     this.onLayerHide();
 
     return true;
+  }
+
+  onFrameSizeChanged(rect) {
+    super.onFrameSizeChanged(rect);
+
+    // TODO: Set hit rect
+
+    if (this.backdrop) {
+      this.backdrop.update(this.rect);
+    }
+
+    // TODO: Remaining implementation
   }
 
   onLayerShow() {
