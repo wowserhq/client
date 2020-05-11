@@ -79,6 +79,13 @@ class Root extends LayoutFrame {
     return true;
   }
 
+  notifyFrameLayerChanged(frame, drawLayerType) {
+    const strata = this.strata[frame.strataType];
+    const level = strata.levels[frame.level];
+    level.batchDirty |= 1 << drawLayerType;
+    strata.batchDirty = 1;
+  }
+
   onLayerUpdate(elapsedSecs) {
     // TODO: Clean-up destroyed frames
 
