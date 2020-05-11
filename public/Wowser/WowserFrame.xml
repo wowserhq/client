@@ -2,7 +2,6 @@
 ..\FrameXML\UI.xsd">
   <ModelFFX name="WowserFrame" parent="WowserParent" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
     <Frames>
-      <Foobar />
       <Frame name="WowserUI" setAllPoints="true">
         <Layers>
           <Layer level="ARTWORK">
