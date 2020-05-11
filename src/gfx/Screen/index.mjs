@@ -15,6 +15,7 @@ class Screen {
     // TODO: Continuously render screen, not on click
     document.addEventListener('click', this.render);
 
+    // Required for now to ensure the rendering program is loaded when needed
     this.debugLines();
   }
 
