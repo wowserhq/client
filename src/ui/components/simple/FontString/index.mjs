@@ -14,6 +14,10 @@ class FontString extends Region {
   postLoadXML(_node) {
     // TODO
   }
+
+  draw(_batch) {
+    // TODO
+  }
 }
 
 export default FontString;
