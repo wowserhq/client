@@ -45,6 +45,10 @@ class LinkedList {
     this.linkToTail(entity);
   }
 
+  isLinked(entity) {
+    return this.linkFor(entity).isLinked;
+  }
+
   linkToHead(entity) {
     this.link(entity, LinkStrategy.AFTER);
   }
@@ -85,6 +89,10 @@ class LinkedList {
       default:
         throw new Error(`Invalid link strategy: ${strategy}`);
     }
+  }
+
+  unlink(entity) {
+    return this.linkFor(entity).unlink();
   }
 
   [Symbol.iterator]() {
