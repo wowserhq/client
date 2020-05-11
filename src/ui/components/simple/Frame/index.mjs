@@ -12,6 +12,10 @@ import {
   LinkedListNode,
   stringToBoolean,
 } from '../../../../utils';
+import {
+  stringToDrawLayerType,
+  stringToStrataType,
+} from '../../../utils';
 
 import FrameFlag from './Flag';
 import * as scriptFunctions from './script';
@@ -44,8 +48,17 @@ class Frame extends ScriptRegion {
     this.strataType = FrameStrataType.MEDIUM;
     this.level = 0;
 
+    this.layersEnabled = [];
+    this.layersEnabled[DrawLayerType.BACKGROUND] = true;
+    this.layersEnabled[DrawLayerType.BORDER]     = true;
+    this.layersEnabled[DrawLayerType.ARTWORK]    = true;
+    this.layersEnabled[DrawLayerType.OVERLAY]    = true;
+    this.layersEnabled[DrawLayerType.HIGHLIGHT]  = false;
+
     this.regions = LinkedList.of(Region, 'regionLink');
-    this.layers = LinkedList.of(Region, 'layerLink');
+    this.layers = Object.values(DrawLayerType).map(() => (
+      LinkedList.of(Region, 'layerLink')
+    ));
     this.children = LinkedList.of(FrameNode);
 
     this.framesLink = LinkedListLink.for(this);
@@ -259,7 +272,7 @@ class Frame extends ScriptRegion {
     }
 
     if (frameStrata) {
-      const strataType = FrameStrataType[frameStrata];
+      const strataType = stringToStrataType(frameStrata);
       if (strataType) {
         this.setFrameStrataType(strataType);
       } else {
@@ -323,7 +336,7 @@ class Frame extends ScriptRegion {
       const level = layer.attributes.get('level');
 
       // TODO: Case sensitivity
-      const drawLayerType = DrawLayerType[level] || DrawLayerType.ARTWORK;
+      const drawLayerType = stringToDrawLayerType(level) || DrawLayerType.ARTWORK;
 
       for (const layerChild of layer.children) {
         const iname = layerChild.name.toLowerCase();
@@ -511,6 +524,33 @@ class Frame extends ScriptRegion {
     return true;
   }
 
+  addRegion(region, drawLayerType) {
+    // TODO: Layout scaling
+
+    console.debug(`adding ${region.name} as frame region to ${this.name} on layer ${drawLayerType}`);
+
+    this.layers[drawLayerType].add(region);
+    this.notifyDrawLayerChanged(drawLayerType);
+  }
+
+  removeRegion(region, drawLayerType) {
+    this.layers[drawLayerType].unlink(region);
+    this.notifyDrawLayerChanged(drawLayerType);
+  }
+
+  notifyDrawLayerChanged(drawLayerType) {
+    const root = Root.instance;
+
+    // TODO: Constantize frame flag
+    if (this.flags & 0x2000) {
+      // TODO: Implementation
+    } else if (root && this.visible) {
+      root.notifyFrameLayerChanged(this, drawLayerType);
+    }
+
+    // TODO: Notify scroll parent
+  }
+
   onFrameSizeChanged(rect) {
     super.onFrameSizeChanged(rect);
 
@@ -531,7 +571,7 @@ class Frame extends ScriptRegion {
     this.runOnHideScript();
   }
 
-  onLayerUpdate(elapsedSecs) {
+  onLayerUpdate(_elapsedSecs) {
     // TODO: Run update script
 
     // TODO: Run PreOnAnimUpdate hooks
@@ -539,8 +579,9 @@ class Frame extends ScriptRegion {
     // TODO: Implement ScriptRegion.onLayerUpdate
     // super.onLayerUpdate(elapsedSecs);
 
-    for (const region of this.regions) {
-      region.onLayerUpdate(elapsedSecs);
+    for (const _region of this.regions) {
+      // TODO: Implement Region.onLayerUpdate
+      // region.onLayerUpdate(elapsedSecs);
     }
   }
 
