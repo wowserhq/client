@@ -1,6 +1,6 @@
 import DrawLayerType from '../../../DrawLayerType';
 import Frame from '../../simple/Frame';
-import RenderBatch from '../../../../gfx/RenderBatch';
+import RenderBatch from '../../../rendering/RenderBatch';
 import { LinkedList } from '../../../../utils';
 
 class FrameStrataLevel {
@@ -18,7 +18,7 @@ class FrameStrataLevel {
 
     this.batchDirty = 0;
 
-    this.renderBatches = LinkedList.of(RenderBatch, 'renderLink');
+    this.renderList = LinkedList.of(RenderBatch, 'renderLink');
   }
 
   removeFrame(frame) {
@@ -38,6 +38,46 @@ class FrameStrataLevel {
     }
 
     return this.batchDirty !== 0;
+  }
+
+  prepareRenderBatches() {
+    // let { batchDirty } = this;
+    // batchDirty = 0xFF;
+
+    const { batchDirty } = this;
+    if (!batchDirty) {
+      return 0;
+    }
+
+    this.batchDirty = 0;
+
+    for (const batch of this.batches) {
+      this.renderList.unlink(batch);
+
+      if ((1 << batch.drawLayerType) & batchDirty) {
+        batch.clear();
+
+        for (const frame of this.frames) {
+          // TODO: Constantize frame flag
+          if (!(frame.flags & 0x2000)) {
+            frame.onFrameRender(batch);
+          }
+        }
+
+        batch.finish();
+      }
+
+      if (batch.count) {
+        this.renderList.linkToTail(batch);
+      }
+    }
+
+    // TODO: Constantize these flags
+    if (this.batchDirty & 0x20) {
+      this.batchDirty |= 0x1F;
+    }
+
+    return 0;
   }
 
   onLayerUpdate(elapsedSecs) {

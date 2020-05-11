@@ -551,6 +551,18 @@ class Frame extends ScriptRegion {
     // TODO: Notify scroll parent
   }
 
+  onFrameRender(batch) {
+    const { drawLayerType } = batch;
+
+    if (!this.layersEnabled[drawLayerType]) {
+      return;
+    }
+
+    for (const region of this.layers[drawLayerType]) {
+      region.draw(batch);
+    }
+  }
+
   onFrameSizeChanged(rect) {
     super.onFrameSizeChanged(rect);
 
