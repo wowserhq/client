@@ -1,10 +1,6 @@
 import math from '@wowserhq/math';
 
 class Vector3 extends math.Vector3 {
-  constructor(x = 0, y = 0, z = 0) {
-    super([x, y, z]);
-  }
-
   get x() {
     return this[0];
   }
