@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+
 import Color from '../../gfx/Color';
 import DrawLayerType from '../DrawLayerType';
 import { Vector2 } from '../../math';
@@ -93,22 +95,20 @@ class Backdrop {
       new Vector2(),
     ];
 
-    const { UI } = TextureImageMode;
-    const { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT } = FramePointType;
     const { backgroundFile, edgeFile } = this;
 
     if (backgroundFile) {
       const bgTexture = new Texture(frame, DrawLayerType.BACKGROUND, 1);
       this.backgroundTexture = bgTexture;
 
-      bgTexture.setPoint(TOPLEFT, frame, TOPLEFT, this.leftInset, -this.topInset, false);
-      bgTexture.setPoint(TOPRIGHT, frame, TOPRIGHT, -this.rightInset, -this.topInset, false);
-      bgTexture.setPoint(BOTTOMLEFT, frame, BOTTOMLEFT, this.leftInset, this.bottomInset, false);
-      bgTexture.setPoint(BOTTOMRIGHT, frame, BOTTOMRIGHT, -this.rightInset, this.topInset, false);
+      bgTexture.setPoint(FramePointType.TOPLEFT, frame, FramePointType.TOPLEFT, this.leftInset, -this.topInset, false);
+      bgTexture.setPoint(FramePointType.TOPRIGHT, frame, FramePointType.TOPRIGHT, -this.rightInset, -this.topInset, false);
+      bgTexture.setPoint(FramePointType.BOTTOMLEFT, frame, FramePointType.BOTTOMLEFT, this.leftInset, this.bottomInset, false);
+      bgTexture.setPoint(FramePointType.BOTTOMRIGHT, frame, FramePointType.BOTTOMRIGHT, -this.rightInset, this.topInset, false);
 
       bgTexture.resize(false);
 
-      bgTexture.setTexture(backgroundFile, this.tileBackground, false, null, UI);
+      bgTexture.setTexture(backgroundFile, this.tileBackground, false, null, TextureImageMode.UI);
     }
 
     if (this.pieces & 0x1) {
@@ -116,12 +116,12 @@ class Backdrop {
       this.leftTexture = leftTexture;
 
       leftTexture.width = this.edgeSize;
-      leftTexture.setPoint(TOPLEFT, frame, TOPLEFT, 0.0, -this.edgeSize, false);
-      leftTexture.setPoint(BOTTOMLEFT, frame, BOTTOMLEFT, 0.0, this.edgeSize, false);
+      leftTexture.setPoint(FramePointType.TOPLEFT, frame, FramePointType.TOPLEFT, 0.0, -this.edgeSize, false);
+      leftTexture.setPoint(FramePointType.BOTTOMLEFT, frame, FramePointType.BOTTOMLEFT, 0.0, this.edgeSize, false);
 
       leftTexture.resize(false);
 
-      leftTexture.setTexture(edgeFile, true, true, null, UI);
+      leftTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
       // TODO: leftTexture.setBlendMode(this.blendMode);
     }
 
@@ -130,12 +130,12 @@ class Backdrop {
       this.rightTexture = rightTexture;
 
       rightTexture.width = this.edgeSize;
-      rightTexture.setPoint(TOPRIGHT, frame, TOPRIGHT, 0.0, -this.edgeSize, false);
-      rightTexture.setPoint(BOTTOMRIGHT, frame, BOTTOMRIGHT, 0.0, this.edgeSize, false);
+      rightTexture.setPoint(FramePointType.TOPRIGHT, frame, FramePointType.TOPRIGHT, 0.0, -this.edgeSize, false);
+      rightTexture.setPoint(FramePointType.BOTTOMRIGHT, frame, FramePointType.BOTTOMRIGHT, 0.0, this.edgeSize, false);
 
       rightTexture.resize(false);
 
-      rightTexture.setTexture(edgeFile, true, true, null, UI);
+      rightTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
       // TODO: rightTexture.setBlendMode(this.blendMode);
     }
 
@@ -144,12 +144,12 @@ class Backdrop {
       this.topTexture = topTexture;
 
       topTexture.height = this.edgeSize;
-      topTexture.setPoint(TOPLEFT, frame, TOPLEFT, this.edgeSize, 0.0, false);
-      topTexture.setPoint(TOPRIGHT, frame, TOPRIGHT, -this.edgeSize, 0.0, false);
+      topTexture.setPoint(FramePointType.TOPLEFT, frame, FramePointType.TOPLEFT, this.edgeSize, 0.0, false);
+      topTexture.setPoint(FramePointType.TOPRIGHT, frame, FramePointType.TOPRIGHT, -this.edgeSize, 0.0, false);
 
       topTexture.resize(false);
 
-      topTexture.setTexture(edgeFile, true, true, null, UI);
+      topTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
       // TODO: topTexture.setBlendMode(this.blendMode);
     }
 
@@ -158,12 +158,12 @@ class Backdrop {
       this.bottomTexture = bottomTexture;
 
       bottomTexture.height = this.edgeSize;
-      bottomTexture.setPoint(BOTTOMLEFT, frame, BOTTOMLEFT, this.edgeSize, 0.0, false);
-      bottomTexture.setPoint(BOTTOMRIGHT, frame, BOTTOMRIGHT, -this.edgeSize, 0.0, false);
+      bottomTexture.setPoint(FramePointType.BOTTOMLEFT, frame, FramePointType.BOTTOMLEFT, this.edgeSize, 0.0, false);
+      bottomTexture.setPoint(FramePointType.BOTTOMRIGHT, frame, FramePointType.BOTTOMRIGHT, -this.edgeSize, 0.0, false);
 
       bottomTexture.resize(false);
 
-      bottomTexture.setTexture(edgeFile, true, true, null, UI);
+      bottomTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
       // TODO: bottomTexture.setBlendMode(this.blendMode);
     }
 
@@ -173,14 +173,14 @@ class Backdrop {
 
       topLeftTexture.width = this.edgeSize;
       topLeftTexture.height = this.edgeSize;
-      topLeftTexture.setPoint(TOPLEFT, frame, TOPLEFT, 0.0, 0.0, true);
+      topLeftTexture.setPoint(FramePointType.TOPLEFT, frame, FramePointType.TOPLEFT, 0.0, 0.0, true);
 
       texCoords[0].setElements(0.5078125, 0.0625);
       texCoords[1].setElements(0.5078125, 0.9375);
       texCoords[2].setElements(0.6171875, 0.0625);
       texCoords[3].setElements(0.6171875, 0.9375);
 
-      topLeftTexture.setTexture(edgeFile, false, false, null, UI);
+      topLeftTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
       topLeftTexture.setTextureCoords(texCoords);
       // TODO: topLeftTexture.setBlendMode(this.blendMode);
     }
@@ -191,14 +191,14 @@ class Backdrop {
 
       topRightTexture.width = this.edgeSize;
       topRightTexture.height = this.edgeSize;
-      topRightTexture.setPoint(TOPRIGHT, frame, TOPRIGHT, 0.0, 0.0, true);
+      topRightTexture.setPoint(FramePointType.TOPRIGHT, frame, FramePointType.TOPRIGHT, 0.0, 0.0, true);
 
       texCoords[0].setElements(0.6328125, 0.0625);
       texCoords[1].setElements(0.6328125, 0.9375);
       texCoords[2].setElements(0.7421875, 0.0625);
       texCoords[3].setElements(0.7421875, 0.9375);
 
-      topRightTexture.setTexture(edgeFile, false, false, null, UI);
+      topRightTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
       topRightTexture.setTextureCoords(texCoords);
       // TODO: topRightTexture.setBlendMode(this.blendMode);
     }
@@ -209,14 +209,14 @@ class Backdrop {
 
       bottomLeftTexture.width = this.edgeSize;
       bottomLeftTexture.height = this.edgeSize;
-      bottomLeftTexture.setPoint(BOTTOMLEFT, frame, BOTTOMLEFT, 0.0, 0.0, true);
+      bottomLeftTexture.setPoint(FramePointType.BOTTOMLEFT, frame, FramePointType.BOTTOMLEFT, 0.0, 0.0, true);
 
       texCoords[0].setElements(0.7578125, 0.0625);
       texCoords[1].setElements(0.7578125, 0.9375);
       texCoords[2].setElements(0.8671875, 0.0625);
       texCoords[3].setElements(0.8671875, 0.9375);
 
-      bottomLeftTexture.setTexture(edgeFile, false, false, null, UI);
+      bottomLeftTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
       bottomLeftTexture.setTextureCoords(texCoords);
       // TODO: bottomLeftTexture.setBlendMode(this.blendMode);
     }
@@ -227,14 +227,14 @@ class Backdrop {
 
       bottomRightTexture.width = this.edgeSize;
       bottomRightTexture.height = this.edgeSize;
-      bottomRightTexture.setPoint(BOTTOMRIGHT, frame, BOTTOMRIGHT, 0.0, 0.0, true);
+      bottomRightTexture.setPoint(FramePointType.BOTTOMRIGHT, frame, FramePointType.BOTTOMRIGHT, 0.0, 0.0, true);
 
       texCoords[0].setElements(0.8828125, 0.0625);
       texCoords[1].setElements(0.8828125, 0.9375);
       texCoords[2].setElements(0.9921875, 0.0625);
       texCoords[3].setElements(0.9921875, 0.9375);
 
-      bottomRightTexture.setTexture(edgeFile, false, false, null, UI);
+      bottomRightTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
       bottomRightTexture.setTextureCoords(texCoords);
       // TODO: bottomRightTexture.setBlendMode(this.blendMode);
     }
