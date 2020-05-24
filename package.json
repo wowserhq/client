@@ -22,7 +22,7 @@
     "wow"
   ],
   "dependencies": {
-    "@wowserhq/math": "0.1.0",
+    "@wowserhq/math": "0.2.0",
     "fengari": "0.1.4"
   },
   "devDependencies": {
