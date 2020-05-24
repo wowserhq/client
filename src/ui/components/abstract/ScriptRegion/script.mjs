@@ -7,9 +7,7 @@ import {
 import {
   luaL_error,
   lua_isnumber,
-  lua_isstring,
   lua_pushnumber,
-  lua_tojsstring,
   lua_tonumber,
 } from '../../../scripting/lua';
 
