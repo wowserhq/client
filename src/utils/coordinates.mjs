@@ -28,4 +28,4 @@ export const NDCtoDDC = (ndcx, ndcy) => ({
 });
 
 // Set default aspect ratio
-setAspectRatio(1.3333333333333333);
+setAspectRatio(1024 / 768);

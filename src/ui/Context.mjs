@@ -1,10 +1,11 @@
 import { Status, path, stringToBoolean } from '../utils';
 import Client from '../Client';
-import DrawLayerType from '../gfx/DrawLayerType';
 
+import DrawLayerType from './DrawLayerType';
 import FactoryRegistry from './components/FactoryRegistry';
 import FontString from './components/simple/FontString';
 import Frame from './components/simple/Frame';
+import Renderer from './rendering/Renderer';
 import Root from './components/Root';
 import ScriptingContext from './scripting/Context';
 import TemplateRegistry from './TemplateRegistry';
@@ -17,6 +18,7 @@ class UIContext {
 
     this.scripting = new ScriptingContext();
     this.factories = new FactoryRegistry();
+    this.renderer = new Renderer();
     this.templates = new TemplateRegistry();
 
     this.root = new Root();
@@ -105,7 +107,7 @@ class UIContext {
       return;
     }
 
-    const lines = toc.split('\r\n');
+    const lines = toc.split(/\r?\n/g);
 
     for (const line of lines) {
       if (!line || line.startsWith('#')) {
@@ -148,8 +150,8 @@ class UIContext {
           } else {
             status.error("element 'Include' without file attribute");
           }
-        } break;
-
+          break;
+        }
         case 'script': {
           const file = attributes.get('file');
           if (file) {
@@ -159,12 +161,12 @@ class UIContext {
           } else if (body) {
             this.scripting.execute(body, `${filePath}:<Scripts>`);
           }
-        } break;
-
+          break;
+        }
         case 'font': {
           // TODO: Font support
-        } break;
-
+          break;
+        }
         // Other frame nodes
         default: {
           const name = attributes.get('name');

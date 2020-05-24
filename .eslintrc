@@ -8,6 +8,7 @@
   "rules": {
     "camelcase": "off",
     "import/order": ["error"],
+    "no-console": "off",
     "no-unused-vars": ["error", {
       "argsIgnorePattern": "^_",
       "varsIgnorePattern": "^_"

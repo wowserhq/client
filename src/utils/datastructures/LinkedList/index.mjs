@@ -45,12 +45,16 @@ class LinkedList {
     this.linkToTail(entity);
   }
 
+  isLinked(entity) {
+    return this.linkFor(entity).isLinked;
+  }
+
   linkToHead(entity) {
-    this.link(entity, LinkStrategy.AFTER, this.head);
+    this.link(entity, LinkStrategy.AFTER);
   }
 
   linkToTail(entity) {
-    this.link(entity, LinkStrategy.BEFORE, this.tail);
+    this.link(entity, LinkStrategy.BEFORE);
   }
 
   linkFor(entity) {
@@ -67,6 +71,7 @@ class LinkedList {
 
     switch (strategy) {
       case LinkStrategy.BEFORE:
+        // From A - C, with target C, becomes A - B - C
         const prev = target.prev;
         prev.next = link;
         link.prev = prev;
@@ -74,6 +79,7 @@ class LinkedList {
         target.prev = link;
         break;
       case LinkStrategy.AFTER:
+        // From A - C, with target A, becomes A - B - C
         const next = target.next;
         next.prev = link;
         link.next = next;
@@ -83,6 +89,10 @@ class LinkedList {
       default:
         throw new Error(`Invalid link strategy: ${strategy}`);
     }
+  }
+
+  unlink(entity) {
+    return this.linkFor(entity).unlink();
   }
 
   [Symbol.iterator]() {

@@ -1,9 +1,10 @@
 import Screen from '../../gfx/Screen';
-import { LinkedList } from '../../utils';
+import { LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
+import FramePointType from './abstract/FramePoint';
 import FrameStrata, { FrameStrataType } from './abstract/FrameStrata';
-import LayoutFrame, { LayoutFramePoint } from './abstract/LayoutFrame';
+import LayoutFrame from './abstract/LayoutFrame';
 
 class Root extends LayoutFrame {
   constructor() {
@@ -13,7 +14,7 @@ class Root extends LayoutFrame {
 
     this.layout = {
       frame: null,
-      anchor: LayoutFramePoint.TOPLEFT,
+      anchor: FramePointType.TOPLEFT,
     };
 
     this.strata = Object.values(FrameStrataType).map(type => (
@@ -23,6 +24,10 @@ class Root extends LayoutFrame {
     this.frames = LinkedList.of(Frame, 'framesLink');
     this.destroyedFrames = LinkedList.of(Frame, 'destroyedLink');
 
+    this.rect.maxX = NDCtoDDCWidth(1);
+    this.rect.maxY = NDCtoDDCHeight(1);
+
+    // TODO: Is this frame flag constant correct?
     this.layoutFlags |= FrameFlag.TOPLEVEL;
 
     this.onPaintScreen = this.onPaintScreen.bind(this);
@@ -46,7 +51,7 @@ class Root extends LayoutFrame {
       // Unflatten (?) current layout frame
 
       this.layout.frame = null;
-      this.layout.anchor = LayoutFramePoint.TOPLEFT;
+      this.layout.anchor = FramePointType.TOPLEFT;
     }
 
     // TODO: Unregister for events
@@ -72,6 +77,13 @@ class Root extends LayoutFrame {
     }
 
     return true;
+  }
+
+  notifyFrameLayerChanged(frame, drawLayerType) {
+    const strata = this.strata[frame.strataType];
+    const level = strata.levels[frame.level];
+    level.batchDirty |= 1 << drawLayerType;
+    strata.batchDirty = 1;
   }
 
   onLayerUpdate(elapsedSecs) {

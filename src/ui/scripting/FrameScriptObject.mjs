@@ -75,6 +75,7 @@ class FrameScriptObject {
   }
 
   runScript(name, argsCount = 0) {
+    // TODO: This needs to be moved to the caller
     const script = this.scripts.get(name);
     if (script && script.luaRef) {
       // TODO: Pass in remaining arguments
