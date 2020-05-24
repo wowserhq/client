@@ -49,20 +49,24 @@ class Button extends Frame {
         case 'normaltexture': {
           const texture = ui.createTexture(child, this);
           this.setStateTexture(ButtonState.NORMAL, texture);
-        } break;
+          break;
+        }
         case 'pushedtexture': {
           const texture = ui.createTexture(child, this);
           this.setStateTexture(ButtonState.PUSHED, texture);
-        } break;
+          break;
+        }
         case 'disabledtexture': {
           const texture = ui.createTexture(child, this);
           this.setStateTexture(ButtonState.DISABLED, texture);
-        } break;
+          break;
+        }
         case 'highlighttexture': {
           const texture = ui.createTexture(child, this);
           // TODO: Blend mode
           this.setHighlight(texture, null);
-        } break;
+          break;
+        }
         case 'buttontext':
           ui.createFontString(child, this);
           // TODO: Reference above font string on this button

@@ -150,8 +150,8 @@ class UIContext {
           } else {
             status.error("element 'Include' without file attribute");
           }
-        } break;
-
+          break;
+        }
         case 'script': {
           const file = attributes.get('file');
           if (file) {
@@ -161,12 +161,12 @@ class UIContext {
           } else if (body) {
             this.scripting.execute(body, `${filePath}:<Scripts>`);
           }
-        } break;
-
+          break;
+        }
         case 'font': {
           // TODO: Font support
-        } break;
-
+          break;
+        }
         // Other frame nodes
         default: {
           const name = attributes.get('name');

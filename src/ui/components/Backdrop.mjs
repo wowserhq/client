@@ -55,19 +55,21 @@ class Backdrop {
     for (const child of node.children) {
       const iname = child.name.toLowerCase();
       switch (iname) {
-        case 'tilesize':
+        case 'tilesize': {
           const backgroundSize = extractValueFrom(child);
           if (backgroundSize !== undefined) {
             this.backgroundSize = backgroundSize;
           }
           break;
-        case 'edgesize':
+        }
+        case 'edgesize': {
           const edgeSize = extractValueFrom(child);
           if (edgeSize !== undefined) {
             this.edgeSize = edgeSize;
           }
           break;
-        case 'backgroundinsets':
+        }
+        case 'backgroundinsets': {
           const insets = extractInsetsFrom(child);
           if (insets.left !== undefined) {
             this.leftInset = insets.left;
@@ -82,6 +84,7 @@ class Backdrop {
             this.bottomInset = insets.bottom;
           }
           break;
+        }
         // TODO: Color & border color
       }
     }
