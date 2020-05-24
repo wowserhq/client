@@ -113,10 +113,10 @@ class Renderer {
         ]);
         const offsetX = (root.rect.minX + root.rect.maxX) * 0.5;
         const offsetY = (root.rect.minY + root.rect.maxY) * 0.5;
-        const viewMatrix = new Matrix4();
-        viewMatrix.translate([-offsetX, -offsetY, 0]);
-        projMatrix.multiply(viewMatrix).transpose();
-        gl.uniformMatrix4fv(viewProjMatrixPtr, false, projMatrix);
+        const viewProjMatrix = new Matrix4();
+        viewProjMatrix.translate([-offsetX, -offsetY, 0.0]);
+        viewProjMatrix.multiply(projMatrix).transpose();
+        gl.uniformMatrix4fv(viewProjMatrixPtr, false, viewProjMatrix);
 
         gl.useProgram(this.program);
         gl.bindVertexArray(vao);

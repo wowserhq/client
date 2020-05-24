@@ -29,14 +29,6 @@ class Vector3 extends math.Vector3 {
     this.set(other);
     return this;
   }
-
-  // TODO: Remove this once new package is published
-  setElements(x, y, z) {
-    this[0] = x;
-    this[1] = y;
-    this[2] = z;
-    return this;
-  }
 }
 
 export default Vector3;
