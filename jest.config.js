@@ -1,6 +1,6 @@
 module.exports = {
   collectCoverageFrom: [
-    'src/**/*.{js,mjs}',
+    'src/**/*.mjs',
   ],
   coverageDirectory: './coverage/',
   moduleFileExtensions: ['js', 'mjs'],
