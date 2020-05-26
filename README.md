@@ -1,7 +1,7 @@
 # Wowser Client
 
 [![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE)
-![Checks](https://badgen.net/github/checks/wowserhq/client)
+[![CI](https://github.com/wowserhq/client/workflows/CI/badge.svg)](https://github.com/wowserhq/client/actions?query=workflow%3ACI)
 [![Join chat](https://badgen.net/badge/gitter/join%20chat/red)](https://gitter.im/wowserhq/wowser)
 
 World of Warcraft in the browser using JavaScript and WebGL.
