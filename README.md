@@ -8,8 +8,6 @@ World of Warcraft in the browser using JavaScript and WebGL.
 
 This repository contains the web client.
 
-Licensed under the [**MIT** license](LICENSE).
-
 ## Background
 
 Wowser is a proof-of-concept of getting a triple-A game to run in a webbrowser.
