@@ -1,9 +1,9 @@
 # Wowser Client
 
+[![Join Community](https://badgen.net/badge/discord/join%20community/blue)](https://discord.gg/DeVVKVg)
 ![Version](https://badgen.net/badge/npm/n%2Fa/gray)
 [![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE)
 [![CI](https://github.com/wowserhq/client/workflows/CI/badge.svg)](https://github.com/wowserhq/client/actions?query=workflow%3ACI)
-[![Join chat](https://badgen.net/badge/gitter/join%20chat/red)](https://gitter.im/wowserhq/wowser)
 [![Test Coverage](https://codecov.io/gh/wowserhq/client/branch/master/graph/badge.svg)](https://codecov.io/gh/wowserhq/client)
 
 World of Warcraft in the browser using JavaScript and WebGL.
