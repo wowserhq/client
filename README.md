@@ -1,15 +1,14 @@
 # Wowser Client
 
-![Node Version](https://badgen.net/badge/node/12+/green)
-[![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE.md)
-![Checks](https://badgen.net/github/checks/wowserhq/client)
-[![Join chat](https://badgen.net/badge/gitter/join%20chat/red)](https://gitter.im/wowserhq/wowser)
+[![Join Community](https://badgen.net/badge/discord/join%20community/blue)](https://discord.gg/DeVVKVg)
+![Version](https://badgen.net/badge/npm/n%2Fa/gray)
+[![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE)
+[![CI](https://github.com/wowserhq/client/workflows/CI/badge.svg)](https://github.com/wowserhq/client/actions?query=workflow%3ACI)
+[![Test Coverage](https://codecov.io/gh/wowserhq/client/branch/master/graph/badge.svg)](https://codecov.io/gh/wowserhq/client)
 
 World of Warcraft in the browser using JavaScript and WebGL.
 
 This repository contains the web client.
-
-Licensed under the [**MIT** license](LICENSE).
 
 ## Background
 
@@ -39,7 +38,7 @@ developed with [webpack].
    git clone git://github.com/wowserhq/wowser.git
    ```
 
-2. Download and install [Node.js] – including `npm` – for your platform.
+2. Download and install [Node.js] 12+ for your platform.
 
 3. Install dependencies:
 
