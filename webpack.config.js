@@ -11,7 +11,7 @@ module.exports = {
     filename: 'wowser-client-[chunkhash:8].js',
   },
   resolve: {
-    extensions: ['.js', '.mjs'],
+    extensions: ['.mjs', '.js'],
   },
   devtool: 'source-map',
   plugins: [
