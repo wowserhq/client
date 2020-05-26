@@ -1,5 +1,6 @@
 # Wowser Client
 
+![Version](https://badgen.net/badge/npm/n%2Fa/gray)
 [![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE)
 [![CI](https://github.com/wowserhq/client/workflows/CI/badge.svg)](https://github.com/wowserhq/client/actions?query=workflow%3ACI)
 [![Join chat](https://badgen.net/badge/gitter/join%20chat/red)](https://gitter.im/wowserhq/wowser)
