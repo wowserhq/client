@@ -38,7 +38,7 @@ developed with [webpack].
    git clone git://github.com/wowserhq/wowser.git
    ```
 
-2. Download and install [Node.js] – including `npm` – for your platform.
+2. Download and install [Node.js] 12+ for your platform.
 
 3. Install dependencies:
 
