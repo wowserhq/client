@@ -1,6 +1,6 @@
 # Wowser Client
 
-[![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE.md)
+[![MIT License](https://badgen.net/github/license/wowserhq/client)](LICENSE)
 ![Checks](https://badgen.net/github/checks/wowserhq/client)
 [![Join chat](https://badgen.net/badge/gitter/join%20chat/red)](https://gitter.im/wowserhq/wowser)
 
