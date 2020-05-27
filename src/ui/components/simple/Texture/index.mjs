@@ -282,10 +282,10 @@ class Texture extends Region {
   }
 
   setTextureCoords(coords) {
-    this.textureCoords[0].copy(coords[0]);
-    this.textureCoords[1].copy(coords[1]);
-    this.textureCoords[2].copy(coords[2]);
-    this.textureCoords[3].copy(coords[3]);
+    this.textureCoords[0].set(coords[0]);
+    this.textureCoords[1].set(coords[1]);
+    this.textureCoords[2].set(coords[2]);
+    this.textureCoords[3].set(coords[3]);
   }
 
   draw(batch) {

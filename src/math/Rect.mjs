@@ -11,7 +11,7 @@ class Rect {
     this.maxX = maxX;
   }
 
-  copy(other) {
+  set(other) {
     this.minY = other.minY;
     this.minX = other.minX;
     this.maxY = other.maxY;

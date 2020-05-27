@@ -326,7 +326,7 @@ class LayoutFrame {
     }
 
     const rect = new Rect();
-    rect.copy(this.rect);
+    rect.set(this.rect);
     return rect;
   }
 
@@ -426,7 +426,7 @@ class LayoutFrame {
       return true;
     }
 
-    const prevRect = new Rect().copy(this.rect);
+    const prevRect = new Rect().set(this.rect);
 
     this.rect.minY = rect.minY;
     this.rect.minX = rect.minX;
