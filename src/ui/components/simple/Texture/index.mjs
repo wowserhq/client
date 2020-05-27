@@ -38,10 +38,10 @@ class Texture extends Region {
     this.shader = Device.instance.shaders.pixelShaderFor(ImageMode.UI);
     this.texture = null;
     this.textureCoords = [
-      new Vector2(0, 0),
-      new Vector2(0, 1),
-      new Vector2(1, 0),
-      new Vector2(1, 1),
+      new Vector2([0, 0]),
+      new Vector2([0, 1]),
+      new Vector2([1, 0]),
+      new Vector2([1, 1]),
     ];
     this.tileHorizontally = false;
     this.tileVertically = false;
@@ -177,10 +177,10 @@ class Texture extends Region {
 
           if (valid) {
             const coords = [
-              new Vector2(rect.left, rect.top),
-              new Vector2(rect.left, rect.bottom),
-              new Vector2(rect.right, rect.top),
-              new Vector2(rect.right, rect.bottom),
+              new Vector2([rect.left, rect.top]),
+              new Vector2([rect.left, rect.bottom]),
+              new Vector2([rect.right, rect.top]),
+              new Vector2([rect.right, rect.bottom]),
             ];
 
             this.setTextureCoords(coords);
