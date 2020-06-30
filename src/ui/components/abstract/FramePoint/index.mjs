@@ -6,7 +6,7 @@ class FramePoint {
   constructor(relative, type, offsetX, offsetY) {
     this.relative = relative;
     this.type = type;
-    this.offset = new Vector2(offsetX, offsetY);
+    this.offset = new Vector2([offsetX, offsetY]);
 
     // TODO: Is this value correct?
     this.flags = 0;

@@ -38,10 +38,10 @@ class Texture extends Region {
     this.shader = Device.instance.shaders.pixelShaderFor(ImageMode.UI);
     this.texture = null;
     this.textureCoords = [
-      new Vector2(0, 0),
-      new Vector2(0, 1),
-      new Vector2(1, 0),
-      new Vector2(1, 1),
+      new Vector2([0, 0]),
+      new Vector2([0, 1]),
+      new Vector2([1, 0]),
+      new Vector2([1, 1]),
     ];
     this.tileHorizontally = false;
     this.tileVertically = false;
@@ -177,10 +177,10 @@ class Texture extends Region {
 
           if (valid) {
             const coords = [
-              new Vector2(rect.left, rect.top),
-              new Vector2(rect.left, rect.bottom),
-              new Vector2(rect.right, rect.top),
-              new Vector2(rect.right, rect.bottom),
+              new Vector2([rect.left, rect.top]),
+              new Vector2([rect.left, rect.bottom]),
+              new Vector2([rect.right, rect.top]),
+              new Vector2([rect.right, rect.bottom]),
             ];
 
             this.setTextureCoords(coords);
@@ -282,10 +282,10 @@ class Texture extends Region {
   }
 
   setTextureCoords(coords) {
-    this.textureCoords[0].copy(coords[0]);
-    this.textureCoords[1].copy(coords[1]);
-    this.textureCoords[2].copy(coords[2]);
-    this.textureCoords[3].copy(coords[3]);
+    this.textureCoords[0].set(coords[0]);
+    this.textureCoords[1].set(coords[1]);
+    this.textureCoords[2].set(coords[2]);
+    this.textureCoords[3].set(coords[3]);
   }
 
   draw(batch) {
