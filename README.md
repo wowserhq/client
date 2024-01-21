@@ -29,8 +29,7 @@ the official client is required.
 
 ## Development
 
-Wowser is written in [ES2015+], modularized using [ECMAScript modules] and
-developed with [webpack].
+Wowser is written in [TypeScript] and developed with [vite].
 
 1. Clone the repository:
 
@@ -38,7 +37,7 @@ developed with [webpack].
    git clone git://github.com/wowserhq/wowser.git
    ```
 
-2. Download and install [Node.js] 12+ for your platform.
+2. Download and install [Node.js] 20+ for your platform.
 
 3. Install dependencies:
 
@@ -79,9 +78,9 @@ When contributing, please:
 
 [BLPConverter]: https://github.com/wowserhq/blizzardry#blp
 [ECMAScript modules]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
-[ES2015+]: https://babeljs.io/docs/learn-es2015/
 [Node.js]: http://nodejs.org/#download
 [StormLib]: https://github.com/wowserhq/blizzardry#mpq
+[TypeScript]: https://www.typescriptlang.org/
 [Wowser]: https://github.com/wowserhq/wowser
 [soon™]: http://www.wowwiki.com/Soon
-[webpack]: http://webpack.github.io/
+[vite]: https://vitejs.dev/
