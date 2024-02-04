@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Wowser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html, body {
+        margin: 0;
+      }
+
+      body {
+        background: black;
+      }
+
+      .container {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
+        width: 100%;
+        padding-top: calc(100% / (1024 / 768));
+        background-image:
+          linear-gradient(45deg, #222 25%, transparent 25%),
+          linear-gradient(-45deg, #222 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #222 75%),
+          linear-gradient(-45deg, transparent 75%, #222 75%);
+        background-size: 20px 20px;
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      }
+
+      canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <canvas></canvas>
+    </div>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

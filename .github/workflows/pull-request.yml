@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [18.x, 20.x]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -19,24 +19,24 @@ jobs:
           CI: true
 
   test-coverage:
-    name: test coverage (12.x)
+    name: test coverage (20.x)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 20
       - run: npm install
       - run: npm run test:coverage
       - uses: codecov/codecov-action@v1
 
   build:
-    name: build (12.x)
+    name: build (20.x)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 20
       - run: npm install
       - run: npm run build
