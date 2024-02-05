@@ -1,7 +1,10 @@
+import Frame from '../simple/Frame';
+import UIRoot from '../UIRoot';
+import XMLNode from '../../XMLNode';
+import { multipleClasses } from '../../../utils';
+
 import LayoutFrame from './LayoutFrame';
 import ScriptObject from './ScriptObject';
-import UIRoot from '../UIRoot';
-import { multipleClasses } from '../../../utils';
 
 import * as scriptFunctions from './ScriptRegion.script';
 
@@ -13,8 +16,10 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
     };
   }
 
-  constructor(...args) {
-    super(...args);
+  _parent: Frame | null;
+
+  constructor(_dummy: unknown) {
+    super(_dummy);
 
     this._parent = null;
   }
@@ -28,14 +33,14 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
     return this._parent;
   }
 
-  get layoutParent() {
+  get layoutParent(): LayoutFrame {
     if (this.width === 0.0 || !this.parent) {
       return UIRoot.instance;
     }
     return this.parent;
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     LayoutFrame.prototype.loadXML.call(this, node);
 
     const parentKey = node.attributes.get('parentKey');

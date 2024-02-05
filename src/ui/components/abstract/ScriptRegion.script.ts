@@ -6,6 +6,7 @@ import {
 } from '../../../utils';
 import {
   luaL_error,
+  lua_State,
   lua_isnumber,
   lua_pushnumber,
   lua_tonumber,
@@ -49,11 +50,11 @@ export const GetBottom = () => {
   return 0;
 };
 
-export const GetWidth = (L) => {
+export const GetWidth = (L: lua_State) => {
   const region = ScriptRegion.getObjectFromStack(L);
   let { width } = region;
 
-  if (width === 0.0 && !luaValueToBoolean(L, 2, 0)) {
+  if (width === 0.0 && !luaValueToBoolean(L, 2, false)) {
     if (region.isResizePending) {
       region.resize(true);
     }
@@ -70,7 +71,7 @@ export const GetWidth = (L) => {
   return 1;
 };
 
-export const SetWidth = (L) => {
+export const SetWidth = (L: lua_State) => {
   const region = ScriptRegion.getObjectFromStack(L);
 
   // TODO: Protected logic
@@ -88,11 +89,11 @@ export const SetWidth = (L) => {
   return 0;
 };
 
-export const GetHeight = (L) => {
+export const GetHeight = (L: lua_State) => {
   const region = ScriptRegion.getObjectFromStack(L);
   let { height } = region;
 
-  if (height === 0.0 && !luaValueToBoolean(L, 2, 0)) {
+  if (height === 0.0 && !luaValueToBoolean(L, 2, false)) {
     if (region.isResizePending) {
       region.resize(true);
     }
@@ -109,7 +110,7 @@ export const GetHeight = (L) => {
   return 1;
 };
 
-export const SetHeight = (L) => {
+export const SetHeight = (L: lua_State) => {
   const region = ScriptRegion.getObjectFromStack(L);
 
   // TOOD: Protected logic

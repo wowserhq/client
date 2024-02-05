@@ -1,16 +1,19 @@
-const FramePointType = {
-  TOPLEFT: 0,
-  TOP: 1,
-  TOPRIGHT: 2,
-  LEFT: 3,
-  CENTER: 4,
-  RIGHT: 5,
-  BOTTOMLEFT: 6,
-  BOTTOM: 7,
-  BOTTOMRIGHT: 8,
-};
+enum FramePointType {
+  TOPLEFT = 0,
+  TOP = 1,
+  TOPRIGHT = 2,
+  LEFT = 3,
+  CENTER = 4,
+  RIGHT = 5,
+  BOTTOMLEFT = 6,
+  BOTTOM = 7,
+  BOTTOMRIGHT = 8,
+}
 
-export const stringToPointType = (str) => FramePointType[str.toUpperCase()];
+export const stringToPointType = (string?: string) => {
+  if (!string) return undefined;
+  return FramePointType[string.toUpperCase() as keyof typeof FramePointType];
+};
 
 export const FramePointTypeSide = {
   CENTERX: [

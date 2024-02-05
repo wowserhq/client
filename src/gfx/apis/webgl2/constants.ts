@@ -12,7 +12,7 @@ const cubeMapFaces = {
   3: 'TEXTURE_CUBE_MAP_NEGATIVE_Y',
   4: 'TEXTURE_CUBE_MAP_POSITIVE_Z',
   5: 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
-};
+} as const;
 
 const blendDestinations = {
   [BlendMode.Opaque]: 'ZERO',
@@ -27,7 +27,7 @@ const blendDestinations = {
   [BlendMode.SrcAlphaOpaque]: 'ZERO',
   [BlendMode.NoAlphaAdd]: 'ONE',
   [BlendMode.ConstantAlpha]: 'ONE_MINUS_CONSTANT_ALPHA',
-};
+} as const;
 
 const blendSources = {
   [BlendMode.Opaque]: 'ONE',
@@ -42,25 +42,25 @@ const blendSources = {
   [BlendMode.SrcAlphaOpaque]: 'SRC_ALPHA',
   [BlendMode.NoAlphaAdd]: 'ONE',
   [BlendMode.ConstantAlpha]: 'CONSTANT_ALPHA',
-};
+} as const;
 
 // TODO: Texture format
 
 const bufferFormatByPoolTarget = {
   [PoolTarget.Vertex]: 'ZERO',
   [PoolTarget.Index]: 'UNSIGNED_SHORT',
-};
+} as const;
 
 const bufferTypeByPooltarget = {
   [PoolTarget.Vertex]: 'ARRAY_BUFFER',
   [PoolTarget.Index]: 'ELEMENT_ARRAY_BUFFER',
-};
+} as const;
 
 const bufferUsageByPoolTarget = {
   [PoolUsage.Static]: 'STATIC_DRAW',
   [PoolUsage.Dynamic]: 'DYNAMIC_DRAW',
   [PoolUsage.Stream]: 'DYNAMIC_DRAW',
-};
+} as const;
 
 const primitiveTypes = {
   [PrimitiveType.Points]: 'POINTS',
@@ -69,10 +69,9 @@ const primitiveTypes = {
   [PrimitiveType.Triangles]: 'TRIANGLES',
   [PrimitiveType.TriangleStrip]: 'TRIANGLE_STRIP',
   [PrimitiveType.TriangleFan]: 'TRIANGLE_FAN',
-  [PrimitiveType.Last]: 'ZERO',
-};
+} as const;
 
-export default (gl) => {
+export default (gl: WebGL2RenderingContext) => {
   const constants = {};
 
   const categories = {
@@ -83,7 +82,7 @@ export default (gl) => {
     bufferTypeByPooltarget,
     bufferUsageByPoolTarget,
     primitiveTypes,
-  };
+  } as const;
 
   for (const [name, category] of Object.entries(categories)) {
     const entry = {};
@@ -92,8 +91,10 @@ export default (gl) => {
       if (constant === undefined) {
         throw new Error(`Could not find WebGL2 constant: ${prop}`);
       }
+      // @ts-expect-error: currently unused (and untyped)
       entry[index] = constant;
     }
+    // @ts-expect-error: currently unused (and untyped)
     constants[name] = entry;
   }
 

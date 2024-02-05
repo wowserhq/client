@@ -7,3 +7,4 @@ export * from './inheritance';
 export * from './logging';
 export * from './lua';
 export * from './strings';
+export * from './types';

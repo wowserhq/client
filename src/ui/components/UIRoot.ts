@@ -1,28 +1,50 @@
+import DrawLayerType from '../DrawLayerType';
 import Screen from '../../gfx/Screen';
+import ScreenLayer from '../../gfx/ScreenLayer';
+import { EdgeRect } from '../../math';
 import { LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
-import FramePointType from './abstract/FramePoint';
+import FramePointType from './abstract/FramePointType';
 import FrameStrata, { FrameStrataType } from './abstract/FrameStrata';
 import LayoutFrame from './abstract/LayoutFrame';
 
 class UIRoot extends LayoutFrame {
+  static instance: UIRoot;
+
+  layout: {
+    frame: Frame | null,
+    anchor: FramePointType
+  };
+  strata: Record<FrameStrataType, FrameStrata> & Iterable<FrameStrata>;
+  frames: LinkedList<Frame>;
+  destroyedFrames: LinkedList<Frame>;
+  screenLayer: ScreenLayer;
+
   constructor() {
     super();
 
-    this.constructor.instance = this;
+    UIRoot.instance = this;
 
     this.layout = {
       frame: null,
       anchor: FramePointType.TOPLEFT,
     };
 
-    this.strata = Object.values(FrameStrataType).map(type => (
-      new FrameStrata(type)
-    ));
+    this.strata = [
+      new FrameStrata(FrameStrataType.WORLD),
+      new FrameStrata(FrameStrataType.BACKGROUND),
+      new FrameStrata(FrameStrataType.LOW),
+      new FrameStrata(FrameStrataType.MEDIUM),
+      new FrameStrata(FrameStrataType.HIGH),
+      new FrameStrata(FrameStrataType.DIALOG),
+      new FrameStrata(FrameStrataType.FULLSCREEN),
+      new FrameStrata(FrameStrataType.FULLSCREEN_DIALOG),
+      new FrameStrata(FrameStrataType.TOOLTIP),
+    ];
 
-    this.frames = LinkedList.of(Frame, 'framesLink');
-    this.destroyedFrames = LinkedList.of(Frame, 'destroyedLink');
+    this.frames = LinkedList.using('framesLink');
+    this.destroyedFrames = LinkedList.using('destroyedLink');
 
     this.rect.maxX = NDCtoDDCWidth(1);
     this.rect.maxY = NDCtoDDCHeight(1);
@@ -37,16 +59,16 @@ class UIRoot extends LayoutFrame {
     );
   }
 
-  register(frame) {
+  register(frame: Frame) {
     this.frames.add(frame);
   }
 
-  showFrame(frame) {
+  showFrame(frame: Frame, _unknown: boolean) {
     this.strata[frame.strataType].addFrame(frame);
     // TODO: Register for events
   }
 
-  hideFrame(frame, _unknownBool) {
+  hideFrame(frame: Frame, _unknown: boolean) {
     if (this.layout.frame === frame) {
       // Unflatten (?) current layout frame
 
@@ -58,7 +80,8 @@ class UIRoot extends LayoutFrame {
     this.strata[frame.strataType].removeFrame(frame);
   }
 
-  raiseFrame(frame, _checkOcclusion) {
+  raiseFrame(source: Frame, _checkOcclusion: boolean) {
+    let frame: Frame | null = source;
     while (frame && frame.flags & FrameFlag.TOPLEVEL) {
       frame = frame.parent;
     }
@@ -79,14 +102,14 @@ class UIRoot extends LayoutFrame {
     return true;
   }
 
-  notifyFrameLayerChanged(frame, drawLayerType) {
+  notifyFrameLayerChanged(frame: Frame, drawLayerType: DrawLayerType) {
     const strata = this.strata[frame.strataType];
     const level = strata.levels[frame.level];
     level.batchDirty |= 1 << drawLayerType;
     strata.batchDirty = 1;
   }
 
-  onLayerUpdate(elapsedSecs) {
+  onLayerUpdate(elapsedSecs: number) {
     // TODO: Clean-up destroyed frames
 
     console.log('root pre-render', this);
@@ -111,7 +134,7 @@ class UIRoot extends LayoutFrame {
     }
   }
 
-  onPaintScreen(param, rect, visibleRect, elapsedSecs) {
+  onPaintScreen(_param: null, _rect: EdgeRect, _visibleRect: EdgeRect, elapsedSecs: number) {
     this.onLayerUpdate(elapsedSecs);
     this.onLayerRender();
   }

@@ -1,3 +1,6 @@
+import RenderBatch from '../../rendering/RenderBatch';
+import XMLNode from '../../XMLNode';
+
 import Region from './Region';
 
 import * as scriptFunctions from './FontString.script';
@@ -11,11 +14,11 @@ class FontString extends Region {
     };
   }
 
-  postLoadXML(_node) {
+  postLoadXML(_node: XMLNode) {
     // TODO
   }
 
-  draw(_batch) {
+  draw(_batch: RenderBatch) {
     // TODO
   }
 }

@@ -2,13 +2,46 @@
 
 import Color from '../../gfx/Color';
 import DrawLayerType from '../DrawLayerType';
-import { Vector2 } from '../../math';
+import XMLNode from '../XMLNode';
+import { Rect, Vector2 } from '../../math';
 import { extractInsetsFrom, extractValueFrom, stringToBoolean } from '../../utils';
 
+import Frame from './simple/Frame';
 import FramePointType from './abstract/FramePointType';
-import Texture, { TextureImageMode } from './simple/Texture';
+import Texture from './simple/Texture';
+import TextureImageMode from './simple/TextureImageMode';
 
 class Backdrop {
+  backgroundFile: string | null;
+  backgroundSize: number;
+
+  edgeFile: string | null;
+  edgeSize: number;
+
+  tileBackground: boolean;
+
+  color: Color;
+  borderColor: Color;
+
+  // TODO: Default value
+  blendMode: null;
+  pieces: number;
+
+  backgroundTexture: Texture | null;
+  leftTexture: Texture | null;
+  rightTexture: Texture | null;
+  topTexture: Texture | null;
+  bottomTexture: Texture | null;
+  topLeftTexture: Texture | null;
+  topRightTexture: Texture | null;
+  bottomLeftTexture: Texture | null;
+  bottomRightTexture: Texture | null;
+
+  topInset: number;
+  bottomInset: number;
+  leftInset: number;
+  rightInset: number;
+
   constructor() {
     this.backgroundFile = null;
     this.backgroundSize = 0.0;
@@ -41,9 +74,9 @@ class Backdrop {
     this.rightInset = 0.0;
   }
 
-  loadXML(node) {
-    this.backgroundFile = node.attributes.get('bgFile');
-    this.edgeFile = node.attributes.get('edgeFile');
+  loadXML(node: XMLNode) {
+    this.backgroundFile = node.attributes.get('bgFile') ?? null;
+    this.edgeFile = node.attributes.get('edgeFile') ?? null;
 
     const tile = node.attributes.get('tile');
     this.tileBackground = stringToBoolean(tile, false);
@@ -90,18 +123,18 @@ class Backdrop {
     }
   }
 
-  setOutput(frame) {
+  setOutput(frame: Frame) {
     const texCoords = [
       new Vector2(),
       new Vector2(),
       new Vector2(),
       new Vector2(),
-    ];
+    ] as const;
 
     const { backgroundFile, edgeFile } = this;
 
     if (backgroundFile) {
-      const bgTexture = new Texture(frame, DrawLayerType.BACKGROUND, 1);
+      const bgTexture = new Texture(frame, DrawLayerType.BACKGROUND, true);
       this.backgroundTexture = bgTexture;
 
       bgTexture.setPoint(FramePointType.TOPLEFT, frame, FramePointType.TOPLEFT, this.leftInset, -this.topInset, false);
@@ -124,7 +157,7 @@ class Backdrop {
 
       leftTexture.resize(false);
 
-      leftTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
+      leftTexture.setTexture(edgeFile!, true, true, null, TextureImageMode.UI);
       // TODO: leftTexture.setBlendMode(this.blendMode);
     }
 
@@ -138,7 +171,7 @@ class Backdrop {
 
       rightTexture.resize(false);
 
-      rightTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
+      rightTexture.setTexture(edgeFile!, true, true, null, TextureImageMode.UI);
       // TODO: rightTexture.setBlendMode(this.blendMode);
     }
 
@@ -152,7 +185,7 @@ class Backdrop {
 
       topTexture.resize(false);
 
-      topTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
+      topTexture.setTexture(edgeFile!, true, true, null, TextureImageMode.UI);
       // TODO: topTexture.setBlendMode(this.blendMode);
     }
 
@@ -166,7 +199,7 @@ class Backdrop {
 
       bottomTexture.resize(false);
 
-      bottomTexture.setTexture(edgeFile, true, true, null, TextureImageMode.UI);
+      bottomTexture.setTexture(edgeFile!, true, true, null, TextureImageMode.UI);
       // TODO: bottomTexture.setBlendMode(this.blendMode);
     }
 
@@ -183,7 +216,7 @@ class Backdrop {
       texCoords[2].setElements(0.6171875, 0.0625);
       texCoords[3].setElements(0.6171875, 0.9375);
 
-      topLeftTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
+      topLeftTexture.setTexture(edgeFile!, false, false, null, TextureImageMode.UI);
       topLeftTexture.setTextureCoords(texCoords);
       // TODO: topLeftTexture.setBlendMode(this.blendMode);
     }
@@ -201,7 +234,7 @@ class Backdrop {
       texCoords[2].setElements(0.7421875, 0.0625);
       texCoords[3].setElements(0.7421875, 0.9375);
 
-      topRightTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
+      topRightTexture.setTexture(edgeFile!, false, false, null, TextureImageMode.UI);
       topRightTexture.setTextureCoords(texCoords);
       // TODO: topRightTexture.setBlendMode(this.blendMode);
     }
@@ -219,7 +252,7 @@ class Backdrop {
       texCoords[2].setElements(0.8671875, 0.0625);
       texCoords[3].setElements(0.8671875, 0.9375);
 
-      bottomLeftTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
+      bottomLeftTexture.setTexture(edgeFile!, false, false, null, TextureImageMode.UI);
       bottomLeftTexture.setTextureCoords(texCoords);
       // TODO: bottomLeftTexture.setBlendMode(this.blendMode);
     }
@@ -237,19 +270,19 @@ class Backdrop {
       texCoords[2].setElements(0.9921875, 0.0625);
       texCoords[3].setElements(0.9921875, 0.9375);
 
-      bottomRightTexture.setTexture(edgeFile, false, false, null, TextureImageMode.UI);
+      bottomRightTexture.setTexture(edgeFile!, false, false, null, TextureImageMode.UI);
       bottomRightTexture.setTextureCoords(texCoords);
       // TODO: bottomRightTexture.setBlendMode(this.blendMode);
     }
   }
 
-  update(rect) {
+  update(rect: Rect) {
     const texCoords = [
       new Vector2(),
       new Vector2(),
       new Vector2(),
       new Vector2(),
-    ];
+    ] as const;
 
     const width = rect.maxX - rect.minX;
     const height = rect.maxY - rect.minY;
@@ -270,7 +303,7 @@ class Backdrop {
       texCoords[2].setElements(width / size, 0.0);
       texCoords[3].setElements(width / size, height / size);
 
-      this.backgroundTexture.setTextureCoords(texCoords);
+      this.backgroundTexture!.setTextureCoords(texCoords);
     }
 
     if (this.pieces & 0x1) {
@@ -279,7 +312,7 @@ class Backdrop {
       texCoords[2].setElements(0.1171875, 0.0625);
       texCoords[3].setElements(0.1171875, v17 - 0.0625);
 
-      this.leftTexture.setTextureCoords(texCoords);
+      this.leftTexture!.setTextureCoords(texCoords);
     }
 
     if (this.pieces & 0x2) {
@@ -288,7 +321,7 @@ class Backdrop {
       texCoords[2].setElements(0.2421875, 0.0625);
       texCoords[3].setElements(0.2421875, v17 - 0.0625);
 
-      this.rightTexture.setTextureCoords(texCoords);
+      this.rightTexture!.setTextureCoords(texCoords);
     }
 
     if (this.pieces & 0x4) {
@@ -297,7 +330,7 @@ class Backdrop {
       texCoords[2].setElements(0.2578125, 0.0625);
       texCoords[3].setElements(0.3671875, 0.0625);
 
-      this.topTexture.setTextureCoords(texCoords);
+      this.topTexture!.setTextureCoords(texCoords);
     }
 
     if (this.pieces & 0x8) {
@@ -306,7 +339,7 @@ class Backdrop {
       texCoords[2].setElements(0.3828125, 0.0625);
       texCoords[3].setElements(0.4921875, 0.0625);
 
-      this.bottomTexture.setTextureCoords(texCoords);
+      this.bottomTexture!.setTextureCoords(texCoords);
     }
 
     // TODO: Set vertex colors

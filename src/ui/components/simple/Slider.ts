@@ -11,8 +11,10 @@ class Slider extends Frame {
     };
   }
 
-  constructor(...args) {
-    super(...args);
+  value: number;
+
+  constructor(parent: Frame | null) {
+    super(parent);
 
     this.value = 0.0;
 

@@ -1,9 +1,23 @@
+import DrawLayerType from '../../DrawLayerType';
+import RenderBatch from '../../rendering/RenderBatch';
 import ScriptRegion from '../abstract/ScriptRegion';
 import { LinkedListLink } from '../../../utils';
 
-class Region extends ScriptRegion {
-  constructor(frame, drawLayerType, show) {
-    super();
+import Frame from './Frame';
+
+abstract class Region extends ScriptRegion {
+  drawLayerType: DrawLayerType | null;
+  shown: boolean;
+  visible: boolean;
+
+  colors: never[];
+  alphas: never[];
+
+  layerLink: LinkedListLink<this>;
+  regionLink: LinkedListLink<this>;
+
+  constructor(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
+    super(null);
 
     this.drawLayerType = null;
     this.shown = false;
@@ -20,11 +34,13 @@ class Region extends ScriptRegion {
     }
   }
 
+  abstract draw(_batch: RenderBatch): void;
+
   onRegionChanged() {
     // TODO: Implementation
   }
 
-  setFrame(frame, drawLayerType, show) {
+  setFrame(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
     if (this._parent === frame) {
       if (this.drawLayerType === drawLayerType) {
         if (show !== this.shown) {
@@ -56,7 +72,7 @@ class Region extends ScriptRegion {
 
       if (frame) {
         frame.regions.add(this);
-        this.deferredResize = (this._parent.layoutFlags & 0x2);
+        this.deferredResize = !!(this._parent.layoutFlags & 0x2);
 
         // TODO: Color changed
 
@@ -79,7 +95,7 @@ class Region extends ScriptRegion {
       if (!this._parent.loading) {
         this.deferredResize = true;
       }
-      this._parent.removeRegion(this, this.drawLayerType);
+      this._parent.removeRegion(this, this.drawLayerType!);
       this.visible = false;
     }
   }
@@ -95,8 +111,8 @@ class Region extends ScriptRegion {
         this.deferredResize = false;
       }
 
-      this._parent.addRegion(this, this.drawLayerType);
-      this.visible = 1;
+      this._parent.addRegion(this, this.drawLayerType!);
+      this.visible = true;
     }
   }
 }

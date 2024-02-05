@@ -2,6 +2,8 @@ import {
   LUA_REGISTRYINDEX,
   LUA_TTABLE,
   lua_Debug,
+  lua_Ref,
+  lua_State,
   lua_atnativeerror,
   lua_call,
   lua_createtable,
@@ -34,15 +36,27 @@ import {
 import bitLua from './vendor/bit.lua';
 import compatLua from './vendor/compat.lua';
 
+import FrameScriptObject from './FrameScriptObject';
+
 import * as extraScriptFunctions from './globals/extra';
 import * as frameScriptFunctions from './globals/frame';
 import * as sharedScriptFunctions from './globals/shared';
 import * as soundScriptFunctions from './globals/sound';
 import * as systemScriptFunctions from './globals/system';
 
+type ScriptFunction = (L: lua_State) => number;
+
 class ScriptingContext {
+  static instance: ScriptingContext;
+
+  errorHandlerFunc: lua_Ref | null;
+  handlingError: boolean;
+  state: lua_State;
+  errorHandlerRef: lua_Ref;
+  recursiveTableHash: lua_Ref;
+
   constructor() {
-    this.constructor.instance = this;
+    ScriptingContext.instance = this;
 
     this.errorHandlerFunc = null;
     this.handlingError = false;
@@ -73,7 +87,7 @@ class ScriptingContext {
     this.execute(compatLua, 'compat.lua');
   }
 
-  compileFunction(source, name = '<unknown>') {
+  compileFunction(source: string, name = '<unknown>') {
     const L = this.state;
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerRef);
@@ -99,7 +113,7 @@ class ScriptingContext {
     return luaRef;
   }
 
-  execute(source, filename = '<inline>') {
+  execute(source: string, filename = '<inline>') {
     console.groupCollapsed('executing', filename);
     console.log(source.slice(0, 500));
 
@@ -121,12 +135,12 @@ class ScriptingContext {
       lua_settop(L, -2);
     }
 
-    console.groupEnd('executing', filename);
+    console.groupEnd();
 
     return true;
   }
 
-  executeFunction(functionRef, thisArg, givenArgsCount, _unk, _event) {
+  executeFunction(functionRef: lua_Ref, thisArg: FrameScriptObject, givenArgsCount: number, _unk: unknown, _event: unknown) {
     const L = this.state;
 
     let argsCount = givenArgsCount;
@@ -137,11 +151,11 @@ class ScriptingContext {
     lua_rawgeti(L, LUA_REGISTRYINDEX, functionRef);
 
     if (thisArg) {
-      if (!thisArg.luaRegistered) {
+      if (!thisArg.isLuaRegistered) {
         thisArg.register();
       }
 
-      lua_rawgeti(L, LUA_REGISTRYINDEX, thisArg.luaRef);
+      lua_rawgeti(L, LUA_REGISTRYINDEX, thisArg.luaRef!);
       argsCount++;
     }
 
@@ -158,7 +172,7 @@ class ScriptingContext {
     lua_settop(L, -1 - givenArgsCount);
   }
 
-  getObjectByName(name) {
+  getObjectByName(name: string) {
     const L = this.state;
 
     lua_getglobal(L, name);
@@ -174,7 +188,7 @@ class ScriptingContext {
     return null;
   }
 
-  getObjectAt(index) {
+  getObjectAt(index: number) {
     const L = this.state;
 
     const info = new lua_Debug();
@@ -212,7 +226,7 @@ class ScriptingContext {
     return 1;
   }
 
-  onError(L) {
+  onError(L: lua_State) {
     if (lua_isuserdata(L, -1)) {
       const e = lua_touserdata(L, -1);
       console.error(e);
@@ -251,13 +265,13 @@ class ScriptingContext {
     return 1;
   }
 
-  registerFunctions(object) {
+  registerFunctions(object: Record<string, ScriptFunction>) {
     for (const [name, func] of Object.entries(object)) {
       this.registerFunction(name, func);
     }
   }
 
-  registerFunction(name, func) {
+  registerFunction(name: string, func: ScriptFunction) {
     const L = this.state;
     lua_pushcclosure(L, func, 0);
     lua_setglobal(L, name);
@@ -265,3 +279,4 @@ class ScriptingContext {
 }
 
 export default ScriptingContext;
+export { type ScriptFunction };

@@ -1,13 +1,13 @@
-import ShaderRegistry from './ShaderRegistry';
+import { ShaderType } from './Shader';
 
-class Device {
+abstract class Device {
+  static instance: Device;
+
   constructor() {
     Device.instance = this;
-
-    this.shaders = new ShaderRegistry();
   }
 
-  createShader() {
+  createShader(_type: ShaderType, _source: string): WebGLShader {
     throw new Error(`${this.constructor.name} must implement 'createShader'`);
   }
 

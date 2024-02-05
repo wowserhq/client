@@ -1,37 +1,47 @@
 /* eslint-disable no-console, import/prefer-default-export */
 
-const INFO = 0x0;
-const WARNING = 0x1;
-const ERROR = 0x2;
-const FATAL = 0x3;
+enum StatusType {
+  INFO = 0x0,
+  WARNING = 0x1,
+  ERROR = 0x2,
+  FATAL = 0x3,
+}
+
+type StatusArgs = Array<unknown>;
+type StatusEntry = {
+  type: StatusType,
+  args: StatusArgs,
+}
 
 class Status {
+  entries: StatusEntry[];
+
   constructor() {
     this.entries = [];
   }
 
-  add(type, ...args) {
-    this.entries.push([type, ...args]);
+  add(type: StatusType, ...args: StatusArgs) {
+    this.entries.push({ type, args });
   }
 
-  info(...args) {
+  info(...args: StatusArgs) {
     console.info(...args);
-    this.add(INFO, ...args);
+    this.add(StatusType.INFO, ...args);
   }
 
-  warning(...args) {
+  warning(...args: StatusArgs) {
     console.warn(...args);
-    this.add(WARNING, ...args);
+    this.add(StatusType.WARNING, ...args);
   }
 
-  error(...args) {
+  error(...args: StatusArgs) {
     console.error(...args);
-    this.add(ERROR, ...args);
+    this.add(StatusType.ERROR, ...args);
   }
 
-  fatal(...args) {
+  fatal(...args: StatusArgs) {
     console.error(...args);
-    this.add(FATAL, ...args);
+    this.add(StatusType.FATAL, ...args);
   }
 }
 

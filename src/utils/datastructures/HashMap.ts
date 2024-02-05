@@ -1,32 +1,38 @@
-const HashStrategy = {
-  IDENTITY: key => key,
-  LOWERCASE: key => key.toLowerCase(),
-  UPPERCASE: key => key.toUpperCase(),
-};
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-class HashMap extends Map {
+const HashStrategy = {
+  IDENTITY: (key: any) => key,
+  LOWERCASE: (key: string) => key.toLowerCase(),
+  UPPERCASE: (key: string) => key.toUpperCase(),
+} as const;
+
+type HashKeyStrategyFn<K> = (_key: K) => K;
+
+class HashMap<K extends string, V> extends Map<K, V> {
+  strategy: HashKeyStrategyFn<K>;
+
   constructor(strategy = HashStrategy.IDENTITY) {
     super();
 
     this.strategy = strategy;
   }
 
-  delete(origKey) {
+  delete(origKey: K) {
     const key = this.strategy(origKey);
     return super.delete(key);
   }
 
-  get(origKey) {
+  get(origKey: K) {
     const key = this.strategy(origKey);
     return super.get(key);
   }
 
-  has(origKey) {
+  has(origKey: K) {
     const key = this.strategy(origKey);
     return super.has(key);
   }
 
-  set(origKey, value) {
+  set(origKey: K, value: V) {
     const key = this.strategy(origKey);
     return super.set(key, value);
   }

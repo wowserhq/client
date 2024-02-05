@@ -1,4 +1,9 @@
 class Rect {
+  minY: number;
+  minX: number;
+  maxY: number;
+  maxX: number;
+
   constructor({
     minY = 0,
     minX = 0,
@@ -11,7 +16,7 @@ class Rect {
     this.maxX = maxX;
   }
 
-  set(other) {
+  set(other: Rect) {
     this.minY = other.minY;
     this.minX = other.minX;
     this.maxY = other.maxY;

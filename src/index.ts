@@ -2,10 +2,10 @@ import Client from './Client';
 import { ModelFFX } from './ui/components';
 import * as glueScriptFunctions from './ui/scripting/globals/glue';
 
-const params = (new URL(document.location)).searchParams;
+const params = new URLSearchParams(document.location.search);
 const api = params.get('api') || 'webgl2';
 
-const canvas = document.querySelector('canvas');
+const canvas = document.querySelector('canvas')!;
 const client = new Client(canvas, { api });
 
 // TODO: Part of GlueMgr

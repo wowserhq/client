@@ -2,26 +2,33 @@ import Backdrop from '../Backdrop';
 import DrawLayerType from '../../DrawLayerType';
 import FrameStrataType from '../abstract/FrameStrataType';
 import Region from './Region';
+import RenderBatch from '../../rendering/RenderBatch';
 import UIRoot from '../UIRoot';
 import Script from '../../scripting/Script';
 import ScriptRegion from '../abstract/ScriptRegion';
 import UIContext from '../../UIContext';
+import XMLNode from '../../XMLNode';
 import {
   LinkedList,
   LinkedListLink,
   LinkedListNode,
+  Status,
   stringToBoolean,
 } from '../../../utils';
+import { Rect } from '../../../math';
 import {
   stringToDrawLayerType,
   stringToStrataType,
 } from '../../utils';
 
 import FrameFlag from './FrameFlag';
+import TitleRegion from './TitleRegion';
 import * as scriptFunctions from './Frame.script';
 
 class FrameNode extends LinkedListNode {
-  constructor(frame) {
+  frame: Frame;
+
+  constructor(frame: Frame) {
     super();
 
     this.frame = frame;
@@ -36,11 +43,33 @@ class Frame extends ScriptRegion {
     };
   }
 
-  constructor(parent) {
-    super();
+  id: number;
+  flags: number;
+  titleRegion: TitleRegion | null;
+
+  loading: boolean;
+  shown: boolean;
+  visible: boolean;
+  strataType: FrameStrataType;
+  level: number;
+
+  layersEnabled: Record<DrawLayerType, boolean> & Iterable<boolean>;
+  backdrop: Backdrop | null;
+
+  regions: LinkedList<Region>;
+  layers: Record<DrawLayerType, LinkedList<Region>>;
+  children: LinkedList<FrameNode>;
+
+  framesLink: LinkedListLink<this>;
+  destroyedLink: LinkedListLink<this>;
+  strataLink: LinkedListLink<this>;
+
+  constructor(parent: Frame | null) {
+    super(null);
 
     this.id = 0;
     this.flags = 0;
+    this.titleRegion = null;
 
     this.loading = false;
     this.shown = false;
@@ -48,18 +77,24 @@ class Frame extends ScriptRegion {
     this.strataType = FrameStrataType.MEDIUM;
     this.level = 0;
 
-    this.layersEnabled = [];
-    this.layersEnabled[DrawLayerType.BACKGROUND] = true;
-    this.layersEnabled[DrawLayerType.BORDER]     = true;
-    this.layersEnabled[DrawLayerType.ARTWORK]    = true;
-    this.layersEnabled[DrawLayerType.OVERLAY]    = true;
-    this.layersEnabled[DrawLayerType.HIGHLIGHT]  = false;
+    this.layersEnabled = [
+      true,
+      true,
+      true,
+      true,
+      false,
+    ];
+    this.backdrop = null;
 
-    this.regions = LinkedList.of(Region, 'regionLink');
-    this.layers = Object.values(DrawLayerType).map(() => (
-      LinkedList.of(Region, 'layerLink')
-    ));
-    this.children = LinkedList.of(FrameNode);
+    this.regions = LinkedList.using('regionLink');
+    this.layers = [
+      LinkedList.using('layerLink'),
+      LinkedList.using('layerLink'),
+      LinkedList.using('layerLink'),
+      LinkedList.using('layerLink'),
+      LinkedList.using('layerLink'),
+    ];
+    this.children = LinkedList.using('link');
 
     this.framesLink = LinkedListLink.for(this);
     this.destroyedLink = LinkedListLink.for(this);
@@ -95,7 +130,7 @@ class Frame extends ScriptRegion {
     this.show();
   }
 
-  setFrameFlag(flag, on) {
+  setFrameFlag(flag: number, on: boolean) {
     if (on) {
       this.flags |= flag;
     } else {
@@ -103,7 +138,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  setFrameLevel(level, shiftChildren = false) {
+  setFrameLevel(level: number, shiftChildren = false) {
     level = Math.max(level, 0);
 
     if (this.level === level) {
@@ -131,7 +166,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  setFrameStrataType(strataType) {
+  setFrameStrataType(strataType: FrameStrataType) {
     if (this.strataType === strataType) {
       return;
     }
@@ -196,7 +231,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  preLoadXML(node) {
+  preLoadXML(node: XMLNode) {
     super.preLoadXML(node);
 
     const id = node.attributes.get('id');
@@ -218,7 +253,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     const dontSavePosition = node.attributes.get('dontSavePosition');
     const frameLevel = node.attributes.get('frameLevel');
     const frameStrata = node.attributes.get('frameStrata');
@@ -230,7 +265,7 @@ class Frame extends ScriptRegion {
 
     if (inherits) {
       const templates = UIContext.instance.templates.filterByList(inherits);
-      for (const template of templates) {
+      for (const { template } of templates) {
         if (template) {
           if (template.locked) {
             // TODO: Error handling
@@ -306,11 +341,11 @@ class Frame extends ScriptRegion {
       const iname = child.name.toLowerCase();
       switch (iname) {
         // TODO: TitleRegion, ResizeBounds & HitRectInsects
-        case 'backdrop':
+        case 'backdrop': {
           const backdrop = new Backdrop();
           backdrop.loadXML(child);
           this.setBackdrop(backdrop);
-          break;
+        } break;
         case 'layers':
           this.loadXMLLayers(child);
           break;
@@ -324,7 +359,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  loadXMLLayers(node) {
+  loadXMLLayers(node: XMLNode) {
     const ui = UIContext.instance;
 
     for (const layer of node.children) {
@@ -341,14 +376,14 @@ class Frame extends ScriptRegion {
       for (const layerChild of layer.children) {
         const iname = layerChild.name.toLowerCase();
         switch (iname) {
-          case 'texture':
+          case 'texture': {
             const texture = ui.createTexture(layerChild, this);
             texture.setFrame(this, drawLayerType, texture.shown);
-            break;
-          case 'fontstring':
+          } break;
+          case 'fontstring': {
             const fontstring = ui.createFontString(layerChild, this);
             fontstring.setFrame(this, drawLayerType, fontstring.shown);
-            break;
+          } break;
           default:
             // TODO: Error handling
         }
@@ -356,7 +391,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  loadXMLScripts(node) {
+  loadXMLScripts(node: XMLNode) {
     for (const child of node.children) {
       const script = this.scripts.get(child.name);
       if (script) {
@@ -370,7 +405,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  postLoadXML(node, status) {
+  postLoadXML(node: XMLNode, status: Status) {
     this.loading = false;
 
     // TODO: More stuff
@@ -398,16 +433,16 @@ class Frame extends ScriptRegion {
     }
   }
 
-  postLoadXMLFrames(node) {
+  postLoadXMLFrames(node: XMLNode, status: Status) {
     const ui = UIContext.instance;
 
     const inherits = node.attributes.get('inherits');
     if (inherits) {
       const templates = ui.templates.filterByList(inherits);
-      for (const template of templates) {
+      for (const { template } of templates) {
         if (template && !template.locked) {
           template.lock();
-          this.postLoadXMLFrames(template.node);
+          this.postLoadXMLFrames(template.node, status);
           template.release();
         }
       }
@@ -416,12 +451,12 @@ class Frame extends ScriptRegion {
     const frames = node.getChildByName('Frames');
     if (frames) {
       for (const frame of frames.children) {
-        ui.createFrame(frame, this);
+        ui.createFrame(frame, this, status);
       }
     }
   }
 
-  setBackdrop(backdrop) {
+  setBackdrop(backdrop: Backdrop) {
     if (this.backdrop) {
       // TODO: Destructor
     }
@@ -524,7 +559,7 @@ class Frame extends ScriptRegion {
     return true;
   }
 
-  addRegion(region, drawLayerType) {
+  addRegion(region: Region, drawLayerType: DrawLayerType) {
     // TODO: Layout scaling
 
     console.debug(`adding ${region.name} as frame region to ${this.name} on layer ${drawLayerType}`);
@@ -533,12 +568,12 @@ class Frame extends ScriptRegion {
     this.notifyDrawLayerChanged(drawLayerType);
   }
 
-  removeRegion(region, drawLayerType) {
+  removeRegion(region: Region, drawLayerType: DrawLayerType) {
     this.layers[drawLayerType].unlink(region);
     this.notifyDrawLayerChanged(drawLayerType);
   }
 
-  notifyDrawLayerChanged(drawLayerType) {
+  notifyDrawLayerChanged(drawLayerType: DrawLayerType) {
     const root = UIRoot.instance;
 
     // TODO: Constantize frame flag
@@ -551,7 +586,7 @@ class Frame extends ScriptRegion {
     // TODO: Notify scroll parent
   }
 
-  onFrameRender(batch) {
+  onFrameRender(batch: RenderBatch) {
     const { drawLayerType } = batch;
 
     if (!this.layersEnabled[drawLayerType]) {
@@ -563,7 +598,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  onFrameSizeChanged(rect) {
+  onFrameSizeChanged(rect: Rect) {
     super.onFrameSizeChanged(rect);
 
     // TODO: Set hit rect
@@ -583,7 +618,7 @@ class Frame extends ScriptRegion {
     this.runOnHideScript();
   }
 
-  onLayerUpdate(_elapsedSecs) {
+  onLayerUpdate(_elapsedSecs: number) {
     // TODO: Run update script
 
     // TODO: Run PreOnAnimUpdate hooks

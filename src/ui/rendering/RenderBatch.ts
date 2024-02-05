@@ -1,4 +1,8 @@
-import Texture from '../../ui/components/simple/Texture';
+import DrawLayerType from '../DrawLayerType';
+import GfxTexture from '../../gfx/Texture';
+import Shader from '../../gfx/Shader';
+import Texture, { TextureCoords, TexturePosition } from '../../ui/components/simple/Texture';
+import { BlendMode } from '../../gfx/types';
 import {
   DDCtoNDCHeight,
   DDCtoNDCWidth,
@@ -10,7 +14,14 @@ import { Rect } from '../../math';
 import RenderMesh from './RenderMesh';
 
 class RenderBatch {
-  constructor(drawLayerType) {
+  drawLayerType: DrawLayerType;
+
+  meshes: RenderMesh[];
+  count: number;
+
+  renderLink: LinkedListLink<this>;
+
+  constructor(drawLayerType: DrawLayerType) {
     this.drawLayerType = drawLayerType;
 
     this.meshes = [];
@@ -34,15 +45,12 @@ class RenderBatch {
 
   // TODO: Too many arguments, potentially use options (may impact performance)
   queue(
-    texture, blendMode, position, textureCoords,
-    colors, indices, shader,
+    texture: GfxTexture, blendMode: BlendMode, position: TexturePosition, textureCoords: TextureCoords,
+    colors: never[], indices: number[], shader: Shader,
   ) {
-    const mesh = new RenderMesh();
-    mesh.texture = texture;
+    const mesh = new RenderMesh(texture, position, textureCoords);
     mesh.blendMode = blendMode;
     mesh.shader = shader;
-    mesh.position = position;
-    mesh.textureCoords = textureCoords;
     mesh.colors = colors;
     mesh.indices = indices;
     // TODO: Atlas implementation
@@ -51,8 +59,8 @@ class RenderBatch {
     ++this.count;
   }
 
-  queueTexture(texture) {
-    if (!texture.texture.isLoaded) {
+  queueTexture(texture: Texture) {
+    if (!texture.texture?.isLoaded) {
       return;
     }
 
@@ -62,7 +70,7 @@ class RenderBatch {
 
     // TODO: Check whether texture coords need updating
     if (texture.updateTextureCoords) {
-      const { texCoords } = texture;
+      const { textureCoords } = texture;
 
       const rect = new Rect({
         minY: texture.position[1].y,
@@ -77,20 +85,20 @@ class RenderBatch {
         const ndcWidth = DDCtoNDCWidth(ddcWidth);
 
         if (width && ndcWidth > 0) {
-          if (texCoords[0].x !== 0) {
-            texCoords[0].x = ndcWidth / width;
+          if (textureCoords[0].x !== 0) {
+            textureCoords[0].x = ndcWidth / width;
           }
 
-          if (texCoords[1].x !== 0) {
-            texCoords[1].x = ndcWidth / width;
+          if (textureCoords[1].x !== 0) {
+            textureCoords[1].x = ndcWidth / width;
           }
 
-          if (texCoords[2].x !== 0) {
-            texCoords[2].x = ndcWidth / width;
+          if (textureCoords[2].x !== 0) {
+            textureCoords[2].x = ndcWidth / width;
           }
 
-          if (texCoords[3].x !== 0) {
-            texCoords[3].x = ndcWidth / width;
+          if (textureCoords[3].x !== 0) {
+            textureCoords[3].x = ndcWidth / width;
           }
         }
       }
@@ -101,26 +109,26 @@ class RenderBatch {
         const ndcHeight = DDCtoNDCHeight(ddcHeight);
 
         if (height && ndcHeight > 0.0) {
-          if (texCoords[0].y !== 0.0) {
-            texCoords[0].y = ndcHeight / height;
+          if (textureCoords[0].y !== 0.0) {
+            textureCoords[0].y = ndcHeight / height;
           }
 
-          if (texCoords[1].y !== 0.0) {
-            texCoords[1].y = ndcHeight / height;
+          if (textureCoords[1].y !== 0.0) {
+            textureCoords[1].y = ndcHeight / height;
           }
 
-          if (texCoords[2].y !== 0.0) {
-            texCoords[2].y = ndcHeight / height;
+          if (textureCoords[2].y !== 0.0) {
+            textureCoords[2].y = ndcHeight / height;
           }
 
-          if (texCoords[3].y !== 0.0) {
-            texCoords[3].y = ndcHeight / height;
+          if (textureCoords[3].y !== 0.0) {
+            textureCoords[3].y = ndcHeight / height;
           }
         }
       }
 
       texture.updateTextureCoords = false;
-      texture.setTextureCoords(texCoords);
+      texture.setTextureCoords(textureCoords);
     }
 
     this.queue(

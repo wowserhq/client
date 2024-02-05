@@ -1,4 +1,4 @@
-import { lua_pushnumber } from '../../../scripting/lua';
+import { lua_State, lua_pushnumber } from '../../../scripting/lua';
 
 export const SetCharSelectModelFrame = () => {
   return 0;
@@ -12,7 +12,7 @@ export const GetCharacterListUpdate = () => {
   return 0;
 };
 
-export const GetNumCharacters = (L) => {
+export const GetNumCharacters = (L: lua_State) => {
   // TODO: Actually calculate number of characters
   lua_pushnumber(L, 0);
   return 1;

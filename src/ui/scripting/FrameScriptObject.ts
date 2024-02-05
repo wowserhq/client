@@ -1,9 +1,11 @@
-import ScriptingContext from './ScriptingContext';
+import ScriptingContext, { ScriptFunction } from './ScriptingContext';
 import Script from './Script';
 import ScriptRegistry from './ScriptRegistry';
 import {
   LUA_REGISTRYINDEX,
   LUA_TTABLE,
+  lua_Ref,
+  lua_State,
   lua_createtable,
   lua_getglobal,
   lua_pushcclosure,
@@ -21,12 +23,16 @@ import {
   luaL_error,
   luaL_ref,
 } from './lua';
+import { This, ThisConstructor } from '../../utils';
 
-const scriptMetaTables = new Map();
-const objectTypes = new Map();
+const scriptMetaTables = new Map<typeof FrameScriptObject, lua_Ref>();
+const objectTypes = new Map<typeof FrameScriptObject, number>();
 
 class FrameScriptObject {
-  constructor() {
+  luaRef: lua_Ref | null;
+  scripts: ScriptRegistry;
+
+  constructor(_dummy: unknown) {
     this.luaRef = null;
 
     this.scripts = new ScriptRegistry();
@@ -39,7 +45,7 @@ class FrameScriptObject {
     return this.luaRef !== null;
   }
 
-  register(name = null) {
+  register(name: string | null = null) {
     const L = ScriptingContext.instance.state;
 
     if (!this.isLuaRegistered) {
@@ -50,7 +56,7 @@ class FrameScriptObject {
       lua_pushlightuserdata(L, this);
       lua_rawset(L, -3);
 
-      const ref = this.constructor.scriptMetaTable;
+      const ref = (this.constructor as typeof FrameScriptObject).scriptMetaTable;
       lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
       lua_setmetatable(L, -2);
 
@@ -64,7 +70,7 @@ class FrameScriptObject {
       lua_settop(L, -2);
 
       if (!found) {
-        lua_rawgeti(L, LUA_REGISTRYINDEX, this.luaRef);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, this.luaRef!);
         lua_setglobal(L, name);
       }
     }
@@ -74,16 +80,20 @@ class FrameScriptObject {
     // TODO: Unregister
   }
 
-  runScript(name, argsCount = 0) {
+  runScript(name: string, argsCount = 0) {
     // TODO: This needs to be moved to the caller
     const script = this.scripts.get(name);
     if (script && script.luaRef) {
       // TODO: Pass in remaining arguments
-      ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount);
+      ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount, undefined, undefined);
     }
   }
 
-  static getObjectByName(name, type = this) {
+  static getObjectByName<T extends ThisConstructor<typeof FrameScriptObject>>(
+    this: T,
+    name: string,
+    type = this
+  ): This<T> | null {
     const object = ScriptingContext.instance.getObjectByName(name);
     if (object && object instanceof type) {
       return object;
@@ -91,10 +101,13 @@ class FrameScriptObject {
     return null;
   }
 
-  static getObjectFromStack(L) {
+  // Note: Throw (as `luaL_error` throws) otherwise TypeScript infers incorrect return type
+  static getObjectFromStack<T extends ThisConstructor<typeof FrameScriptObject>>(
+    this: T,
+    L: lua_State
+  ): This<T> {
     if (lua_type(L, 1) !== LUA_TTABLE) {
-      luaL_error(L, "Attempt to find 'this' in non-table object (used '.' instead of ':' ?)");
-      return null;
+      throw luaL_error(L, "Attempt to find 'this' in non-table object (used '.' instead of ':' ?)");
     }
 
     lua_rawgeti(L, 1, 0);
@@ -102,20 +115,18 @@ class FrameScriptObject {
     lua_settop(L, -2);
 
     if (!object) {
-      luaL_error(L, "Attempt to find 'this' in non-framescript object");
-      return null;
+      throw luaL_error(L, "Attempt to find 'this' in non-framescript object");
     }
 
     // TODO: Will this work in all scenarios?
     if (!(object instanceof this)) {
-      luaL_error(L, 'Wrong object type for member function');
-      return null;
+      throw luaL_error(L, 'Wrong object type for member function');
     }
 
     return object;
   }
 
-  static get scriptFunctions() {
+  static get scriptFunctions(): Record<string, ScriptFunction> {
     return {};
   }
 
@@ -146,7 +157,7 @@ class FrameScriptObject {
     let type = objectTypes.get(this);
     if (!type) {
       type = objectTypes.size;
-      objectTypes.set(type, this);
+      objectTypes.set(this, type);
     }
     return type;
   }

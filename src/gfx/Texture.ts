@@ -1,5 +1,9 @@
 class Texture {
-  constructor(path) {
+  path: string;
+  isLoaded: boolean;
+  image: HTMLImageElement;
+
+  constructor(path: string) {
     this.path = path;
     this.isLoaded = false;
 

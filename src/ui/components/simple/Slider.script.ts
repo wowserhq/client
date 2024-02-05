@@ -1,4 +1,4 @@
-import { lua_pushnumber } from '../../scripting/lua';
+import { lua_State, lua_pushnumber } from '../../scripting/lua';
 
 import Slider from './Slider';
 
@@ -26,7 +26,7 @@ export const SetMinMaxValues = () => {
   return 0;
 };
 
-export const GetValue = (L) => {
+export const GetValue = (L: lua_State) => {
   const slider = Slider.getObjectFromStack(L);
   const { value } = slider;
   lua_pushnumber(L, value);

@@ -11,8 +11,8 @@ class EditBox extends Frame {
     };
   }
 
-  constructor(...args) {
-    super(...args);
+  constructor(parent: Frame | null) {
+    super(parent);
 
     this.scripts.register(
       new Script('OnEnterPressed'),

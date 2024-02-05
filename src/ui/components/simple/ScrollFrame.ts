@@ -1,6 +1,8 @@
-import Frame from './Frame';
 import Script from '../../scripting/Script';
 import UIContext from '../../UIContext';
+import XMLNode from '../../XMLNode';
+
+import Frame from './Frame';
 
 import * as scriptFunctions from './ScrollFrame.script';
 
@@ -12,8 +14,10 @@ class ScrollFrame extends Frame {
     };
   }
 
-  constructor(...args) {
-    super(...args);
+  scrollChild: Frame | null;
+
+  constructor(parent: Frame | null) {
+    super(parent);
 
     this.scrollChild = null;
 
@@ -24,7 +28,7 @@ class ScrollFrame extends Frame {
     );
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     super.loadXML(node);
 
     const scrollChild = node.getChildByName('ScrollChild');

@@ -1,7 +1,14 @@
-import { HashMap, HashStrategy } from '../utils';
+import { HashMap, HashStrategy, Status } from '../utils';
+
+import XMLNode from './XMLNode';
 
 class TemplateNode {
-  constructor(name, node) {
+  name: string;
+  node: XMLNode;
+  tainted: boolean;
+  locked: boolean;
+
+  constructor(name: string, node: XMLNode) {
     this.name = name;
     this.node = node;
     this.tainted = false;
@@ -17,18 +24,19 @@ class TemplateNode {
   }
 }
 
-class TemplateRegistry extends HashMap {
+class TemplateRegistry extends HashMap<string, TemplateNode> {
   constructor() {
     super(HashStrategy.UPPERCASE);
   }
 
-  filterByList(list) {
-    return list.split(',').map(name => (
-      this.get(name.trim())
-    ));
+  filterByList(list: string) {
+    return list.split(',').map((name: string) => ({
+      name,
+      template: this.get(name.trim())
+    }));
   }
 
-  register(node, name, tainted, status) {
+  register(node: XMLNode, name: string, tainted: boolean, status: Status) {
     let entry = this.get(name);
     if (entry) {
       if (!entry.tainted || tainted) {

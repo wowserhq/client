@@ -1,4 +1,6 @@
-import fengari from 'fengari';
+import fengari, { lua_State } from 'fengari';
+
+type lua_Ref = number;
 
 const {
   lauxlib,
@@ -72,11 +74,6 @@ const {
 
 const {
   luaL_openlibs,
-  luaopen_base,
-  luaopen_bit,
-  luaopen_math,
-  luaopen_string,
-  luaopen_table,
 } = lualib;
 
 export {
@@ -91,6 +88,8 @@ export {
   LUA_TTABLE,
   LUA_TUSERDATA,
   lua_Debug,
+  type lua_Ref,
+  type lua_State,
   lua_atnativeerror,
   lua_call,
   lua_checkstack,
@@ -137,11 +136,6 @@ export {
   luaL_openlibs,
   luaL_ref,
   luaL_unref,
-  luaopen_base,
-  luaopen_bit,
-  luaopen_math,
-  luaopen_string,
-  luaopen_table,
   to_jsstring,
   to_luastring,
 };

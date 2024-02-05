@@ -13,8 +13,16 @@ import Texture from './components/simple/Texture';
 import XMLNode from './XMLNode';
 
 class UIContext {
+  static instance: UIContext;
+
+  scripting: ScriptingContext;
+  factories: FactoryRegistry;
+  renderer: Renderer;
+  templates: TemplateRegistry;
+  root: UIRoot;
+
   constructor() {
-    this.constructor.instance = this;
+    UIContext.instance = this;
 
     this.scripting = new ScriptingContext();
     this.factories = new FactoryRegistry();
@@ -24,7 +32,7 @@ class UIContext {
     this.root = new UIRoot();
   }
 
-  getParentNameFor(node) {
+  getParentNameFor(node: XMLNode) {
     let parentName = node.attributes.get('parent');
     if (parentName) {
       return parentName;
@@ -33,7 +41,7 @@ class UIContext {
     const inherits = node.attributes.get('inherits');
     if (inherits) {
       const templates = this.templates.filterByList(inherits);
-      for (const template of templates) {
+      for (const { template } of templates) {
         // TODO: Does this bit require lock/release of templates?
         if (template && !template.locked) {
           parentName = node.attributes.get('parent');
@@ -44,7 +52,7 @@ class UIContext {
     return parentName;
   }
 
-  createFrame(node, parent, status = new Status()) {
+  createFrame(node: XMLNode, parent: Frame | null, status = new Status()) {
     const name = node.attributes.get('name');
     if (name) {
       status.info(`creating ${node.name} named ${name}`);
@@ -75,12 +83,12 @@ class UIContext {
     // TODO: Handle unique factories
     frame.preLoadXML(node);
     frame.loadXML(node);
-    frame.postLoadXML(node);
+    frame.postLoadXML(node, status);
 
     return frame;
   }
 
-  createFontString(node, frame) {
+  createFontString(node: XMLNode, frame: Frame) {
     const fontString = new FontString(frame, DrawLayerType.ARTWORK, true);
     fontString.preLoadXML(node);
     fontString.loadXML(node);
@@ -88,7 +96,7 @@ class UIContext {
     return fontString;
   }
 
-  createTexture(node, frame) {
+  createTexture(node: XMLNode, frame: Frame) {
     const texture = new Texture(frame, DrawLayerType.ARTWORK, true);
     texture.preLoadXML(node);
     texture.loadXML(node);
@@ -96,7 +104,7 @@ class UIContext {
     return texture;
   }
 
-  async load(tocPath, status = new Status()) {
+  async load(tocPath: string, status = new Status()) {
     status.info('loading toc', tocPath);
 
     const dirPath = path.dirname(tocPath);
@@ -119,7 +127,7 @@ class UIContext {
     }
   }
 
-  async loadFile(filePath, status = new Status()) {
+  async loadFile(filePath: string, status = new Status()) {
     status.info('loading file', filePath);
 
     const source = await Client.instance.fetch(filePath);
@@ -173,7 +181,7 @@ class UIContext {
           const virtual = attributes.get('virtual');
           if (stringToBoolean(virtual)) {
             if (name) {
-              this.templates.register(child, name, null, status);
+              this.templates.register(child, name, false, status);
             } else {
               status.warning('unnamed virtual node at top level');
             }

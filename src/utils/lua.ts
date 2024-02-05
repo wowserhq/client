@@ -10,6 +10,7 @@ import {
   LUA_TSTRING,
   LUA_TTABLE,
   LUA_TUSERDATA,
+  lua_State,
   lua_gettop,
   lua_toboolean,
   lua_tocfunction,
@@ -21,7 +22,7 @@ import {
 
 import { stringToBoolean } from '.';
 
-export const luaStackToArray = (L) => {
+export const luaStackToArray = (L: lua_State) => {
   const top = lua_gettop(L);
 
   const results = [];
@@ -46,6 +47,7 @@ export const luaStackToArray = (L) => {
         break;
       case LUA_TNONE:
         value = undefined;
+        break;
       case LUA_TNUMBER:
         value = lua_tonumber(L, idx);
         break;
@@ -66,7 +68,7 @@ export const luaStackToArray = (L) => {
   return results;
 };
 
-export const luaValueToBoolean = (L, index, standard) => {
+export const luaValueToBoolean = (L: lua_State, index: number, standard: boolean) => {
   let result;
   switch (lua_type(L, index)) {
     case LUA_TNIL:
@@ -78,10 +80,10 @@ export const luaValueToBoolean = (L, index, standard) => {
     case LUA_TNUMBER:
       result = lua_tonumber(L, index) !== 0;
       break;
-    case LUA_TSTRING:
+    case LUA_TSTRING: {
       const str = lua_tojsstring(L, index);
       result = stringToBoolean(str, standard);
-      break;
+    } break;
     default:
       result = standard;
       break;

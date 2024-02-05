@@ -1,10 +1,15 @@
 import Client from '../../../Client';
 import Device from '../../../gfx/Device';
+import DrawLayerType from '../../DrawLayerType';
+import GfxTexture from '../../../gfx/Texture';
 import Region from './Region';
-import TextureFlags from '../../../gfx/TextureFlags';
+import RenderBatch from '../../rendering/RenderBatch';
+import Shader from '../../../gfx/Shader';
 import UIContext from '../../UIContext';
+import WebGL2Device from '../../../gfx/apis/webgl2/WebGL2Device';
+import XMLNode from '../../XMLNode';
 import { BlendMode } from '../../../gfx/types';
-import { Vector2, Vector3 } from '../../../math';
+import { Rect, Vector2, Vector3 } from '../../../math';
 import { stringToBlendMode } from '../../utils';
 import {
   NDCtoDDCHeight,
@@ -14,10 +19,19 @@ import {
   stringToFloat,
 } from '../../../utils';
 
-import ImageMode from './TextureImageMode';
+import Frame from './Frame';
+import TextureImageMode from './TextureImageMode';
 import * as scriptFunctions from './Texture.script';
 
+type TexturePosition = readonly [Vector3, Vector3, Vector3, Vector3];
+type TextureCoords = readonly [Vector2, Vector2, Vector2, Vector2];
+
 class Texture extends Region {
+  static indices = [
+    0, 1, 2,
+    2, 1, 3,
+  ];
+
   static get scriptFunctions() {
     return {
       ...super.scriptFunctions,
@@ -25,7 +39,16 @@ class Texture extends Region {
     };
   }
 
-  constructor(frame, drawLayerType, show) {
+  blendMode: BlendMode;
+  position: TexturePosition;
+  shader: Shader;
+  texture: GfxTexture | null;
+  textureCoords: TextureCoords;
+  tileHorizontally: boolean;
+  tileVertically: boolean;
+  updateTextureCoords: boolean;
+
+  constructor(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
     super(frame, drawLayerType, show);
 
     this.blendMode = BlendMode.Alpha;
@@ -35,7 +58,7 @@ class Texture extends Region {
       new Vector3(),
       new Vector3(),
     ];
-    this.shader = Device.instance.shaders.pixelShaderFor(ImageMode.UI);
+    this.shader = (Device.instance as WebGL2Device).shaders.pixelShaderFor(TextureImageMode.UI);
     this.texture = null;
     this.textureCoords = [
       new Vector2([0, 0]),
@@ -88,7 +111,7 @@ class Texture extends Region {
     super.height = height;
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     const alphaMode = node.attributes.get('alphaMode');
     const file = node.attributes.get('file');
     const hidden = node.attributes.get('hidden');
@@ -137,7 +160,7 @@ class Texture extends Region {
     for (const child of node.children) {
       const iname = child.name.toLowerCase();
       switch (iname) {
-        case 'texcoords':
+        case 'texcoords': {
           let valid = true;
 
           const rect = {
@@ -155,7 +178,7 @@ class Texture extends Region {
             continue;
           }
 
-          for (const side of Object.keys(rect)) {
+          for (const side of Object.keys(rect) as (keyof typeof rect)[]) {
             const attr = child.attributes.get(side);
             if (attr) {
               if (
@@ -181,7 +204,7 @@ class Texture extends Region {
               new Vector2([rect.left, rect.bottom]),
               new Vector2([rect.right, rect.top]),
               new Vector2([rect.right, rect.bottom]),
-            ];
+            ] as const;
 
             this.setTextureCoords(coords);
 
@@ -195,7 +218,7 @@ class Texture extends Region {
               || rect.bottom < 0 || rect.bottom > 1
             );
           }
-          break;
+        }  break;
         case 'color':
           // TODO: Color
           break;
@@ -207,7 +230,7 @@ class Texture extends Region {
 
     if (file) {
       // TODO: Handle all arguments correctly
-      const success = this.setTexture(file, wrapU, wrapV, null, ImageMode.UI);
+      const success = this.setTexture(file, wrapU, wrapV, null, TextureImageMode.UI);
       if (success) {
         // TODO: Set colors
       } else {
@@ -225,11 +248,11 @@ class Texture extends Region {
     // TODO: Non-blocking
   }
 
-  postLoadXML(_node) {
+  postLoadXML(_node: XMLNode) {
     // TODO
   }
 
-  onFrameSizeChanged(rect) {
+  onFrameSizeChanged(rect: Rect) {
     super.onFrameSizeChanged(rect);
 
     this.setPosition(this.rect);
@@ -242,7 +265,7 @@ class Texture extends Region {
     // TODO: Notify scroll parent
   }
 
-  setBlendMode(blendMode) {
+  setBlendMode(blendMode: BlendMode) {
     if (this.blendMode === blendMode) {
       return;
     }
@@ -251,7 +274,7 @@ class Texture extends Region {
     this.onRegionChanged();
   }
 
-  setPosition(rect) {
+  setPosition(rect: Rect) {
     this.position[0].setElements(rect.minX, rect.maxY, this.layoutDepth);
     this.position[1].setElements(rect.minX, rect.minY, this.layoutDepth);
     this.position[2].setElements(rect.maxX, rect.maxY, this.layoutDepth);
@@ -261,17 +284,18 @@ class Texture extends Region {
   }
 
   // TODO: Create flags
-  setTexture(filename, wrapU, wrapV, filter, imageMode) {
+  setTexture(filename: string, _wrapU: boolean, _wrapV: boolean, _filter: unknown, imageMode: TextureImageMode) {
     let texture = null;
 
     if (filename) {
       // TODO: Remaining texture flags
-      const flags = new TextureFlags({ wrapU, wrapV });
-      texture = Client.instance.textures.lookup(filename, flags);
+      // TODO: No longer accurate, needs a refactor
+      // TODO: const _flags = new TextureFlags(TextureFilter.Linear, wrapU, wrapV);
+      texture = Client.instance.textures.lookup(filename);
 
       // TODO: Verify texture
 
-      this.shader = Device.instance.shaders.pixelShaderFor(imageMode);
+      this.shader = (Device.instance as WebGL2Device).shaders.pixelShaderFor(imageMode);
     }
 
     // TODO: Texture cleanup
@@ -281,24 +305,19 @@ class Texture extends Region {
     return true;
   }
 
-  setTextureCoords(coords) {
+  setTextureCoords(coords: TextureCoords) {
     this.textureCoords[0].set(coords[0]);
     this.textureCoords[1].set(coords[1]);
     this.textureCoords[2].set(coords[2]);
     this.textureCoords[3].set(coords[3]);
   }
 
-  draw(batch) {
+  draw(batch: RenderBatch) {
     if (this.texture) {
       batch.queueTexture(this);
     }
   }
 }
 
-Texture.indices = [
-  0, 1, 2,
-  2, 1, 3,
-];
-
 export default Texture;
-export { ImageMode as TextureImageMode };
+export { type TextureCoords, type TexturePosition };

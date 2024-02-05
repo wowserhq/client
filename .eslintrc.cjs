@@ -11,12 +11,14 @@ module.exports = {
   root: true,
   env: { browser: true, node: true },
   rules: {
-    'camelcase': 'off',
-    'no-console': 'off',
-    'no-unused-vars': ['error', {
+    '@typescript-eslint/no-this-alias': 'off',
+    '@typescript-eslint/no-unused-vars': ['error', {
       'argsIgnorePattern': '^_',
       'varsIgnorePattern': '^_'
     }],
+    'camelcase': 'off',
+    'no-cond-assign': 'off',
+    'no-console': 'off',
     'quotes': ['error', 'single', {
       'avoidEscape': true
     }],

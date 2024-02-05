@@ -2,6 +2,7 @@ import ScriptingContext from '../ScriptingContext';
 import {
   LUA_REGISTRYINDEX,
   LUA_TFUNCTION,
+  lua_State,
   lua_type,
   luaL_error,
   luaL_ref,
@@ -96,17 +97,17 @@ export const debugprofilestop = () => {
   return 0;
 };
 
-export const seterrorhandler = (L) => {
+export const seterrorhandler = (L: lua_State) => {
   if (lua_type(L, 1) !== LUA_TFUNCTION) {
     luaL_error(L, 'Usage: seterrorhandler(errfunc)');
     return 0;
   }
 
   const scripting = ScriptingContext.instance;
-  if (scripting.errorHandlerRef) {
-    luaL_unref(L, LUA_REGISTRYINDEX, scripting.errorHandlerRef);
+  if (scripting.errorHandlerFunc) {
+    luaL_unref(L, LUA_REGISTRYINDEX, scripting.errorHandlerFunc);
   }
-  scripting.errorHandlerRef = luaL_ref(L, LUA_REGISTRYINDEX);
+  scripting.errorHandlerFunc = luaL_ref(L, LUA_REGISTRYINDEX);
   return 0;
 };
 

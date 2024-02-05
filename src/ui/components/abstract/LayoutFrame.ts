@@ -1,4 +1,5 @@
 import ScriptRegion from './ScriptRegion';
+import XMLNode from '../../XMLNode';
 import {
   EPSILON1,
   EPSILON2,
@@ -22,7 +23,10 @@ import FramePointType, {
 } from './FramePointType';
 
 class FrameNode extends LinkedListNode {
-  constructor(frame, changed = 0) {
+  frame: LayoutFrame;
+  changed: number;
+
+  constructor(frame: LayoutFrame, changed: number = 0) {
     super();
 
     this.frame = frame;
@@ -31,6 +35,32 @@ class FrameNode extends LinkedListNode {
 }
 
 class LayoutFrame {
+  static resizePendingList: LinkedList<LayoutFrame> = LinkedList.using('resizePendingLink');
+
+  layoutFlags: number;
+
+  rect: Rect;
+  _width: number;
+  _height: number;
+
+  layoutScale: number;
+  layoutDepth: number;
+
+  guard: {
+    left: boolean,
+    top: boolean,
+    right: boolean,
+    bottom: boolean,
+    centerX: boolean,
+    centerY: boolean,
+  };
+
+  resizeList: LinkedList<FrameNode>;
+  resizeCounter: number;
+  _resizePendingLink?: LinkedListLink<LayoutFrame>;
+
+  points: Record<FramePointType, FramePoint | null> & Iterable<FramePoint | null>;
+
   constructor() {
     this.layoutFlags = 0;
 
@@ -50,15 +80,18 @@ class LayoutFrame {
       centerY: false,
     };
 
-    this.resizeList = LinkedList.of(FrameNode);
+    this.resizeList = LinkedList.using('link');
     this.resizeCounter = NaN;
 
-    this.points = [];
+    this.points = [
+      null, null, null,
+      null, null, null,
+      null, null, null,
+    ];
   }
 
-  // Note: Required as LayoutFrame is used as an auxiliary baseclass using
-  // the multipleClasses utility; creating this link in the constructor would
-  // incorrectly hold a reference to a throw-away LayoutFrame instance
+  // Note: LayoutFrame is used as an auxiliary baseclass using the `multipleClasses` utility, so creating this
+  // link in the constructor would hold an invalid reference to a throw-away LayoutFrame instance
   get resizePendingLink() {
     if (!this._resizePendingLink) {
       this._resizePendingLink = LinkedListLink.for(this);
@@ -203,11 +236,11 @@ class LayoutFrame {
     return this.layoutFlags & 0x4;
   }
 
-  get layoutParent() {
+  get layoutParent(): LayoutFrame | null {
     return null;
   }
 
-  set deferredResize(enable) {
+  set deferredResize(enable: boolean) {
     if (enable) {
       this.layoutFlags |= 0x2;
 
@@ -234,7 +267,7 @@ class LayoutFrame {
     // TODO: Implementation
   }
 
-  calculateRect(rect) {
+  calculateRect(rect: Rect) {
     rect.minX = this.left;
     if (rect.minX === FramePoint.UNDEFINED) {
       return false;
@@ -291,7 +324,7 @@ class LayoutFrame {
     return true;
   }
 
-  canBeAnchorFor(_other) {
+  canBeAnchorFor(_other: LayoutFrame) {
     // TODO: Implementation
     return true;
   }
@@ -303,7 +336,11 @@ class LayoutFrame {
     }
   }
 
-  getFirstPoint(pointTypes, prop = 'x') {
+  fullyQualifyName(_name: string): string | null {
+    return null;
+  }
+
+  getFirstPoint(pointTypes: FramePointType[], prop: 'x' | 'y') {
     let value;
     for (const pointType of pointTypes) {
       const point = this.points[pointType];
@@ -330,7 +367,7 @@ class LayoutFrame {
     return rect;
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     const size = node.getChildByName('Size');
     if (size) {
       const { x, y } = extractDimensionsFrom(size);
@@ -360,12 +397,12 @@ class LayoutFrame {
         const relativeValue = child.attributes.get('relativeTo');
 
         const pointType = stringToPointType(pointValue);
+        let relativePointType = pointType;
         if (!pointType) {
           // TODO: Error handling
           continue;
         }
 
-        let relativePointType = pointType;
         if (relativePointValue) {
           relativePointType = stringToPointType(relativePointValue);
           if (!relativePointType) {
@@ -376,7 +413,7 @@ class LayoutFrame {
 
         let relative = layoutParent;
         if (relativeValue) {
-          const fqname = this.fullyQualifyName(relativeValue);
+          const fqname = this.fullyQualifyName(relativeValue)!;
           relative = ScriptRegion.getObjectByName(fqname);
           if (!relative) {
             // TODO: Error handling
@@ -396,7 +433,7 @@ class LayoutFrame {
           y: offsetY,
         } = extractDimensionsFrom(offsetNode || child);
 
-        this.setPoint(pointType, relative, relativePointType, offsetX, offsetY, false);
+        this.setPoint(pointType, relative, relativePointType!, offsetX, offsetY, false);
       }
 
       this.resize(false);
@@ -440,13 +477,13 @@ class LayoutFrame {
     return this.layoutFlags & 0x1;
   }
 
-  onFrameSizeChanged(_prevRect) {
+  onFrameSizeChanged(_prevRect: Rect) {
     for (const node of this.resizeList) {
       node.frame.resize(false);
     }
   }
 
-  registerResize(frame, changed) {
+  registerResize(frame: LayoutFrame, changed: number) {
     for (const node of this.resizeList) {
       if (node.frame === frame) {
         node.changed |= changed;
@@ -485,8 +522,8 @@ class LayoutFrame {
     }
   }
 
-  setAllPoints(relative, resize = false) {
-    if (!relative.canBeAnchorFor(this)) {
+  setAllPoints(relative: LayoutFrame | null, resize = false) {
+    if (!relative || !relative.canBeAnchorFor(this)) {
       return;
     }
 
@@ -518,8 +555,8 @@ class LayoutFrame {
     }
   }
 
-  setPoint(pointType, relative, relativePointType, offsetX = 0, offsetY = 0, resize = false) {
-    if (!relative.canBeAnchorFor(this)) {
+  setPoint(pointType: FramePointType, relative: LayoutFrame | null, relativePointType: FramePointType, offsetX = 0, offsetY = 0, resize = false) {
+    if (!relative || !relative.canBeAnchorFor(this)) {
       return;
     }
 
@@ -551,7 +588,7 @@ class LayoutFrame {
       this.points[pointType] = framePoint;
     }
 
-    this.layoutflags &= ~0x8;
+    this.layoutFlags &= ~0x8;
     relative.registerResize(this, 1 << pointType);
 
     if (resize) {
@@ -559,7 +596,7 @@ class LayoutFrame {
     }
   }
 
-  unregisterResize() {
+  unregisterResize(_frame: LayoutFrame, _dep: number) {
     // TODO: Implementation
   }
 
@@ -569,13 +606,11 @@ class LayoutFrame {
     for (const frame of resizePendingList) {
       // TODO: Is object loaded check
       if (frame.onFrameResize() || --frame.resizeCounter === 0) {
-        frame.layoutflags &= ~0x4;
+        frame.layoutFlags &= ~0x4;
         resizePendingList.unlink(frame);
       }
     }
   }
 }
-
-LayoutFrame.resizePendingList = LinkedList.of(LayoutFrame, 'resizePendingLink');
 
 export default LayoutFrame;

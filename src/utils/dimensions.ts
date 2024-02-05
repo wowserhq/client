@@ -1,11 +1,13 @@
 /* eslint-disable import/prefer-default-export */
 
+import XMLNode from '../ui/XMLNode';
+
 import {
   NDCtoDDCWidth,
   maxAspectCompensation,
 } from './coordinates';
 
-export const extractDimensionsFrom = (node) => {
+export const extractDimensionsFrom = (node: XMLNode) => {
   let x = undefined;
   let y = undefined;
 
@@ -35,6 +37,7 @@ export const extractDimensionsFrom = (node) => {
         if (yValue) {
           y = parseFloat(yValue);
         }
+        break;
       case 'absdimension':
         xValue = child.attributes.get('x');
         if (xValue != null) {
@@ -47,6 +50,7 @@ export const extractDimensionsFrom = (node) => {
           const ndcy = parseFloat(yValue) / maxAspectCompensation;
           y = NDCtoDDCWidth(ndcy);
         }
+        break;
       default:
         // TODO: Error handling
     }
@@ -55,7 +59,7 @@ export const extractDimensionsFrom = (node) => {
   return { x, y };
 };
 
-export const extractInsetsFrom = (node) => {
+export const extractInsetsFrom = (node: XMLNode) => {
   let left = undefined;
   let right = undefined;
   let top = undefined;
@@ -148,7 +152,7 @@ export const extractInsetsFrom = (node) => {
   return { left, right, top, bottom };
 };
 
-export const extractValueFrom = (node) => {
+export const extractValueFrom = (node: XMLNode) => {
   let value = undefined;
 
   let val = node.attributes.get('val');
