@@ -1,7 +1,16 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // Ensure non-existent files produce 404s
+  appType: 'mpa',
   assetsInclude: ['**/*.lua'],
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/wowser-client-[hash].js',
+      },
+    },
+  },
   define: {
     // Configure Fengari to not suffix Lua integers with `.0` when string formatted
     // See: https://github.com/fengari-lua/fengari/issues/113
@@ -20,4 +29,6 @@ export default defineConfig({
       },
     },
   ],
-});
+  // Do not include local game files into a production build
+  publicDir: command === 'build' ? false : 'public'
+}));
