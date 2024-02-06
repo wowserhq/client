@@ -1,4 +1,6 @@
-export default async (path, bodyType = 'text') => {
+type ResponseBodyType = 'arrayBuffer' | 'blob' | 'formData' | 'json' | 'text'
+
+export default async (path: string, bodyType: ResponseBodyType = 'text' ) => {
   // TODO: Does this path need to be normalized?
   const response = await fetch(path);
   if (response.status === 200) {

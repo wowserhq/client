@@ -5,7 +5,12 @@ import FrameStrataType from './FrameStrataType';
 import FrameStrataLevel from './FrameStrataLevel';
 
 class FrameStrata {
-  constructor(type) {
+  type: FrameStrataType;
+  levels: FrameStrataLevel[];
+  levelsDirty: number;
+  batchDirty: number;
+
+  constructor(type: FrameStrataType) {
     this.type = type;
     this.levels = [];
 
@@ -14,16 +19,14 @@ class FrameStrata {
   }
 
   get name() {
-    const lookup = Object.keys(FrameStrataType);
-    const name = lookup[this.type];
-    return name;
+    return FrameStrataType[this.type];
   }
 
   get topLevel() {
     return this.levels.length;
   }
 
-  addFrame(frame) {
+  addFrame(frame: Frame) {
     const { topLevel } = this;
     if (frame.level >= topLevel) {
       for (let index = topLevel; index < frame.level + 1; ++index) {
@@ -47,14 +50,14 @@ class FrameStrata {
     }
 
     this.levelsDirty = 1;
-    this.batchDirty |= (level.batchDirty !== 0);
+    this.batchDirty |= +(level.batchDirty !== 0);
   }
 
-  removeFrame(frame) {
+  removeFrame(frame: Frame) {
     if (frame.level < this.topLevel) {
       const level = this.levels[frame.level];
       const batchDirty = level.removeFrame(frame);
-      this.batchDirty |= batchDirty;
+      this.batchDirty |= +batchDirty;
       this.levelsDirty = 1;
     }
   }
@@ -84,7 +87,7 @@ class FrameStrata {
     return this.batchDirty;
   }
 
-  onLayerUpdate(elapsedSecs) {
+  onLayerUpdate(elapsedSecs: number) {
     for (const level of this.levels) {
       level.onLayerUpdate(elapsedSecs);
     }
@@ -110,10 +113,10 @@ class FrameStrata {
         renderer.draw(batch);
       }
 
-      console.groupEnd(`level ${level.index}`);
+      console.groupEnd();
     }
 
-    console.groupEnd(`strata ${this.type} (${this.name})`);
+    console.groupEnd();
   }
 }
 

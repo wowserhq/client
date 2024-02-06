@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-export const stringToBoolean = (string, standard = false) => {
+export const stringToBoolean = (string?: string, standard = false) => {
   if (!string) {
     return standard;
   }
@@ -39,4 +39,4 @@ export const stringToBoolean = (string, standard = false) => {
 };
 
 // TODO: This may not cover all edge cases
-export const stringToFloat = (string) => parseFloat(string);
+export const stringToFloat = (string: string) => parseFloat(string);

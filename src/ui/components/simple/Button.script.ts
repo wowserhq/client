@@ -4,6 +4,7 @@ import {
 } from '../../../utils';
 import {
   LUA_REGISTRYINDEX,
+  lua_State,
   lua_pushnil,
   lua_pushnumber,
   lua_rawgeti,
@@ -103,7 +104,7 @@ export const SetHighlightTexture = () => {
   return 0;
 };
 
-export const GetHighlightTexture = (L) => {
+export const GetHighlightTexture = (L: lua_State) => {
   const button = Button.getObjectFromStack(L);
   const texture = button.highlightTexture;
 
@@ -112,7 +113,7 @@ export const GetHighlightTexture = (L) => {
       texture.register();
     }
 
-    lua_rawgeti(L, LUA_REGISTRYINDEX, texture.luaRef);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, texture.luaRef!);
   } else {
     lua_pushnil(L);
   }
@@ -128,7 +129,7 @@ export const GetPushedTextOffset = () => {
   return 0;
 };
 
-export const GetTextWidth = (L) => {
+export const GetTextWidth = (L: lua_State) => {
   const button = Button.getObjectFromStack(L);
   const { fontString } = button;
 

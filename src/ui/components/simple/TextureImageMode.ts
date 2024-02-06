@@ -1,4 +1,6 @@
-export default {
-  UI: 'UI',
-  DESATURATE: 'Desaturate',
-};
+enum TextureImageMode {
+  UI = 'UI',
+  DESATURATE = 'Desaturate',
+}
+
+export default TextureImageMode;

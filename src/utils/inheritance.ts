@@ -1,36 +1,51 @@
-/* eslint-disable import/prefer-default-export */
+/* eslint-disable @typescript-eslint/no-explicit-any, import/prefer-default-export */
 
-// Poor man's multi inheritance mechanism
-// Note: Will most likely not work with complex hierarchies
-// Inspiration: https://itnext.io/multiple-inheritance-in-js-part-2-24adca2c2518
-const multipleClasses = (base, ...ctors) => {
+type Constructor<T = object> = new (...args: any[]) => T;
+
+// Poor man's multi inheritance mechanism (may break with complex hierarchies)
+const multipleClasses = <
+  B extends Constructor,
+  O extends Constructor
+>(base: B, other: O) => {
+  type CombinedClassType = Constructor<InstanceType<B> & InstanceType<O>> & {
+    // Statics for base
+    [K in keyof B]: B[K]
+  } & {
+    // Statics for other
+    [K in keyof O]: O[K]
+  }
+
   const cls = class extends base {
-    constructor(baseArgs = [], ...ctorsArgs) {
+    constructor(..._args: any[]) {
       // Create an instance of the base class
-      const instance = super(...baseArgs);
+      super();
 
-      // Construct temporary instances of all other classes and assign their
-      // own properties to the instance
-      for (const [index, ctor] of ctors.entries()) {
-        Object.assign(instance, new ctor(...(ctorsArgs[index] || [])));
-      }
-
-      return instance;
+      // Construct temporary throw-away instance of other class and assign own properties
+      // Warning: using `this` as a reference in other class' constructor will not work correctly
+      Object.assign(this, new other());
     }
-  };
+  } as unknown as CombinedClassType;
 
   const { prototype } = cls;
 
-  // Enhance the new class' prototype with all the methods, getters and setters
-  // from all other classes
-  for (const ctor of ctors) {
-    const pds = Object.getOwnPropertyDescriptors(ctor.prototype);
-    for (const [name, pd] of Object.entries(pds)) {
-      if (name === 'constructor') {
-        continue;
-      }
-      Object.defineProperty(prototype, name, pd);
+  // Handle instance methods, getters and setters from the other class
+  let pds = Object.getOwnPropertyDescriptors(other.prototype);
+  for (const [name, pd] of Object.entries(pds)) {
+    // Skip over existing prototype entries
+    if (name in prototype) {
+      continue;
     }
+    Object.defineProperty(prototype, name, pd);
+  }
+
+  // Handle statics from the other class
+  pds = Object.getOwnPropertyDescriptors(other);
+  for (const [name, pd] of Object.entries(pds)) {
+    // Skip over existing static properties / methods
+    if (name in cls) {
+      continue;
+    }
+    Object.defineProperty(cls, name, pd);
   }
 
   return cls;

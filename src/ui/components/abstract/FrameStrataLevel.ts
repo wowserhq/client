@@ -4,30 +4,41 @@ import RenderBatch from '../../rendering/RenderBatch';
 import { LinkedList } from '../../../utils';
 
 class FrameStrataLevel {
-  constructor(index) {
+  index: number;
+  pendingFrames: LinkedList<Frame>;
+  frames: LinkedList<Frame>;
+  pendingFrame?: Frame;
+  batches: Record<DrawLayerType, RenderBatch> & Iterable<RenderBatch>;
+  batchDirty: number;
+  renderList: LinkedList<RenderBatch>;
+
+  constructor(index: number) {
     this.index = index;
 
-    this.pendingFrames = LinkedList.of(Frame, 'strataLink');
-    this.frames = LinkedList.of(Frame, 'strataLink');
+    // TODO: Can these two linked lists use the same property safely?
+    this.pendingFrames = LinkedList.using('strataLink');
+    this.frames = LinkedList.using('strataLink');
 
-    this.pendingFrame = null;
-
-    this.batches = Object.values(DrawLayerType).map(type => (
-      new RenderBatch(type)
-    ));
+    this.batches = [
+      new RenderBatch(DrawLayerType.BACKGROUND),
+      new RenderBatch(DrawLayerType.BORDER),
+      new RenderBatch(DrawLayerType.ARTWORK),
+      new RenderBatch(DrawLayerType.OVERLAY),
+      new RenderBatch(DrawLayerType.HIGHLIGHT),
+    ];
 
     this.batchDirty = 0;
 
-    this.renderList = LinkedList.of(RenderBatch, 'renderLink');
+    this.renderList = LinkedList.using('renderLink');
   }
 
-  removeFrame(frame) {
+  removeFrame(frame: Frame) {
     if (!this.frames.isLinked(frame)) {
-      return 0;
+      return false;
     }
 
     if (frame === this.pendingFrame) {
-      this.pendingFrame = this.frames.linkFor(frame).next;
+      this.pendingFrame = this.frames.linkFor(frame).next?.entity;
     }
 
     this.frames.unlink(frame);
@@ -80,10 +91,10 @@ class FrameStrataLevel {
     return 0;
   }
 
-  onLayerUpdate(elapsedSecs) {
+  onLayerUpdate(elapsedSecs: number) {
     let frame = this.frames.head;
     while (frame) {
-      const next = frame.strataLink.next.entity;
+      const next = frame.strataLink.next?.entity;
       this.pendingFrame = next;
       frame.onLayerUpdate(elapsedSecs);
       frame = this.pendingFrame;

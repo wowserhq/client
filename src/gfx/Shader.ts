@@ -1,11 +1,19 @@
 import Client from '../Client';
 import Device from './Device';
 
+type ShaderType = 'vertex' | 'pixel'
+
 class Shader {
-  constructor(type, path) {
+  type: ShaderType;
+  path: string;
+  isLoaded: boolean;
+
+  source?: string;
+  apiShader?: WebGLShader;
+
+  constructor(type: ShaderType, path: string) {
     this.type = type;
     this.path = path;
-    this.data = null;
     this.isLoaded = false;
 
     this.onSourceLoaded = this.onSourceLoaded.bind(this);
@@ -17,7 +25,7 @@ class Shader {
     return this.isLoaded;
   }
 
-  onSourceLoaded(source) {
+  onSourceLoaded(source: string) {
     this.source = source;
 
     const device = Device.instance;
@@ -28,3 +36,4 @@ class Shader {
 }
 
 export default Shader;
+export type { ShaderType };

@@ -5,9 +5,12 @@ const LinkStrategy = {
   BEFORE: 2,
 };
 
-class LinkedList {
-  constructor(type, propertyName = 'link') {
-    this.type = type;
+class LinkedList<T> {
+  propertyName: keyof T;
+
+  sentinel: LinkedListLink<T>;
+
+  constructor(propertyName: keyof T) {
     this.propertyName = propertyName;
 
     this.sentinel = new LinkedListLink();
@@ -20,7 +23,7 @@ class LinkedList {
   }
 
   get head() {
-    return this.headLink.entity;
+    return this.headLink?.entity;
   }
 
   get tailLink() {
@@ -28,7 +31,7 @@ class LinkedList {
   }
 
   get tail() {
-    return this.tailLink.entity;
+    return this.tailLink?.entity;
   }
 
   get size() {
@@ -36,32 +39,32 @@ class LinkedList {
     let count = 0;
     while (link !== this.sentinel) {
       count++;
-      link = link.next;
+      link = link?.next ?? null;
     }
     return count;
   }
 
-  add(entity) {
+  add(entity: T) {
     this.linkToTail(entity);
   }
 
-  isLinked(entity) {
+  isLinked(entity: T) {
     return this.linkFor(entity).isLinked;
   }
 
-  linkToHead(entity) {
+  linkToHead(entity: T) {
     this.link(entity, LinkStrategy.AFTER);
   }
 
-  linkToTail(entity) {
+  linkToTail(entity: T) {
     this.link(entity, LinkStrategy.BEFORE);
   }
 
-  linkFor(entity) {
-    return entity[this.propertyName];
+  linkFor(entity: T): LinkedListLink<T> {
+    return entity[this.propertyName] as LinkedListLink<T>;
   }
 
-  link(entity, strategy = LinkStrategy.BEFORE, other = null) {
+  link(entity: T, strategy = LinkStrategy.BEFORE, other?: T) {
     const link = this.linkFor(entity);
     if (link.isLinked) {
       link.unlink();
@@ -70,28 +73,32 @@ class LinkedList {
     const target = (other && this.linkFor(other)) || this.sentinel;
 
     switch (strategy) {
-      case LinkStrategy.BEFORE:
+      case LinkStrategy.BEFORE: {
         // From A - C, with target C, becomes A - B - C
         const prev = target.prev;
-        prev.next = link;
+        if (prev) {
+          prev.next = link;
+        }
         link.prev = prev;
         link.next = target;
         target.prev = link;
-        break;
-      case LinkStrategy.AFTER:
+      } break;
+      case LinkStrategy.AFTER: {
         // From A - C, with target A, becomes A - B - C
         const next = target.next;
-        next.prev = link;
+        if (next) {
+          next.prev = link;
+        }
         link.next = next;
         link.prev = target;
         target.next = link;
-        break;
+      } break;
       default:
         throw new Error(`Invalid link strategy: ${strategy}`);
     }
   }
 
-  unlink(entity) {
+  unlink(entity: T) {
     return this.linkFor(entity).unlink();
   }
 
@@ -100,14 +107,14 @@ class LinkedList {
     return {
       link: sentinel,
       next() {
-        this.link = this.link.next;
-        return { value: this.link.entity, done: this.link === sentinel };
+        this.link = this.link?.next ?? this.link;
+        return { value: this.link.entity!, done: this.link === sentinel };
       },
     };
   }
 
-  static of(type, propertyName = 'link') {
-    return new this(type, propertyName);
+  static using<T>(propertyName: keyof T) {
+    return new this<T>(propertyName);
   }
 }
 

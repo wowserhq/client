@@ -5,6 +5,7 @@ import {
   maxAspectCompensation,
 } from '../../../../utils';
 import {
+  lua_State,
   lua_pushboolean,
   lua_pushnumber,
   lua_pushstring,
@@ -38,7 +39,7 @@ export const SetUsesToken = () => {
   return 0;
 };
 
-export const GetSavedAccountList = (L) => {
+export const GetSavedAccountList = (L: lua_State) => {
   // TODO: Implementation
   lua_pushstring(L, '');
   return 1;
@@ -76,14 +77,14 @@ export const GetMovieResolution = () => {
   return 0;
 };
 
-export const GetScreenWidth = (L) => {
+export const GetScreenWidth = (L: lua_State) => {
   const ddcx = NDCtoDDCWidth(1.0);
   const ndcx = DDCtoNDCWidth(maxAspectCompensation * ddcx);
   lua_pushnumber(L, ndcx);
   return 1;
 };
 
-export const GetScreenHeight = (L) => {
+export const GetScreenHeight = (L: lua_State) => {
   const ddcy = NDCtoDDCHeight(1.0);
   const ndcx = DDCtoNDCWidth(maxAspectCompensation * ddcy);
   lua_pushnumber(L, ndcx);
@@ -98,7 +99,7 @@ export const ShowTOSNotice = () => {
   return 0;
 };
 
-export const TOSAccepted = (L) => {
+export const TOSAccepted = (L: lua_State) => {
   // TODO: Implementation
   lua_pushboolean(L, 1);
   return 1;
@@ -112,7 +113,7 @@ export const ShowEULANotice = () => {
   return 0;
 };
 
-export const EULAAccepted = (L) => {
+export const EULAAccepted = (L: lua_State) => {
   // TODO: Implementation
   lua_pushboolean(L, 1);
   return 1;
@@ -294,7 +295,7 @@ export const GetCreditsText = () => {
   return 0;
 };
 
-export const GetClientExpansionLevel = (L) => {
+export const GetClientExpansionLevel = (L: lua_State) => {
   // TODO: Wrath of the Lich King
   lua_pushnumber(L, 3);
   return 1;
@@ -324,7 +325,7 @@ export const ScanDLLContinueAnyway = () => {
   return 0;
 };
 
-export const IsScanDLLFinished = (L) => {
+export const IsScanDLLFinished = (L: lua_State) => {
   // TODO: Implementation
   lua_pushboolean(L, 1);
   return 1;

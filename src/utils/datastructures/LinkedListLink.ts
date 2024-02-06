@@ -1,5 +1,9 @@
-class LinkedListLink {
-  constructor(entity) {
+class LinkedListLink<T> {
+  entity?: T;
+  prev: LinkedListLink<T> | null;
+  next: LinkedListLink<T> | null;
+
+  constructor(entity?: T) {
     this.entity = entity;
 
     this.prev = null;
@@ -23,7 +27,7 @@ class LinkedListLink {
     this.next = null;
   }
 
-  static for(entity) {
+  static for<T>(entity: T) {
     return new this(entity);
   }
 }

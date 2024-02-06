@@ -1,6 +1,9 @@
+import XMLNode from '../../ui/XMLNode';
+
 import ScriptingContext from './ScriptingContext';
 import {
   LUA_REGISTRYINDEX,
+  lua_Ref,
   lua_getglobal,
   lua_rawgeti,
   luaL_ref,
@@ -8,10 +11,16 @@ import {
 } from './lua';
 
 class Script {
-  constructor(name, args = []) {
+  name: string;
+  args: string[];
+  luaRef: lua_Ref | null;
+  source: string | null;
+
+  constructor(name: string, args: string[] = []) {
     this.name = name;
     this.args = ['self', ...args];
     this.luaRef = null;
+    this.source = null;
   }
 
   get wrapper() {
@@ -20,7 +29,7 @@ class Script {
 
   // Activates script using given node
   // TODO: Handle status
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     const { body } = node;
 
     const scripting = ScriptingContext.instance;

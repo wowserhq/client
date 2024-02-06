@@ -1,4 +1,9 @@
 class EdgeRect {
+  top: number;
+  left: number;
+  bottom: number;
+  right: number;
+
   constructor({
     top = 0,
     left = 0,

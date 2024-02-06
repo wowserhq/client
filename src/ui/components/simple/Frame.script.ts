@@ -1,4 +1,5 @@
 import {
+  lua_State,
   lua_pushnil,
   lua_pushnumber,
 } from '../../scripting/lua';
@@ -49,7 +50,7 @@ export const SetFrameStrata = () => {
   return 0;
 };
 
-export const GetFrameLevel = (L) => {
+export const GetFrameLevel = (L: lua_State) => {
   const frame = Frame.getObjectFromStack(L);
   lua_pushnumber(L, frame.level);
   return 1;
@@ -135,7 +136,7 @@ export const SetAlpha = () => {
   return 0;
 };
 
-export const GetID = (L) => {
+export const GetID = (L: lua_State) => {
   const frame = Frame.getObjectFromStack(L);
   const { id } = frame;
   lua_pushnumber(L, id);
@@ -162,7 +163,7 @@ export const DisableDrawLayer = () => {
   return 0;
 };
 
-export const Show = (L) => {
+export const Show = (L: lua_State) => {
   const frame = Frame.getObjectFromStack(L);
   if (frame.protectedFunctionsAllowed) {
     frame.show();
@@ -172,7 +173,7 @@ export const Show = (L) => {
   return 0;
 };
 
-export const Hide = (L) => {
+export const Hide = (L: lua_State) => {
   const frame = Frame.getObjectFromStack(L);
   if (frame.protectedFunctionsAllowed) {
     frame.hide();
@@ -186,7 +187,7 @@ export const IsVisible = () => {
   return 0;
 };
 
-export const IsShown = (L) => {
+export const IsShown = (L: lua_State) => {
   const frame = Frame.getObjectFromStack(L);
   if (frame.shown) {
     lua_pushnumber(L, 1.0);

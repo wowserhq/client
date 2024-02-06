@@ -1,40 +1,41 @@
 import { HashMap, HashStrategy } from '../../utils';
 
-import * as frameTypes from '.';
+import {
+  Button, CheckButton, EditBox, Frame, Model, ScrollFrame, SimpleHTML, Slider
+} from '.';
 
-const DEFAULT_FACTORIES = [
-  'Button',
-  'CheckButton',
-  'EditBox',
-  'Frame',
-  'Model',
-  'ScrollFrame',
-  'SimpleHTML',
-  'Slider',
-];
+const DEFAULT_FACTORIES = {
+  Button, CheckButton, EditBox, Frame, Model, ScrollFrame, SimpleHTML, Slider
+};
+
+type FactoryConstructor = new (parent: Frame | null) => Frame;
 
 class FactoryNode {
-  constructor(name, ctor, unique = false) {
+  name: string;
+  ctor: FactoryConstructor;
+  unique: boolean;
+
+  constructor(name: string, ctor: FactoryConstructor, unique = false) {
     this.name = name;
     this.ctor = ctor;
     this.unique = unique;
   }
 
-  build(parent) {
+  build(parent: Frame | null) {
     return new this.ctor(parent);
   }
 }
 
-class FactoryRegistry extends HashMap {
+class FactoryRegistry extends HashMap<string, FactoryNode> {
   constructor() {
     super(HashStrategy.UPPERCASE);
 
-    for (const name of DEFAULT_FACTORIES) {
-      this.register(name, frameTypes[name]);
+    for (const [name, ctor] of Object.entries(DEFAULT_FACTORIES)) {
+      this.register(name, ctor);
     }
   }
 
-  register(name, ctor, unique = false) {
+  register(name: string, ctor: FactoryConstructor, unique = false) {
     const node = new FactoryNode(name, ctor, unique);
     this.set(name, node);
   }

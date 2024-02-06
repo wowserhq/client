@@ -1,9 +1,14 @@
 import DrawLayerType from '../../DrawLayerType';
-import Frame from './Frame';
 import Script from '../../scripting/Script';
 import UIContext from '../../UIContext';
+import XMLNode from '../../XMLNode';
+import { BlendMode } from '../../../gfx/types';
 
 import ButtonState from './ButtonState';
+import FontString from './FontString';
+import Frame from './Frame';
+import Texture from './Texture';
+
 import * as scriptFunctions from './Button.script';
 
 class Button extends Frame {
@@ -14,8 +19,17 @@ class Button extends Frame {
     };
   }
 
-  constructor(...args) {
-    super(...args);
+  textures: Record<ButtonState, Texture | null>;
+
+  activeTexture: Texture | null;
+  highlightTexture: Texture | null;
+
+  fontString: FontString | null;
+
+  state: ButtonState;
+
+  constructor(parent: Frame | null) {
+    super(parent);
 
     this.scripts.register(
       new Script('PreClick', ['button', 'down']),
@@ -38,7 +52,7 @@ class Button extends Frame {
     this.state = ButtonState.DISABLED;
   }
 
-  loadXML(node) {
+  loadXML(node: XMLNode) {
     super.loadXML(node);
 
     const ui = UIContext.instance;
@@ -78,7 +92,7 @@ class Button extends Frame {
     // TODO: Text, click registration and motion scripts
   }
 
-  setHighlight(texture, _blendMode) {
+  setHighlight(texture: Texture, _blendMode: BlendMode | null) {
     if (this.highlightTexture === texture) {
       return;
     }
@@ -95,7 +109,7 @@ class Button extends Frame {
     this.highlightTexture = texture;
   }
 
-  setStateTexture(state, texture) {
+  setStateTexture(state: ButtonState, texture: Texture) {
     const stored = this.textures[state];
     if (stored === texture) {
       return;
@@ -117,7 +131,7 @@ class Button extends Frame {
 
     if (texture && state === this.state) {
       this.activeTexture = texture;
-      // TODO: Show texture
+      texture.show();
     }
   }
 }

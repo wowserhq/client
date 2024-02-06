@@ -3,6 +3,17 @@ import { BlendMode } from '../gfx/types';
 import DrawLayerType from './DrawLayerType';
 import FrameStrataType from './components/abstract/FrameStrataType';
 
-export const stringToBlendMode = (str) => BlendMode[str.toUpperCase()];
-export const stringToDrawLayerType = (str) => DrawLayerType[str.toUpperCase()];
-export const stringToStrataType = (str) => FrameStrataType[str.toUpperCase()];
+export const stringToBlendMode = (string?: string) => {
+  if (!string) return undefined;
+  return BlendMode[string?.toUpperCase() as keyof typeof BlendMode];
+};
+
+export const stringToDrawLayerType = (string?: string) => {
+  if (!string) return undefined;
+  return DrawLayerType[string?.toUpperCase() as keyof typeof DrawLayerType];
+};
+
+export const stringToStrataType = (string?: string) => {
+  if (!string) return undefined;
+  return FrameStrataType[string?.toUpperCase() as keyof typeof FrameStrataType];
+};

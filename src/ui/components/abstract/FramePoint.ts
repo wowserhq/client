@@ -1,9 +1,17 @@
 import { Vector2 } from '../../../math';
 
+import LayoutFrame from './LayoutFrame';
 import Type from './FramePointType';
 
 class FramePoint {
-  constructor(relative, type, offsetX, offsetY) {
+  static UNDEFINED = Infinity;
+
+  relative: LayoutFrame;
+  type: Type;
+  offset: Vector2;
+  flags: number;
+
+  constructor(relative: LayoutFrame, type: Type, offsetX: number, offsetY: number) {
     this.relative = relative;
     this.type = type;
     this.offset = new Vector2([offsetX, offsetY]);
@@ -33,7 +41,7 @@ class FramePoint {
       }
     }
 
-    if (relative.flags & 0x2) {
+    if (relative.layoutFlags & 0x2) {
       relative.deferredResize = false;
       if (this.flags & 0x4) {
         if (!initial) {
@@ -64,8 +72,12 @@ class FramePoint {
     return rect;
   }
 
-  x(scale) {
-    const { UNDEFINED } = this.constructor;
+  setRelative(_relative: LayoutFrame, _relativePoint: Type, _offsetX: number, _offsetY: number) {
+    // TODO: Implement
+  }
+
+  x(scale: number) {
+    const { UNDEFINED } = FramePoint;
 
     const rect = this.relativeRect;
     if (!rect) {
@@ -93,8 +105,8 @@ class FramePoint {
     }
   }
 
-  y(scale) {
-    const { UNDEFINED } = this.constructor;
+  y(scale: number) {
+    const { UNDEFINED } = FramePoint;
 
     const rect = this.relativeRect;
     if (!rect) {
@@ -122,7 +134,7 @@ class FramePoint {
     }
   }
 
-  static synthesizeSide(center, opposite, size) {
+  static synthesizeSide(center: number, opposite: number, size: number) {
     if (center !== this.UNDEFINED && opposite !== this.UNDEFINED) {
       return center + center - opposite;
     } else if (opposite !== this.UNDEFINED && size !== 0.0) {
@@ -133,7 +145,7 @@ class FramePoint {
     return this.UNDEFINED;
   }
 
-  static synthesizeCenter(side1, side2, size) {
+  static synthesizeCenter(side1: number, side2: number, size: number) {
     if (side1 !== this.UNDEFINED && side2 !== this.UNDEFINED) {
       return (side1 + side2) * 0.5;
     } else if (side1 !== this.UNDEFINED && size !== 0.0) {
@@ -144,7 +156,5 @@ class FramePoint {
     return this.UNDEFINED;
   }
 }
-
-FramePoint.UNDEFINED = Infinity;
 
 export default FramePoint;

@@ -1,4 +1,6 @@
 class Color {
+  value: number;
+
   constructor(value = 0x00000000) {
     this.value = value;
   }

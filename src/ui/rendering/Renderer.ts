@@ -1,21 +1,28 @@
 import Device from '../../gfx/Device';
+import Shader from '../../gfx/Shader';
 import UIRoot from '../components/UIRoot';
+import WebGL2Device from '../../gfx/apis/webgl2/WebGL2Device';
 import { Matrix4 } from '../../math';
 
+import RenderBatch from './RenderBatch';
+
+// TODO: Device agnostic (not bound to WebGL2Device)
 class Renderer {
+  vertexShader: Shader;
+  pixelShader: Shader;
+  program: WebGLProgram | null;
+
   constructor() {
     // TODO: Does not support stereo vertex shader yet
-    this.vertexShader = Device.instance.shaders.shaderFor('vertex', 'UI');
-    this.pixelShader = Device.instance.shaders.shaderFor('pixel', 'UI');
+    this.vertexShader = (Device.instance as WebGL2Device).shaders.shaderFor('vertex', 'UI');
+    this.pixelShader = (Device.instance as WebGL2Device).shaders.shaderFor('pixel', 'UI');
 
     this.program = null;
   }
 
-  draw(batch) {
-    // TODO: Drawing routine should use WebGL2Device
-
+  draw(batch: RenderBatch) {
     const root = UIRoot.instance;
-    const { gl } = Device.instance;
+    const { gl } = (Device.instance as WebGL2Device);
     const { pixelShader, vertexShader } = this;
 
     if (!this.program) {
@@ -23,9 +30,9 @@ class Renderer {
         return;
       }
 
-      this.program = gl.createProgram();
-      gl.attachShader(this.program, vertexShader.apiShader);
-      gl.attachShader(this.program, pixelShader.apiShader);
+      this.program = gl.createProgram()!;
+      gl.attachShader(this.program, vertexShader.apiShader!);
+      gl.attachShader(this.program, pixelShader.apiShader!);
       gl.linkProgram(this.program);
 
       const success = gl.getProgramParameter(this.program, gl.LINK_STATUS);

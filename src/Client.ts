@@ -1,3 +1,4 @@
+import Device from './gfx/Device';
 import WebGL2Device from './gfx/apis/webgl2/WebGL2Device';
 import WebGPUDevice from './gfx/apis/webgpu/WebGPUDevice';
 import Screen from './gfx/Screen';
@@ -5,9 +6,21 @@ import TextureRegistry from './gfx/TextureRegistry';
 import UIContext from './ui/UIContext';
 import { fetch } from './utils';
 
+type ClientOptions = {
+  api: 'webgl2' | 'webgpu' | string
+}
+
 class Client {
-  constructor(canvas, { api }) {
-    this.constructor.instance = this;
+  static instance: Client;
+
+  fetch: typeof fetch;
+  device: Device;
+  screen: Screen;
+  textures: TextureRegistry;
+  ui: UIContext;
+
+  constructor(canvas: HTMLCanvasElement, { api }: ClientOptions) {
+    Client.instance = this;
 
     this.fetch = fetch;
 
@@ -17,7 +30,7 @@ class Client {
         this.device = new WebGL2Device(canvas);
         break;
       case 'webgpu':
-        this.device = new WebGPUDevice(canvas);
+        this.device = new WebGPUDevice();
         break;
     }
 

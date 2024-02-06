@@ -1,14 +1,21 @@
 import Device from '../../Device';
 import ShaderRegistry from '../../ShaderRegistry';
-import constantsFor from './constants';
+import { ShaderType } from '../../Shader';
+
+// import constantsFor from './constants';
+
 
 class WebGL2Device extends Device {
-  constructor(canvas) {
-    super(canvas);
+  gl: WebGL2RenderingContext;
+  shaders: ShaderRegistry;
+
+  constructor(canvas: HTMLCanvasElement) {
+    super();
 
     // TODO: Handle context loss
-    this.gl = canvas.getContext('webgl2');
-    this.constants = constantsFor(this.gl);
+    this.gl = canvas.getContext('webgl2')!;
+    // TODO: Constants
+    // this.constants = constantsFor(this.gl);
 
     this.shaders = new ShaderRegistry((type, name) => {
       const ext = type === 'pixel' ? 'frag' : 'vert';
@@ -16,10 +23,10 @@ class WebGL2Device extends Device {
     });
   }
 
-  createShader(type, source) {
+  createShader(type: ShaderType, source: string): WebGLShader {
     const { gl } = this;
     const shaderType = type === 'pixel' ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER;
-    const shader = this.gl.createShader(shaderType);
+    const shader = this.gl.createShader(shaderType)!;
     this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
 
