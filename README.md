@@ -76,6 +76,11 @@ When contributing, please:
 - Fork the repository
 - Open a pull request (preferably on a separate branch)
 
+## License
+
+Except where otherwise noted, Wowser Client is copyright © 2019-2024 Wowser Contributors. It is licensed
+under the **MIT license**. See [`LICENSE`](LICENSE) for more information.
+
 [BLPConverter]: https://github.com/wowserhq/blizzardry#blp
 [ECMAScript modules]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
 [Node.js]: http://nodejs.org/#download
