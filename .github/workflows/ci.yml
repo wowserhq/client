@@ -1,8 +1,11 @@
-name: CI
+name: ci
+
 on:
   push:
     branches:
-      - master
+      - main
+  pull_request:
+
 jobs:
   lint-and-test:
     name: lint and test
