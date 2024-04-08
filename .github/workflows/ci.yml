@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  lint-and-test:
-    name: lint and test
+  lint-typecheck-and-test:
+    name: lint, typecheck and test
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,6 +20,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
+      - run: npm run typecheck
       - run: npm test
         env:
           CI: true
