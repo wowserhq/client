@@ -33,8 +33,8 @@ import {
   to_luastring,
 } from './lua';
 
-import bitLua from './vendor/bit.lua';
-import compatLua from './vendor/compat.lua';
+import bitLua from './vendor/bit.lua?raw'; // eslint-disable-line import/no-unresolved
+import compatLua from './vendor/compat.lua?raw'; // eslint-disable-line import/no-unresolved
 
 import FrameScriptObject from './FrameScriptObject';
 
