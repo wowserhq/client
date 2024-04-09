@@ -48,6 +48,15 @@ class LinkedList<T> {
     this.linkToTail(entity);
   }
 
+  find(predicate: (entity: T) => boolean): T | null {
+    for (const entity of this) {
+      if (predicate(entity)) {
+        return entity;
+      }
+    }
+    return null;
+  }
+
   isLinked(entity: T) {
     return this.linkFor(entity).isLinked;
   }
@@ -96,6 +105,14 @@ class LinkedList<T> {
       default:
         throw new Error(`Invalid link strategy: ${strategy}`);
     }
+  }
+
+  toString(callback: (entity: T) => string) {
+    const result = [];
+    for (const entity of this) {
+      result.push(callback(entity));
+    }
+    return `[${result.join(', ')}]`;
   }
 
   unlink(entity: T) {
