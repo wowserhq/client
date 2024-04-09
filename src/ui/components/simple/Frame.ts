@@ -9,6 +9,7 @@ import ScriptRegion from '../abstract/ScriptRegion';
 import UIContext from '../../UIContext';
 import XMLNode from '../../XMLNode';
 import {
+  EnumRecord,
   LinkedList,
   LinkedListLink,
   LinkedListNode,
@@ -53,7 +54,7 @@ class Frame extends ScriptRegion {
   strataType: FrameStrataType;
   level: number;
 
-  layersEnabled: Record<DrawLayerType, boolean> & Iterable<boolean>;
+  layersEnabled: EnumRecord<DrawLayerType, boolean>;
   backdrop: Backdrop | null;
 
   regions: LinkedList<Region>;

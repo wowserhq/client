@@ -2,7 +2,7 @@ import DrawLayerType from '../DrawLayerType';
 import Screen from '../../gfx/Screen';
 import ScreenLayer from '../../gfx/ScreenLayer';
 import { EdgeRect } from '../../math';
-import { LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
+import { EnumRecord, LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
 import FramePointType from './abstract/FramePointType';
@@ -16,7 +16,7 @@ class UIRoot extends LayoutFrame {
     frame: Frame | null,
     anchor: FramePointType
   };
-  strata: Record<FrameStrataType, FrameStrata> & Iterable<FrameStrata>;
+  strata: EnumRecord<FrameStrataType, FrameStrata>;
   frames: LinkedList<Frame>;
   destroyedFrames: LinkedList<Frame>;
   screenLayer: ScreenLayer;
@@ -112,7 +112,7 @@ class UIRoot extends LayoutFrame {
   onLayerUpdate(elapsedSecs: number) {
     // TODO: Clean-up destroyed frames
 
-    console.log('root pre-render', this);
+    console.log('root pre-render');
 
     LayoutFrame.resizePending();
 

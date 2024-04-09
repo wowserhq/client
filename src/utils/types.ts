@@ -1,3 +1,5 @@
+export type EnumRecord<E extends string | number | symbol, V> = Record<E, V> & Iterable<V> & { length: number };
+
 // See: https://github.com/microsoft/TypeScript/issues/5863#issuecomment-1336204919
 export type ThisConstructor<
   T extends { prototype: unknown } = { prototype: unknown },

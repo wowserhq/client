@@ -7,6 +7,7 @@ import {
   areClose,
 } from '../../../math';
 import {
+  EnumRecord,
   LinkedList,
   LinkedListLink,
   LinkedListNode,
@@ -59,7 +60,7 @@ class LayoutFrame {
   resizeCounter: number;
   _resizePendingLink?: LinkedListLink<LayoutFrame>;
 
-  points: Record<FramePointType, FramePoint | null> & Iterable<FramePoint | null>;
+  points: EnumRecord<FramePointType, FramePoint | null>;
 
   constructor() {
     this.layoutFlags = 0;

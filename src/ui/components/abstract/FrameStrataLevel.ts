@@ -1,14 +1,14 @@
 import DrawLayerType from '../../DrawLayerType';
 import Frame from '../simple/Frame';
 import RenderBatch from '../../rendering/RenderBatch';
-import { LinkedList } from '../../../utils';
+import { EnumRecord, LinkedList } from '../../../utils';
 
 class FrameStrataLevel {
   index: number;
   pendingFrames: LinkedList<Frame>;
   frames: LinkedList<Frame>;
   pendingFrame?: Frame;
-  batches: Record<DrawLayerType, RenderBatch> & Iterable<RenderBatch>;
+  batches: EnumRecord<DrawLayerType, RenderBatch>;
   batchDirty: number;
   renderList: LinkedList<RenderBatch>;
 
