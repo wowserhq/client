@@ -240,7 +240,7 @@ class Texture extends Region {
 
     if (alphaMode) {
       const blendMode = stringToBlendMode(alphaMode);
-      if (blendMode) {
+      if (blendMode !== undefined) {
         this.setBlendMode(blendMode);
       }
     }

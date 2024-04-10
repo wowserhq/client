@@ -10,12 +10,7 @@ enum FramePointType {
   BOTTOMRIGHT = 8,
 }
 
-export const stringToPointType = (string?: string) => {
-  if (!string) return undefined;
-  return FramePointType[string.toUpperCase() as keyof typeof FramePointType];
-};
-
-export const FramePointTypeSide = {
+const FramePointTypeSide = {
   CENTERX: [
     FramePointType.TOP,
     FramePointType.CENTER,
@@ -49,3 +44,4 @@ export const FramePointTypeSide = {
 };
 
 export default FramePointType;
+export { FramePointTypeSide };

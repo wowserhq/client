@@ -1,6 +1,7 @@
 import { BlendMode } from '../gfx/types';
 
 import DrawLayerType from './DrawLayerType';
+import FramePointType from './components/abstract/FramePointType';
 import FrameStrataType from './components/abstract/FrameStrataType';
 
 export const stringToBlendMode = (string?: string) => {
@@ -13,7 +14,12 @@ export const stringToDrawLayerType = (string?: string) => {
   return DrawLayerType[string?.toUpperCase() as keyof typeof DrawLayerType];
 };
 
-export const stringToStrataType = (string?: string) => {
+export const stringToFramePointType = (string?: string) => {
+  if (!string) return undefined;
+  return FramePointType[string.toUpperCase() as keyof typeof FramePointType];
+};
+
+export const stringToFrameStrataType = (string?: string) => {
   if (!string) return undefined;
   return FrameStrataType[string?.toUpperCase() as keyof typeof FrameStrataType];
 };

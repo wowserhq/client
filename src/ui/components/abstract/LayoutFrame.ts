@@ -1,5 +1,6 @@
 import ScriptRegion from './ScriptRegion';
 import XMLNode from '../../XMLNode';
+import { stringToFramePointType } from '../../utils';
 import {
   EPSILON1,
   EPSILON2,
@@ -18,10 +19,7 @@ import {
 } from '../../../utils';
 
 import FramePoint from './FramePoint';
-import FramePointType, {
-  FramePointTypeSide,
-  stringToPointType,
-} from './FramePointType';
+import FramePointType, { FramePointTypeSide } from './FramePointType';
 
 class FrameNode extends LinkedListNode {
   frame: LayoutFrame;
@@ -397,16 +395,16 @@ class LayoutFrame {
         const relativePointValue = child.attributes.get('relativePoint');
         const relativeValue = child.attributes.get('relativeTo');
 
-        const pointType = stringToPointType(pointValue);
+        const pointType = stringToFramePointType(pointValue);
         let relativePointType = pointType;
-        if (!pointType) {
+        if (pointType === undefined) {
           // TODO: Error handling
           continue;
         }
 
         if (relativePointValue) {
-          relativePointType = stringToPointType(relativePointValue);
-          if (!relativePointType) {
+          relativePointType = stringToFramePointType(relativePointValue);
+          if (relativePointType === undefined) {
             // TODO: Error handling
             continue;
           }
