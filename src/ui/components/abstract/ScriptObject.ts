@@ -11,8 +11,8 @@ class ScriptObject extends FrameScriptObject {
 
   _name: string | null;
 
-  constructor(_dummy: unknown) {
-    super(_dummy);
+  constructor(..._args: unknown[]) {
+    super(..._args);
 
     this._name = null;
   }

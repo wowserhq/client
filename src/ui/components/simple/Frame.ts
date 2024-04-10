@@ -66,7 +66,7 @@ class Frame extends ScriptRegion {
   strataLink: LinkedListLink<this>;
 
   constructor(parent: Frame | null) {
-    super(null);
+    super();
 
     this.id = 0;
     this.flags = 0;
@@ -189,7 +189,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  // TODO: Seems to be necessary with split getter/setters + inheritance
+  // Note: Seems to be necessary with split getter/setters + inheritance
   get parent() {
     return this._parent;
   }

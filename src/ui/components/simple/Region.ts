@@ -5,7 +5,7 @@ import { LinkedListLink } from '../../../utils';
 
 import Frame from './Frame';
 
-abstract class Region extends ScriptRegion {
+class Region extends ScriptRegion {
   drawLayerType: DrawLayerType | null;
   shown: boolean;
   visible: boolean;
@@ -17,7 +17,7 @@ abstract class Region extends ScriptRegion {
   regionLink: LinkedListLink<this>;
 
   constructor(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
-    super(null);
+    super();
 
     this.drawLayerType = null;
     this.shown = false;
@@ -34,7 +34,9 @@ abstract class Region extends ScriptRegion {
     }
   }
 
-  abstract draw(_batch: RenderBatch): void;
+  draw(_batch: RenderBatch) {
+    throw new Error(`${this.constructor.name} must implement 'draw'`);
+  }
 
   onRegionChanged() {
     // TODO: Implementation
