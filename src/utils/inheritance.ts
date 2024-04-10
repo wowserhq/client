@@ -16,9 +16,9 @@ const multipleClasses = <
   }
 
   const cls = class extends base {
-    constructor(..._args: any[]) {
+    constructor(...args: any[]) {
       // Create an instance of the base class
-      super();
+      super(...args);
 
       // Construct temporary throw-away instance of other class and assign own properties
       // Warning: using `this` as a reference in other class' constructor will not work correctly

@@ -18,8 +18,8 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
 
   _parent: Frame | null;
 
-  constructor(_dummy: unknown) {
-    super(_dummy);
+  constructor(..._args: unknown[]) {
+    super(_args);
 
     this._parent = null;
   }

@@ -32,7 +32,7 @@ class FrameScriptObject {
   luaRef: lua_Ref | null;
   scripts: ScriptRegistry;
 
-  constructor(_dummy: unknown) {
+  constructor(..._args: unknown[]) {
     this.luaRef = null;
 
     this.scripts = new ScriptRegistry();
