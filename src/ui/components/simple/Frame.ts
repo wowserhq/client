@@ -19,7 +19,7 @@ import {
 import { Rect } from '../../../math';
 import {
   stringToDrawLayerType,
-  stringToStrataType,
+  stringToFrameStrataType,
 } from '../../utils';
 
 import FrameFlag from './FrameFlag';
@@ -308,8 +308,8 @@ class Frame extends ScriptRegion {
     }
 
     if (frameStrata) {
-      const strataType = stringToStrataType(frameStrata);
-      if (strataType) {
+      const strataType = stringToFrameStrataType(frameStrata);
+      if (strataType !== undefined) {
         this.setFrameStrataType(strataType);
       } else {
         // TODO: Error handling
@@ -371,8 +371,7 @@ class Frame extends ScriptRegion {
 
       const level = layer.attributes.get('level');
 
-      // TODO: Case sensitivity
-      const drawLayerType = stringToDrawLayerType(level) || DrawLayerType.ARTWORK;
+      const drawLayerType = stringToDrawLayerType(level) ?? DrawLayerType.ARTWORK;
 
       for (const layerChild of layer.children) {
         const iname = layerChild.name.toLowerCase();
