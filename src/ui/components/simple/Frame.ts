@@ -16,7 +16,7 @@ import {
   Status,
   stringToBoolean,
 } from '../../../utils';
-import { Rect } from '../../../math';
+import { EPSILON1, Rect, areClose } from '../../../math';
 import {
   stringToDrawLayerType,
   stringToFrameStrataType,
@@ -53,6 +53,7 @@ class Frame extends ScriptRegion {
   visible: boolean;
   strataType: FrameStrataType;
   level: number;
+  frameScale: number;
 
   layersEnabled: EnumRecord<DrawLayerType, boolean>;
   backdrop: Backdrop | null;
@@ -77,6 +78,7 @@ class Frame extends ScriptRegion {
     this.visible = false;
     this.strataType = FrameStrataType.MEDIUM;
     this.level = 0;
+    this.frameScale = 1.0;
 
     this.layersEnabled = [
       true,
@@ -210,11 +212,13 @@ class Frame extends ScriptRegion {
     if (parent) {
       this.setFrameStrataType(parent.strataType);
       this.setFrameLevel(parent.level + 1, true);
+      this.updateScale(false);
 
       // TODO: Alpha and scrolling adjustments
     } else {
       this.setFrameStrataType(FrameStrataType.MEDIUM);
       this.setFrameLevel(0, true);
+      this.updateScale(false);
 
       // TODO: Alpha and scrolling adjustments
     }
@@ -222,7 +226,7 @@ class Frame extends ScriptRegion {
     if (parent) {
       // TODO: Parent attachment protection
       const node = new FrameNode(this);
-      parent.children.linkToHead(node);
+      parent.children.linkToTail(node);
     }
 
     if (this.shown) {
@@ -482,7 +486,7 @@ class Frame extends ScriptRegion {
       return false;
     }
 
-    if (this.parent && !this.parent.visible) {
+    if (this._parent && !this._parent.visible) {
       return false;
     }
 
@@ -604,11 +608,23 @@ class Frame extends ScriptRegion {
 
     // TODO: Set hit rect
 
-    if (this.backdrop) {
-      this.backdrop.update(this.rect);
+    if (!areClose(rect.minX, this.rect.maxX) || !areClose(rect.minY, this.rect.maxY)) {
+      if (this.backdrop) {
+        this.backdrop.update(this.rect);
+      }
+
+      const ratio = 1.0 / this.layoutScale;
+      const width = ratio * (this.rect.maxX - this.rect.minX);
+      const height = ratio * (this.rect.maxY - this.rect.minY);
+
+      this.onFrameSizeChangedRange(width, height);
     }
 
-    // TODO: Remaining implementation
+    UIRoot.instance.notifyFrameMovedOrResized(this);
+  }
+
+  onFrameSizeChangedRange(_width: number, _height: number) {
+    // TODO
   }
 
   onLayerShow() {
@@ -647,6 +663,29 @@ class Frame extends ScriptRegion {
     if (!this.loading) {
       this.runScript('OnShow');
     }
+  }
+
+  updateScale(force: boolean) {
+    let scale = this.frameScale;
+    if (this.parent) {
+      scale *= this.parent.layoutScale;
+    }
+
+    if ((!force && areClose(scale, this.layoutScale, EPSILON1)) || scale === 0.0) {
+      return false;
+    }
+
+    this.setLayoutScale(scale, force);
+
+    for (const region of this.regions) {
+        region.setLayoutScale(scale, force);
+    }
+
+    for (const child of this.children) {
+        child.frame.updateScale(false);
+    }
+
+    return true;
   }
 }
 

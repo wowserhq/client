@@ -34,10 +34,15 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
   }
 
   get layoutParent(): LayoutFrame {
-    if (this.width === 0.0 || !this.parent) {
+    if (!this._parent || this._parent.layoutScale === 0.0) {
       return UIRoot.instance;
     }
-    return this.parent;
+    return this._parent;
+  }
+
+  getLayoutFrameByName(name: string): LayoutFrame | null {
+    const fqname = this.fullyQualifyName(name);
+    return ScriptRegion.getObjectByName(fqname);
   }
 
   loadXML(node: XMLNode, status: Status) {

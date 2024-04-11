@@ -72,8 +72,18 @@ class FramePoint {
     return rect;
   }
 
-  setRelative(_relative: LayoutFrame, _relativePoint: Type, _offsetX: number, _offsetY: number) {
-    // TODO: Implement
+  markUnused() {
+    this.type = Type.TOPLEFT - 1;
+    this.offset.setElements(0.0, 0.0);
+    // this.relative = null;
+    this.flags = this.flags & 0x2 ? 0x2 | 0x4 | 0x8 : 0x8;
+  }
+
+  setRelative(relative: LayoutFrame, relativePoint: Type, offsetX: number, offsetY: number) {
+    this.type = relativePoint;
+    this.offset.setElements(offsetX, offsetY);
+    this.relative = relative;
+    this.flags = this.flags & 0x2 ? 0x2 | 0x4 : 0x0;
   }
 
   x(scale: number) {

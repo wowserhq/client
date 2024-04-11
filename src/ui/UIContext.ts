@@ -5,6 +5,7 @@ import DrawLayerType from './DrawLayerType';
 import FactoryRegistry from './components/FactoryRegistry';
 import FontString from './components/simple/FontString';
 import Frame from './components/simple/Frame';
+import LayoutFrame from './components/abstract/LayoutFrame';
 import Renderer from './rendering/Renderer';
 import UIRoot from './components/UIRoot';
 import ScriptingContext from './scripting/ScriptingContext';
@@ -44,7 +45,7 @@ class UIContext {
       for (const { template } of templates) {
         // TODO: Does this bit require lock/release of templates?
         if (template && !template.locked) {
-          parentName = node.attributes.get('parent');
+          parentName = template.node.attributes.get('parent');
         }
       }
     }
@@ -187,7 +188,7 @@ class UIContext {
             }
           } else {
             this.createFrame(child, null, status);
-            // TODO: Re-layout
+            LayoutFrame.resizePending();
           }
         }
       }

@@ -109,6 +109,17 @@ class UIRoot extends LayoutFrame {
     strata.batchDirty = 1;
   }
 
+  notifyFrameMovedOrResized(frame: Frame) {
+    const strata = this.strata[frame.strataType];
+    strata.levelsDirty = 1;
+
+    if (this.layout.frame) {
+      this.raiseFrame(this.layout.frame, false);
+    }
+
+    // TODO: Focus check
+  }
+
   onLayerUpdate(elapsedSecs: number) {
     // TODO: Clean-up destroyed frames
 
