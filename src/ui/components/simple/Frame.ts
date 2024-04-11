@@ -254,7 +254,8 @@ class Frame extends ScriptRegion {
     }
   }
 
-  loadXML(node: XMLNode) {
+  loadXML(node: XMLNode, status: Status) {
+    // TODO: Group attribute extraction together with usage
     const dontSavePosition = node.attributes.get('dontSavePosition');
     const frameLevel = node.attributes.get('frameLevel');
     const frameStrata = node.attributes.get('frameStrata');
@@ -266,22 +267,22 @@ class Frame extends ScriptRegion {
 
     if (inherits) {
       const templates = UIContext.instance.templates.filterByList(inherits);
-      for (const { template } of templates) {
+      for (const { name, template } of templates) {
         if (template) {
           if (template.locked) {
-            // TODO: Error handling
+            status.warning(`recursively inherited node: ${name}`);
           } else {
             template.lock();
-            this.loadXML(template.node);
+            this.loadXML(template.node, status);
             template.release();
           }
         } else {
-          // TODO: Error handling
+          status.warning(`could not find inherited node: ${name}`);
         }
       }
     }
 
-    super.loadXML(node);
+    super.loadXML(node, status);
 
     if (hidden) {
       if (stringToBoolean(hidden)) {
@@ -348,7 +349,7 @@ class Frame extends ScriptRegion {
           this.setBackdrop(backdrop);
         } break;
         case 'layers':
-          this.loadXMLLayers(child);
+          this.loadXMLLayers(child, status);
           break;
         case 'attributes':
           // TODO: Load attributes
@@ -360,7 +361,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  loadXMLLayers(node: XMLNode) {
+  loadXMLLayers(node: XMLNode, status: Status) {
     const ui = UIContext.instance;
 
     for (const layer of node.children) {
@@ -377,7 +378,7 @@ class Frame extends ScriptRegion {
         const iname = layerChild.name.toLowerCase();
         switch (iname) {
           case 'texture': {
-            const texture = ui.createTexture(layerChild, this);
+            const texture = ui.createTexture(layerChild, this, status);
             texture.setFrame(this, drawLayerType, texture.shown);
           } break;
           case 'fontstring': {

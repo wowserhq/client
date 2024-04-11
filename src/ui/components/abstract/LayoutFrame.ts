@@ -14,6 +14,7 @@ import {
   LinkedListNode,
   NDCtoDDCHeight,
   NDCtoDDCWidth,
+  Status,
   extractDimensionsFrom,
   stringToBoolean,
 } from '../../../utils';
@@ -366,7 +367,7 @@ class LayoutFrame {
     return rect;
   }
 
-  loadXML(node: XMLNode) {
+  loadXML(node: XMLNode, status: Status) {
     const size = node.getChildByName('Size');
     if (size) {
       const { x, y } = extractDimensionsFrom(size);
@@ -387,7 +388,7 @@ class LayoutFrame {
     const anchors = node.getChildByName('Anchors');
     if (anchors) {
       if (setAllPoints) {
-        // TODO: Error handling
+        status.warning('setAllPoints set to true in frame with anchors (ignored)');
       }
 
       for (const child of anchors.children) {
@@ -398,14 +399,14 @@ class LayoutFrame {
         const pointType = stringToFramePointType(pointValue);
         let relativePointType = pointType;
         if (pointType === undefined) {
-          // TODO: Error handling
+          status.warning(`invalid anchor point in frame: ${pointValue}`);
           continue;
         }
 
         if (relativePointValue) {
           relativePointType = stringToFramePointType(relativePointValue);
           if (relativePointType === undefined) {
-            // TODO: Error handling
+            status.warning(`invalid relative anchor point in frame: ${relativePointValue}`);
             continue;
           }
         }
@@ -415,13 +416,12 @@ class LayoutFrame {
           const fqname = this.fullyQualifyName(relativeValue)!;
           relative = ScriptRegion.getObjectByName(fqname);
           if (!relative) {
-            // TODO: Error handling
-            console.warn(`could not find relative frame: ${fqname}`);
+            status.warning(`could not find relative frame: ${relativeValue}`);
             continue;
           }
 
           if (relative === this) {
-            // TODO: Error handling
+            status.warning(`frame anchored to itself: ${relativeValue}`);
             continue;
           }
         }
