@@ -17,10 +17,6 @@ class ScriptObject extends FrameScriptObject {
     this._name = null;
   }
 
-  get displayName() {
-    return this.name || '<unnamed>';
-  }
-
   get name() {
     return this._name;
   }

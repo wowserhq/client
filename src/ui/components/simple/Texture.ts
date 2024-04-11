@@ -73,9 +73,9 @@ class Texture extends Region {
   }
 
   get width() {
-    const layoutwidth = super.width;
-    if (layoutwidth !== 0.0) {
-      return layoutwidth;
+    const layoutWidth = super.width;
+    if (layoutWidth !== 0.0) {
+      return layoutWidth;
     }
 
     if (this.texture && this.texture.isLoaded) {
@@ -253,7 +253,20 @@ class Texture extends Region {
   }
 
   postLoadXML(_node: XMLNode) {
-    // TODO
+    if (this._parent) {
+      let i = 0;
+      for (const point of this.points) {
+        if (point && !(point.flags & 0x8)) {
+          break;
+        }
+
+        if (i + 1 === this.points.length) {
+          this.setAllPoints(this._parent, true);
+          break;
+        }
+        ++i;
+      }
+    }
   }
 
   onFrameSizeChanged(rect: Rect) {

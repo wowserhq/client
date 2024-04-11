@@ -41,8 +41,16 @@ class FrameScriptObject {
     );
   }
 
+  get displayName() {
+    return this.name || '<unnamed>';
+  }
+
   get isLuaRegistered() {
     return this.luaRef !== null;
+  }
+
+  get name(): string | null {
+    return null;
   }
 
   register(name: string | null = null) {

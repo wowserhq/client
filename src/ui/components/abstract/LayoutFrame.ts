@@ -1,4 +1,3 @@
-import ScriptRegion from './ScriptRegion';
 import XMLNode from '../../XMLNode';
 import { stringToFramePointType } from '../../utils';
 import {
@@ -81,7 +80,7 @@ class LayoutFrame {
     };
 
     this.resizeList = LinkedList.using('link');
-    this.resizeCounter = NaN;
+    this.resizeCounter = 0;
 
     this.points = [
       null, null, null,
@@ -329,10 +328,21 @@ class LayoutFrame {
     return true;
   }
 
+  clearAllPoints() {
+    this.freePoints();
+  }
+
   freePoints() {
+    let i = 0;
     for (const point of this.points) {
-      // TODO: Implementation
-      console.error('freeing point', point);
+      if (point && !(point.flags & 0x8)) {
+        if (point.relative) {
+          point.relative.unregisterResize(this, 1 << i);
+        }
+
+        point.markUnused();
+      }
+      ++i;
     }
   }
 
@@ -357,6 +367,10 @@ class LayoutFrame {
     return FramePoint.UNDEFINED;
   }
 
+  getLayoutFrameByName(_name: string): LayoutFrame | null {
+    return null;
+  }
+
   getRect() {
     if (!(this.layoutFlags & 0x1)) {
       return undefined;
@@ -365,6 +379,11 @@ class LayoutFrame {
     const rect = new Rect();
     rect.set(this.rect);
     return rect;
+  }
+
+  isResizeDependency(_dependentFrame: LayoutFrame) {
+    // TODO: Implementation
+    return false;
   }
 
   loadXML(node: XMLNode, status: Status) {
@@ -413,8 +432,7 @@ class LayoutFrame {
 
         let relative = layoutParent;
         if (relativeValue) {
-          const fqname = this.fullyQualifyName(relativeValue)!;
-          relative = ScriptRegion.getObjectByName(fqname);
+          relative = this.getLayoutFrameByName(relativeValue);
           if (!relative) {
             status.warning(`could not find relative frame: ${relativeValue}`);
             continue;
@@ -552,6 +570,10 @@ class LayoutFrame {
     if (resize) {
       this.resize(false);
     }
+  }
+
+  setLayoutScale(_scale: number, _force: boolean) {
+    // TODO: Implementation
   }
 
   setPoint(pointType: FramePointType, relative: LayoutFrame | null, relativePointType: FramePointType, offsetX = 0, offsetY = 0, resize = false) {
