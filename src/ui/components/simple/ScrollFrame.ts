@@ -1,6 +1,7 @@
 import Script from '../../scripting/Script';
 import UIContext from '../../UIContext';
 import XMLNode from '../../XMLNode';
+import { Status } from '../../../utils';
 
 import Frame from './Frame';
 
@@ -28,20 +29,20 @@ class ScrollFrame extends Frame {
     );
   }
 
-  loadXML(node: XMLNode) {
-    super.loadXML(node);
+  loadXML(node: XMLNode, status: Status) {
+    super.loadXML(node, status);
 
     const scrollChild = node.getChildByName('ScrollChild');
     if (scrollChild) {
       const child = scrollChild.firstChild;
       if (child) {
-        const frame = UIContext.instance.createFrame(child, this);
+        const frame = UIContext.instance.createFrame(child, this, status);
         if (frame) {
           this.scrollChild = frame;
         }
       } else {
-        // TODO: Error handling
-        console.warn('scroll frame created without child');
+        const name = this.name || '<unnamed>';
+        status.warning(`frame ${name}: scroll frame created without scroll child`);
       }
     }
   }

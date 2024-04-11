@@ -3,6 +3,7 @@ import Script from '../../scripting/Script';
 import UIContext from '../../UIContext';
 import XMLNode from '../../XMLNode';
 import { BlendMode } from '../../../gfx/types';
+import { Status } from '../../../utils';
 
 import ButtonState from './ButtonState';
 import FontString from './FontString';
@@ -52,8 +53,8 @@ class Button extends Frame {
     this.state = ButtonState.DISABLED;
   }
 
-  loadXML(node: XMLNode) {
-    super.loadXML(node);
+  loadXML(node: XMLNode, status: Status) {
+    super.loadXML(node, status);
 
     const ui = UIContext.instance;
 
@@ -61,22 +62,22 @@ class Button extends Frame {
       const iname = child.name.toLowerCase();
       switch (iname) {
         case 'normaltexture': {
-          const texture = ui.createTexture(child, this);
+          const texture = ui.createTexture(child, this, status);
           this.setStateTexture(ButtonState.NORMAL, texture);
           break;
         }
         case 'pushedtexture': {
-          const texture = ui.createTexture(child, this);
+          const texture = ui.createTexture(child, this, status);
           this.setStateTexture(ButtonState.PUSHED, texture);
           break;
         }
         case 'disabledtexture': {
-          const texture = ui.createTexture(child, this);
+          const texture = ui.createTexture(child, this, status);
           this.setStateTexture(ButtonState.DISABLED, texture);
           break;
         }
         case 'highlighttexture': {
-          const texture = ui.createTexture(child, this);
+          const texture = ui.createTexture(child, this, status);
           // TODO: Blend mode
           this.setHighlight(texture, null);
           break;

@@ -82,24 +82,24 @@ class UIContext {
 
     // TODO: Handle unique factories
     frame.preLoadXML(node);
-    frame.loadXML(node);
+    frame.loadXML(node, status);
     frame.postLoadXML(node, status);
 
     return frame;
   }
 
-  createFontString(node: XMLNode, frame: Frame) {
+  createFontString(node: XMLNode, frame: Frame, status = new Status()) {
     const fontString = new FontString(frame, DrawLayerType.ARTWORK, true);
     fontString.preLoadXML(node);
-    fontString.loadXML(node);
+    fontString.loadXML(node, status);
     fontString.postLoadXML(node);
     return fontString;
   }
 
-  createTexture(node: XMLNode, frame: Frame) {
+  createTexture(node: XMLNode, frame: Frame, status = new Status()) {
     const texture = new Texture(frame, DrawLayerType.ARTWORK, true);
     texture.preLoadXML(node);
-    texture.loadXML(node);
+    texture.loadXML(node, status);
     texture.postLoadXML(node);
     return texture;
   }

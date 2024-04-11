@@ -1,7 +1,7 @@
 import Frame from '../simple/Frame';
 import UIRoot from '../UIRoot';
 import XMLNode from '../../XMLNode';
-import { multipleClasses } from '../../../utils';
+import { Status, multipleClasses } from '../../../utils';
 
 import LayoutFrame from './LayoutFrame';
 import ScriptObject from './ScriptObject';
@@ -40,8 +40,8 @@ class ScriptRegion extends multipleClasses(ScriptObject, LayoutFrame) {
     return this.parent;
   }
 
-  loadXML(node: XMLNode) {
-    LayoutFrame.prototype.loadXML.call(this, node);
+  loadXML(node: XMLNode, status: Status) {
+    super.loadXML(node, status);
 
     const parentKey = node.attributes.get('parentKey');
     if (parentKey) {

@@ -14,6 +14,7 @@ import { stringToBlendMode } from '../../utils';
 import {
   NDCtoDDCHeight,
   NDCtoDDCWidth,
+  Status,
   maxAspectCompensation,
   stringToBoolean,
   stringToFloat,
@@ -111,7 +112,8 @@ class Texture extends Region {
     super.height = height;
   }
 
-  loadXML(node: XMLNode) {
+  loadXML(node: XMLNode, status: Status) {
+    // TODO: Group attribute extraction together with usage
     const alphaMode = node.attributes.get('alphaMode');
     const file = node.attributes.get('file');
     const hidden = node.attributes.get('hidden');
@@ -123,18 +125,18 @@ class Texture extends Region {
       const template = UIContext.instance.templates.get(inherits);
       if (template) {
         if (template.locked) {
-          // TODO: Error handling
+          status.warning(`recursively inherited node: ${inherits}`);
         } else {
           template.lock();
-          this.loadXML(template.node);
+          this.loadXML(template.node, status);
           template.release();
         }
       } else {
-        // TODO: Error handling
+        status.warning(`could not find inherited node: ${inherits}`);
       }
     }
 
-    super.loadXML(node);
+    super.loadXML(node, status);
 
     if (hidden) {
       if (stringToBoolean(hidden)) {
@@ -170,31 +172,31 @@ class Texture extends Region {
             bottom: 1.0,
           };
 
-          // TODO: Handle name in error handling
-          // const name = this.name || '<unnamed>';
+          const name = this.name || '<unnamed>';
 
-          // TODO: Handle rectangle
           if (child.getChildByName('Rect')) {
-            continue;
-          }
+            // TODO: Handle rectangle
+          } else {
+            for (const side of Object.keys(rect) as (keyof typeof rect)[]) {
+              const attr = child.attributes.get(side);
+              if (attr) {
+                if (
+                  ((side === 'left' || side === 'right') && this.tileHorizontally)
+                  || ((side === 'top' || side === 'bottom') && this.tileVertically)
+                ) {
+                  status.error(
+                    `texture ${name}: invalid TexCoords value (horizTile: ${this.tileHorizontally}; vertTile: ${this.tileVertically}`
+                  );
+                  valid = false;
+                }
 
-          for (const side of Object.keys(rect) as (keyof typeof rect)[]) {
-            const attr = child.attributes.get(side);
-            if (attr) {
-              if (
-                ((side === 'left' || side === 'right') && this.tileHorizontally)
-                || ((side === 'top' || side === 'bottom') && this.tileVertically)
-              ) {
-                // TODO: error handling
-                valid = false;
+                const value = stringToFloat(attr);
+                if (value < -10000 || value > 10000) {
+                  status.error(`texture ${name}: invalid TexCoords value (out of range)`);
+                  valid = false;
+                }
+                rect[side] = value;
               }
-
-              const value = stringToFloat(attr);
-              if (value < -10000 || value > 10000) {
-                // TODO: Error handling
-                valid = false;
-              }
-              rect[side] = value;
             }
           }
 
@@ -234,7 +236,8 @@ class Texture extends Region {
       if (success) {
         // TODO: Set colors
       } else {
-        // TODO: Error handling
+        const name = this.name || '<unnamed>';
+        status.warning(`texture ${name}: unable to load texture file ${file}`);
       }
     }
 
@@ -245,6 +248,7 @@ class Texture extends Region {
       }
     }
 
+    // TODO: Alpha
     // TODO: Non-blocking
   }
 
