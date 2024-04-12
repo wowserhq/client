@@ -7,6 +7,7 @@ import {
 import {
   lua_State,
   lua_pushboolean,
+  lua_pushnil,
   lua_pushnumber,
   lua_pushstring,
 } from '../../../scripting/lua';
@@ -199,8 +200,10 @@ export const PatchDownloadApply = () => {
   return 0;
 };
 
-export const GetNumAddOns = () => {
-  return 0;
+export const GetNumAddOns = (L: lua_State) => {
+  // TODO: Implementation
+  lua_pushnumber(L, 0);
+  return 1;
 };
 
 export const GetAddOnInfo = () => {
@@ -395,8 +398,10 @@ export const AcceptChangedOptionWarnings = () => {
   return 0;
 };
 
-export const ShowChangedOptionWarnings = () => {
-  return 0;
+export const ShowChangedOptionWarnings = (L: lua_State) => {
+  // TODO: Implementation
+  lua_pushnil(L);
+  return 1;
 };
 
 export const TokenEntered = () => {
@@ -467,10 +472,14 @@ export const ReadyForAccountDataTimes = () => {
   return 0;
 };
 
-export const IsTrialAccount = () => {
-  return 0;
+export const IsTrialAccount = (L: lua_State) => {
+  // TODO: Implementation
+  lua_pushnil(L);
+  return 1;
 };
 
-export const IsSystemSupported = () => {
-  return 0;
+export const IsSystemSupported = (L: lua_State) => {
+  // TODO: Implementation
+  lua_pushboolean(L, 1);
+  return 1;
 };
