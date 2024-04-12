@@ -1,10 +1,12 @@
 import EventType from '../../scripting/EventType';
 import {
   lua_State,
+  lua_isnumber,
   lua_isstring,
   lua_pushnil,
   lua_pushnumber,
   lua_tolstring,
+  lua_tonumber,
   luaL_error,
   to_jsstring,
 } from '../../scripting/lua';
@@ -55,13 +57,28 @@ export const SetFrameStrata = () => {
   return 0;
 };
 
-export const GetFrameLevel = (L: lua_State) => {
+export const GetFrameLevel = (L: lua_State): number => {
   const frame = Frame.getObjectFromStack(L);
   lua_pushnumber(L, frame.level);
   return 1;
 };
 
-export const SetFrameLevel = () => {
+export const SetFrameLevel = (L: lua_State): number => {
+  const frame = Frame.getObjectFromStack(L);
+
+  // TODO: Protected logic
+
+  if (!lua_isnumber(L, 2)) {
+    return luaL_error(L, 'Usage: %s:SetFrameLevel(level)', frame.displayName);
+  }
+
+  const level = lua_tonumber(L, 2);
+  if (level < 0) {
+    return luaL_error(L, '%s:SetFrameLevel(): Passed negative frame level: %d', frame.displayName, level);
+  }
+
+  frame.setFrameLevel(level, true);
+
   return 0;
 };
 
@@ -156,7 +173,17 @@ export const GetID = (L: lua_State) => {
   return 1;
 };
 
-export const SetID = () => {
+export const SetID = (L: lua_State): number => {
+  const frame = Frame.getObjectFromStack(L);
+
+  // TODO: Protected logic
+
+  if (!lua_isnumber(L, 2)) {
+    return luaL_error(L, 'Usage: %s:SetID(ID)', frame.displayName);
+  }
+
+  frame.id = lua_tonumber(L, 2);
+
   return 0;
 };
 

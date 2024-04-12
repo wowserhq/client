@@ -1,18 +1,33 @@
+import UIRoot from '../UIRoot';
+import { stringToFramePointType } from '../../utils';
 import {
   DDCtoNDCWidth,
   NDCtoDDCWidth,
+  aspectCompensation,
   luaValueToBoolean,
   maxAspectCompensation,
 } from '../../../utils';
 import {
+  LUA_TNIL,
+  LUA_TSTRING,
+  LUA_TTABLE,
   luaL_error,
   lua_State,
   lua_isnumber,
+  lua_isstring,
   lua_pushnumber,
+  lua_rawgeti,
+  lua_settop,
+  lua_tolstring,
   lua_tonumber,
+  lua_touserdata,
+  lua_type,
+  to_jsstring,
 } from '../../scripting/lua';
 
+import LayoutFrame from './LayoutFrame';
 import ScriptRegion from './ScriptRegion';
+import FramePointType from './FramePointType';
 
 export const IsProtected = () => {
   return 0;
@@ -144,15 +159,136 @@ export const GetPoint = () => {
   return 0;
 };
 
-export const SetPoint = () => {
+export const SetPoint = (L: lua_State): number => {
+  const region = ScriptRegion.getObjectFromStack(L);
+
+  // TODO: Protection logic
+
+  if (!lua_isstring(L, 2)) {
+    return luaL_error(L, 'Usage: %s:SetPoint("point" [, region or nil] [, "relativePoint"] [, offsetX, offsetY])', region.displayName);
+  }
+
+  let relative: LayoutFrame | null = region.layoutParent;
+
+  const pointStr = to_jsstring(lua_tolstring(L, 2, 0));
+  const point = stringToFramePointType(pointStr);
+  if (point === undefined) {
+    return luaL_error(L, '%s:SetPoint(): Unknown region point (%s)', region.displayName, pointStr);
+  }
+
+  let argsIndex = 3;
+  if (lua_type(L, 3) == LUA_TSTRING) {
+    const name = to_jsstring(lua_tolstring(L, 3, 0));
+    relative = region.getLayoutFrameByName(name);
+
+    argsIndex++;
+  } else if (lua_type(L, 3) == LUA_TTABLE) {
+    lua_rawgeti(L, 3, 0);
+
+    relative = lua_touserdata(L, -1) || null;
+
+    lua_settop(L, -2);
+
+    argsIndex++;
+  } else if (lua_type(L, 3) == LUA_TNIL) {
+    relative = UIRoot.instance;
+
+    argsIndex++;
+  }
+
+  if (!relative) {
+    const name = lua_tolstring(L, 3, 0);
+    return luaL_error(L, "%s:SetPoint(): Couldn't find region named '%s'", region.displayName, name);
+  }
+
+  if (relative == region) {
+    return luaL_error(L, '%s:SetPoint(): trying to anchor to itself', region.displayName);
+  }
+
+  if (relative.isResizeDependency(region)) {
+    return luaL_error(L, '%s:SetPoint(): %s is dependent on this', region.displayName, (relative as ScriptRegion).displayName);
+  }
+
+  let relativePoint: FramePointType | undefined = point;
+
+  if (lua_type(L, argsIndex) == LUA_TSTRING) {
+    const relativePointStr = to_jsstring(lua_tolstring(L, argsIndex, 0));
+    relativePoint = stringToFramePointType(relativePointStr);
+    if (relativePoint === undefined) {
+      return luaL_error(L, '%s:SetPoint(): Unknown region point', region.displayName);
+    }
+
+    argsIndex++;
+  }
+
+  let offsetX = 0.0;
+  let offsetY = 0.0;
+
+  if (lua_isnumber(L, argsIndex) && lua_isnumber(L, argsIndex + 1)) {
+    const x = lua_tonumber(L, argsIndex);
+    const ndcX = x / (aspectCompensation * 1024.0);
+    const ddcX = NDCtoDDCWidth(ndcX);
+
+    const y = lua_tonumber(L, argsIndex + 1);
+    const ndcY = y / (aspectCompensation * 1024.0);
+    const ddcY = NDCtoDDCWidth(ndcY);
+
+    offsetX = ddcX;
+    offsetY = ddcY;
+  }
+
+  region.setPoint(point, relative, relativePoint, offsetX, offsetY, true);
+
   return 0;
 };
 
-export const SetAllPoints = () => {
+export const SetAllPoints = (L: lua_State): number => {
+  const region = ScriptRegion.getObjectFromStack(L);
+
+  // TODO: Protected logic
+
+  let relative: LayoutFrame | null = region.layoutParent;
+
+  if (lua_isstring(L, 2)) {
+    const name = to_jsstring(lua_tolstring(L, 2, 0));
+    relative = region.getLayoutFrameByName(name);
+  } else if (lua_type(L, 2) == LUA_TTABLE) {
+    lua_rawgeti(L, 2, 0);
+
+    relative = lua_touserdata(L, -1) || null;
+
+    lua_settop(L, -2);
+  } else if (lua_type(L, 2) == LUA_TNIL) {
+    relative = UIRoot.instance;
+  }
+
+  if (!relative) {
+    const name = lua_tolstring(L, 2, 0);
+    return luaL_error(L, "%s:SetAllPoints(): Couldn't find region named '%s'", region.displayName, name);
+  }
+
+  if (relative == region) {
+    return luaL_error(L, '%s:SetAllPoints(): trying to anchor to itself', region.displayName);
+  }
+
+  if (relative.isResizeDependency(region)) {
+    return luaL_error(L, '%s:SetAllPoints(): %s is dependent on this', region.displayName, (relative as ScriptRegion).displayName);
+  }
+
+  region.setAllPoints(relative, true);
+
   return 0;
 };
 
-export const ClearAllPoints = () => {
+export const ClearAllPoints = (L: lua_State): number => {
+  const region = ScriptRegion.getObjectFromStack(L);
+
+  if (region.protectedFunctionsAllowed) {
+    region.clearAllPoints();
+  } else {
+    // TODO: Error handling
+  }
+
   return 0;
 };
 

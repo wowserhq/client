@@ -1,3 +1,7 @@
+import { lua_State } from '../../scripting/lua';
+
+import Texture from './Texture';
+
 export const IsObjectType = () => {
   return 0;
 };
@@ -46,11 +50,15 @@ export const GetAlpha = () => {
   return 0;
 };
 
-export const Show = () => {
+export const Show = (L: lua_State): number => {
+  const texture = Texture.getObjectFromStack(L);
+  texture.show();
   return 0;
 };
 
-export const Hide = () => {
+export const Hide = (L: lua_State): number => {
+  const texture = Texture.getObjectFromStack(L);
+  texture.hide();
   return 0;
 };
 
