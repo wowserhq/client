@@ -23,6 +23,10 @@ class Script {
     this.source = null;
   }
 
+  get isLuaRegistered() {
+    return this.luaRef !== null;
+  }
+
   get wrapper() {
     return `return function(${this.args.join(', ')})\n$body\nend`;
   }

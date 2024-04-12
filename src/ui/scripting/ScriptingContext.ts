@@ -6,18 +6,23 @@ import {
   lua_State,
   lua_atnativeerror,
   lua_call,
+  lua_checkstack,
   lua_createtable,
   lua_gc,
   lua_getglobal,
   lua_getinfo,
   lua_getlocal,
   lua_getstack,
+  lua_gettop,
   lua_insert,
   lua_isstring,
   lua_isuserdata,
   lua_pcall,
+  lua_pushboolean,
   lua_pushcclosure,
+  lua_pushnumber,
   lua_pushstring,
+  lua_pushvalue,
   lua_rawgeti,
   lua_replace,
   lua_setglobal,
@@ -36,6 +41,8 @@ import {
 import bitLua from './vendor/bit.lua?raw'; // eslint-disable-line import/no-unresolved
 import compatLua from './vendor/compat.lua?raw'; // eslint-disable-line import/no-unresolved
 
+import EventType from './EventType';
+import EventEmitter, { EventListenerNode } from './EventEmitter';
 import FrameScriptObject from './FrameScriptObject';
 
 import * as extraScriptFunctions from './globals/extra';
@@ -54,6 +61,7 @@ class ScriptingContext {
   state: lua_State;
   errorHandlerRef: lua_Ref;
   recursiveTableHash: lua_Ref;
+  events: Record<EventType, EventEmitter>;
 
   constructor() {
     ScriptingContext.instance = this;
@@ -72,6 +80,10 @@ class ScriptingContext {
 
     this.recursiveTableHash = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_gc(L, 6, 110);
+
+    this.events = Object.assign({}, ...Object.values(EventType).map((type) => ({
+      [type]: new EventEmitter(type)
+    })));
 
     // TODO: Is this OK, rather than lua_openbase + friends?
     luaL_openlibs(L);
@@ -140,12 +152,44 @@ class ScriptingContext {
     return true;
   }
 
-  executeFunction(functionRef: lua_Ref, thisArg: FrameScriptObject, givenArgsCount: number, _unk: unknown, _event: unknown) {
+  executeFunction(functionRef: lua_Ref, thisArg: FrameScriptObject, givenArgsCount: number, _unk?: unknown, event?: EventEmitter) {
     const L = this.state;
 
+    const stackBase = 1 - givenArgsCount + lua_gettop(L);
     let argsCount = givenArgsCount;
 
-    // TODO: Global 'this', 'event' and 'argX'
+    lua_checkstack(L, givenArgsCount + 2);
+
+    if (thisArg) {
+      lua_getglobal(L, 'this');
+
+      if (!thisArg.isLuaRegistered) {
+        thisArg.register();
+      }
+
+      lua_rawgeti(L, LUA_REGISTRYINDEX, thisArg.luaRef!);
+      lua_setglobal(L, 'this');
+    }
+
+    if (event) {
+      lua_getglobal(L, 'event');
+      lua_pushvalue(L, stackBase);
+      lua_setglobal(L, 'event');
+    }
+
+    const firstArg = event ? 1 : 0;
+    let globalArgId = 0;
+    if (firstArg < givenArgsCount) {
+      for (let i = firstArg; i < givenArgsCount; ++i) {
+        globalArgId++;
+        const argName = `arg${globalArgId}`;
+        lua_getglobal(L, argName);
+        lua_pushvalue(L, stackBase + firstArg);
+        lua_setglobal(L, argName);
+      }
+    }
+
+    lua_checkstack(L, givenArgsCount + 3);
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerRef);
     lua_rawgeti(L, LUA_REGISTRYINDEX, functionRef);
@@ -159,7 +203,9 @@ class ScriptingContext {
       argsCount++;
     }
 
-    // TODO: Arguments
+    for (let i = 0; i < givenArgsCount; ++i) {
+      lua_pushvalue(L, stackBase + i);
+    }
 
     if (lua_pcall(L, argsCount, 0, -2 - argsCount)) {
       lua_settop(L, -2);
@@ -167,7 +213,18 @@ class ScriptingContext {
 
     lua_settop(L, -2);
 
-    // TODO: Clean-up
+    for (let i = globalArgId; i > 0; --i) {
+      const argName = `arg${globalArgId}`;
+      lua_setglobal(L, argName);
+    }
+
+    if (event) {
+      lua_setglobal(L, 'event');
+  }
+
+    if (thisArg) {
+      lua_setglobal(L, 'this');
+    }
 
     lua_settop(L, -1 - givenArgsCount);
   }
@@ -275,6 +332,85 @@ class ScriptingContext {
     const L = this.state;
     lua_pushcclosure(L, func, 0);
     lua_setglobal(L, name);
+  }
+
+  registerScriptEvent(object: FrameScriptObject, event: EventEmitter) {
+    if (event.pendingSignalCount) {
+      let node = event.registerListeners.find((node) => node.listener === object);
+      if (node) {
+        return;
+      }
+
+      node = new EventListenerNode(object);
+      event.registerListeners.add(node);
+    } else {
+      const node = new EventListenerNode(object);
+      event.listeners.add(node);
+    }
+  }
+
+  signalEvent(type: EventType, format?: string, ...args: Array<string | number | boolean>) {
+    const L = this.state;
+
+    const event = this.events[type];
+    if (!event) {
+      return;
+    }
+
+    let argsCount = 1;
+    lua_pushstring(L, event.type);
+
+    if (format) {
+      for (const char of format) {
+        switch (char) {
+          case 'b':
+            lua_pushboolean(L, args[argsCount++ - 1] as boolean);
+            break;
+
+          case 'd':
+            lua_pushnumber(L, args[argsCount++ - 1] as number);
+            break;
+
+          case 'f':
+            lua_pushnumber(L, args[argsCount++ - 1] as number);
+            break;
+
+          case 's':
+            lua_pushstring(L, args[argsCount++ - 1] as string);
+            break;
+
+          case 'u':
+            lua_pushnumber(L, args[argsCount++ - 1] as number);
+            break;
+        }
+      }
+    }
+
+    event.signalCount++;
+    event.pendingSignalCount++;
+
+    lua_checkstack(L, argsCount);
+
+    for (const node of event.listeners) {
+      const unregisterNode = event.unregisterListeners.find((inner) => inner.listener === node.listener);
+      if (unregisterNode) {
+        break;
+      }
+
+      const script = node.listener.scripts.get('OnEvent');
+      if (script?.isLuaRegistered) {
+        for (let i = 0; i < argsCount; ++i) {
+          lua_pushvalue(L, -argsCount);
+        }
+
+        this.executeFunction(script.luaRef!, node.listener, argsCount, null, event);
+      }
+    }
+
+    event.pendingSignalCount--;
+
+    // TODO: Unregister listeners
+    // TODO: Register listeners
   }
 }
 
