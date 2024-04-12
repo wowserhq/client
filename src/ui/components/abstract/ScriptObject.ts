@@ -23,7 +23,7 @@ class ScriptObject extends FrameScriptObject {
 
   set name(name) {
     if (this._name) {
-      this.deregister();
+      this.unregister();
       this._name = null;
     }
 

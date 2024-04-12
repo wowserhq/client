@@ -1,7 +1,12 @@
+import EventType from '../../scripting/EventType';
 import {
   lua_State,
+  lua_isstring,
   lua_pushnil,
   lua_pushnumber,
+  lua_tolstring,
+  luaL_error,
+  to_jsstring,
 } from '../../scripting/lua';
 
 import Frame from './Frame';
@@ -76,7 +81,15 @@ export const HookScript = () => {
   return 0;
 };
 
-export const RegisterEvent = () => {
+export const RegisterEvent = (L: lua_State): number => {
+  const frame = Frame.getObjectFromStack(L);
+
+  if (!lua_isstring(L, 2)) {
+    return luaL_error(L, 'Usage: %s:RegisterEvent("event")', frame.displayName);
+  }
+
+  const event = to_jsstring(lua_tolstring(L, 2, 0));
+  frame.registerScriptEvent(event as EventType);
   return 0;
 };
 

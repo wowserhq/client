@@ -1,3 +1,4 @@
+import EventType from './EventType';
 import ScriptingContext, { ScriptFunction } from './ScriptingContext';
 import Script from './Script';
 import ScriptRegistry from './ScriptRegistry';
@@ -84,8 +85,31 @@ class FrameScriptObject {
     }
   }
 
-  deregister() {
-    // TODO: Unregister
+  unregister(_name: string | null = null) {
+    // TODO: Implementation
+  }
+
+  registerScriptEvent(type: EventType) {
+    const scripting = ScriptingContext.instance;
+
+    const event = scripting.events[type];
+    if (!event) {
+      return false;
+    }
+
+    if (event.pendingSignalCount) {
+      const node = event.unregisterListeners.find((node) => node.listener === this);
+      if (node) {
+        event.unregisterListeners.unlink(node);
+      }
+    }
+
+    const node = event.listeners.find((node) => node.listener === this);
+    if (!node) {
+      scripting.registerScriptEvent(this, event);
+    }
+
+    return true;
   }
 
   runScript(name: string, argsCount = 0) {
@@ -93,7 +117,7 @@ class FrameScriptObject {
     const script = this.scripts.get(name);
     if (script && script.luaRef) {
       // TODO: Pass in remaining arguments
-      ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount, undefined, undefined);
+      ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount);
     }
   }
 
