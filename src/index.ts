@@ -1,4 +1,5 @@
 import Client from './Client';
+import EventType from './ui/scripting/EventType';
 import { ModelFFX } from './ui/components';
 import * as glueScriptFunctions from './ui/scripting/globals/glue';
 
@@ -19,11 +20,25 @@ client.ui.factories.register('ModelFFX', ModelFFX);
   // await client.ui.load('Interface\\GlueXML\\GlueXML.toc');
   // await client.ui.load('Interface\\FrameXML\\FrameXML.toc');
 
-  console.timeLog('Client load time', client);
+  console.timeLog('Client load time');
 
   // TODO: Should be handled by GlueMgr
-  // client.ui.scripting.execute('SetGlueScreen("login")');
+  client.ui.scripting.signalEvent(EventType.FRAMES_LOADED);
+  client.ui.scripting.signalEvent(EventType.SET_GLUE_SCREEN, '%s', 'login');
+
+  let last = new Date();
+  const updateAndRender = () => {
+    const now = new Date();
+    const diff = +now - +last;
+
+    client.ui.root.onLayerUpdate(diff);
+    client.screen.render();
+
+    last = now;
+  };
 
   // Postpone rendering to allow resources to load (for now)
-  setTimeout(client.screen.render, 1000);
+  setTimeout(updateAndRender, 1000);
+
+  document.addEventListener('click', updateAndRender);
 })();
