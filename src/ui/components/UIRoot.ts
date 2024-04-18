@@ -2,7 +2,7 @@ import DrawLayerType from '../DrawLayerType';
 import Screen from '../../gfx/Screen';
 import ScreenLayer from '../../gfx/ScreenLayer';
 import { EdgeRect } from '../../math';
-import { EnumRecord, LinkedList, NDCtoDDCWidth, NDCtoDDCHeight } from '../../utils';
+import { EnumRecord, LinkedList, NDCtoDDCWidth, NDCtoDDCHeight, enumRecordFor } from '../../utils';
 
 import Frame, { FrameFlag } from './simple/Frame';
 import FramePointType from './abstract/FramePointType';
@@ -31,17 +31,7 @@ class UIRoot extends LayoutFrame {
       anchor: FramePointType.TOPLEFT,
     };
 
-    this.strata = [
-      new FrameStrata(FrameStrataType.WORLD),
-      new FrameStrata(FrameStrataType.BACKGROUND),
-      new FrameStrata(FrameStrataType.LOW),
-      new FrameStrata(FrameStrataType.MEDIUM),
-      new FrameStrata(FrameStrataType.HIGH),
-      new FrameStrata(FrameStrataType.DIALOG),
-      new FrameStrata(FrameStrataType.FULLSCREEN),
-      new FrameStrata(FrameStrataType.FULLSCREEN_DIALOG),
-      new FrameStrata(FrameStrataType.TOOLTIP),
-    ];
+    this.strata = enumRecordFor(FrameStrataType, (type) => new FrameStrata(type));
 
     this.frames = LinkedList.using('framesLink');
     this.destroyedFrames = LinkedList.using('destroyedLink');

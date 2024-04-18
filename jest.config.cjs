@@ -6,7 +6,8 @@ module.exports = {
   coverageDirectory: './coverage/',
   moduleFileExtensions: ['js', 'ts'],
   testMatch: [
-    '**/spec/**/*.spec.js',
+    '**/*.test.js',
+    '**/*.test.ts',
   ],
   verbose: true,
 };

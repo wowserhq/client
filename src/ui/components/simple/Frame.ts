@@ -14,6 +14,7 @@ import {
   LinkedListLink,
   LinkedListNode,
   Status,
+  enumRecordFor,
   stringToBoolean,
 } from '../../../utils';
 import { EPSILON1, Rect, areClose } from '../../../math';
@@ -80,13 +81,7 @@ class Frame extends ScriptRegion {
     this.level = 0;
     this.frameScale = 1.0;
 
-    this.layersEnabled = [
-      true,
-      true,
-      true,
-      true,
-      false,
-    ];
+    this.layersEnabled = enumRecordFor(DrawLayerType, (type) => type !== DrawLayerType.HIGHLIGHT);
     this.backdrop = null;
 
     this.regions = LinkedList.using('regionLink');

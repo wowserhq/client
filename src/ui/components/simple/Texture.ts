@@ -1,6 +1,7 @@
 import Client from '../../../Client';
 import Device from '../../../gfx/Device';
 import DrawLayerType from '../../DrawLayerType';
+import FramePointType from '../../components/abstract/FramePointType';
 import GfxTexture from '../../../gfx/Texture';
 import Region from './Region';
 import RenderBatch from '../../rendering/RenderBatch';
@@ -15,6 +16,7 @@ import {
   NDCtoDDCHeight,
   NDCtoDDCWidth,
   Status,
+  enumSizeFor,
   maxAspectCompensation,
   stringToBoolean,
   stringToFloat,
@@ -255,12 +257,13 @@ class Texture extends Region {
   postLoadXML(_node: XMLNode) {
     if (this._parent) {
       let i = 0;
+      const length = enumSizeFor(FramePointType);
       for (const point of this.points) {
         if (point && !(point.flags & 0x8)) {
           break;
         }
 
-        if (i + 1 === this.points.length) {
+        if (i + 1 === length) {
           this.setAllPoints(this._parent, true);
           break;
         }
