@@ -1,7 +1,7 @@
 import DrawLayerType from '../../DrawLayerType';
 import Frame from '../simple/Frame';
 import RenderBatch from '../../rendering/RenderBatch';
-import { EnumRecord, LinkedList } from '../../../utils';
+import { EnumRecord, LinkedList, enumRecordFor } from '../../../utils';
 
 class FrameStrataLevel {
   index: number;
@@ -19,13 +19,7 @@ class FrameStrataLevel {
     this.pendingFrames = LinkedList.using('strataLink');
     this.frames = LinkedList.using('strataLink');
 
-    this.batches = [
-      new RenderBatch(DrawLayerType.BACKGROUND),
-      new RenderBatch(DrawLayerType.BORDER),
-      new RenderBatch(DrawLayerType.ARTWORK),
-      new RenderBatch(DrawLayerType.OVERLAY),
-      new RenderBatch(DrawLayerType.HIGHLIGHT),
-    ];
+    this.batches = enumRecordFor(DrawLayerType, (type) => new RenderBatch(type));
 
     this.batchDirty = 0;
 
