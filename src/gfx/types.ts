@@ -13,7 +13,6 @@ export enum BlendMode {
   SrcAlphaOpaque = 9,
   NoAlphaAdd = 10,
   ConstantAlpha = 11,
-  Last = 12,
 }
 
 export enum PoolHintBit {
@@ -26,14 +25,12 @@ export enum PoolHintBit {
 export enum PoolTarget {
   Vertex = 0,
   Index = 1,
-  Last = 2,
 }
 
 export enum PoolUsage {
   Static = 0,
   Dynamic = 1,
   Stream = 2,
-  Last = 3,
 }
 
 export enum PrimitiveType {
@@ -43,7 +40,6 @@ export enum PrimitiveType {
   Triangles = 3,
   TriangleStrip = 4,
   TriangleFan = 5,
-  Last = 6,
 }
 
 export enum RenderStateType {
@@ -133,7 +129,6 @@ export enum RenderStateType {
   PointSprite = 83,
   Unk84 = 84,
   ColorMaterial = 85,
-  Last = 86,
 }
 
 export enum TextureFilter {
@@ -192,5 +187,4 @@ export enum VertexBufferFormat {
   PT2 = 11,
   PBNT2 = 12,
   PNC2T2 = 13,
-  Last = 14,
 }

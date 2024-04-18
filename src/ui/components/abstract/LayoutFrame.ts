@@ -14,6 +14,7 @@ import {
   NDCtoDDCHeight,
   NDCtoDDCWidth,
   Status,
+  enumRecordFor,
   extractDimensionsFrom,
   stringToBoolean,
 } from '../../../utils';
@@ -82,11 +83,7 @@ class LayoutFrame {
     this.resizeList = LinkedList.using('link');
     this.resizeCounter = 0;
 
-    this.points = [
-      null, null, null,
-      null, null, null,
-      null, null, null,
-    ];
+    this.points = enumRecordFor(FramePointType, (_type) => null);
   }
 
   // Note: LayoutFrame is used as an auxiliary baseclass using the `multipleClasses` utility, so creating this
