@@ -2,20 +2,19 @@ import Device from '../../Device';
 import ShaderRegistry from '../../ShaderRegistry';
 import { ShaderType } from '../../Shader';
 
-// import constantsFor from './constants';
-
+import constantsFor from './constants';
 
 class WebGL2Device extends Device {
   gl: WebGL2RenderingContext;
   shaders: ShaderRegistry;
+  constants;
 
   constructor(canvas: HTMLCanvasElement) {
     super();
 
     // TODO: Handle context loss
     this.gl = canvas.getContext('webgl2')!;
-    // TODO: Constants
-    // this.constants = constantsFor(this.gl);
+    this.constants = constantsFor(this.gl);
 
     this.shaders = new ShaderRegistry((type, name) => {
       const ext = type === 'pixel' ? 'frag' : 'vert';

@@ -25,6 +25,11 @@ export function enumSizeFor<T extends string | number>(enumeration: EnumType<T>)
   return enumValuesFor(enumeration).length;
 }
 
+// See: https://stackoverflow.com/a/69756175
+export type PickByType<T, Value> = {
+  [P in keyof T as T[P] extends Value | undefined ? P : never]: T[P]
+}
+
 // See: https://github.com/microsoft/TypeScript/issues/5863#issuecomment-1336204919
 export type ThisConstructor<
   T extends { prototype: unknown } = { prototype: unknown },

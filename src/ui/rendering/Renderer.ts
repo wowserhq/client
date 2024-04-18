@@ -22,7 +22,7 @@ class Renderer {
 
   draw(batch: RenderBatch) {
     const root = UIRoot.instance;
-    const { gl } = (Device.instance as WebGL2Device);
+    const { constants, gl } = (Device.instance as WebGL2Device);
     const { pixelShader, vertexShader } = this;
 
     if (!this.program) {
@@ -48,6 +48,14 @@ class Renderer {
     if (batch.meshes.length) {
       for (const mesh of batch.meshes) {
         const { image } = mesh.texture;
+
+        // TODO: Is this correct?
+        if (mesh.blendMode) {
+          gl.enable(gl.BLEND);
+          gl.blendFunc(constants.blendSources[mesh.blendMode], constants.blendDestinations[mesh.blendMode]);
+        } else {
+          gl.disable(gl.BLEND);
+        }
 
         const texture = gl.createTexture();
         gl.activeTexture(gl.TEXTURE0 + 0);
