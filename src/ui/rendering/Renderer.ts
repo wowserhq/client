@@ -47,8 +47,6 @@ class Renderer {
 
     if (batch.meshes.length) {
       for (const mesh of batch.meshes) {
-        const { image } = mesh.texture;
-
         // TODO: Is this correct?
         if (mesh.blendMode) {
           gl.enable(gl.BLEND);
@@ -62,8 +60,8 @@ class Renderer {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(
           gl.TEXTURE_2D, 0, gl.RGBA8,
-          image.width, image.height, 0,
-          gl.RGBA, gl.UNSIGNED_BYTE, image
+          mesh.texture.width, mesh.texture.height, 0,
+          gl.RGBA, gl.UNSIGNED_BYTE, mesh.texture.image
         );
         gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);

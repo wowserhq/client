@@ -1,5 +1,5 @@
 import Shader from '../../gfx/Shader';
-import Texture from '../../gfx/Texture';
+import Texture from '../../gfx/texture/Texture';
 import { BlendMode } from '../../gfx/types';
 import { TextureCoords, TexturePosition } from '../components/simple/Texture';
 

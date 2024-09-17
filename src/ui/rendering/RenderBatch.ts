@@ -1,5 +1,5 @@
 import DrawLayerType from '../DrawLayerType';
-import GfxTexture from '../../gfx/Texture';
+import GfxTexture from '../../gfx/texture/Texture';
 import Shader from '../../gfx/Shader';
 import Texture, { TextureCoords, TexturePosition } from '../../ui/components/simple/Texture';
 import { BlendMode } from '../../gfx/types';

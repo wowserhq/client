@@ -1,4 +1,6 @@
-class Texture {
+import type Texture from './Texture';
+
+class PNGTexture implements Texture {
   path: string;
   isLoaded: boolean;
   image: HTMLImageElement;
@@ -9,7 +11,6 @@ class Texture {
 
     this.onLoaded = this.onLoaded.bind(this);
 
-    // TODO: BLP/TGA support instead of PNG
     this.image = new Image();
     this.image.addEventListener('load', this.onLoaded);
     this.image.src = path;
@@ -28,4 +29,4 @@ class Texture {
   }
 }
 
-export default Texture;
+export default PNGTexture;

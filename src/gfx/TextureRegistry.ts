@@ -1,6 +1,7 @@
 import { HashMap, HashStrategy } from '../utils';
-
-import Texture from './Texture';
+import BLPTexture from './texture/BLPTexture';
+import PNGTexture from './texture/PNGTexture';
+import Texture from './texture/Texture';
 
 class TextureRegistry extends HashMap<string, Texture> {
   constructor() {
@@ -8,11 +9,15 @@ class TextureRegistry extends HashMap<string, Texture> {
   }
 
   lookup(path: string) {
-    // TODO: BLP/TGA support instead of PNG
-    path = `${path.replace(/\.blp|\.tga/i, '')}.png`;
+    // TODO: TGA support instead of PNG
+    path = path.replace(/\.tga/i, '.png');
     let texture = this.get(path);
     if (!texture) {
-      texture = new Texture(path);
+      if (path.endsWith('.png')) {
+        texture = new PNGTexture(path);
+      } else {
+        texture = new BLPTexture(path);
+      }
       this.set(path, texture);
     }
     return texture;

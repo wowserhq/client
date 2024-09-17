@@ -2,7 +2,7 @@ import Client from '../../../Client';
 import Device from '../../../gfx/Device';
 import DrawLayerType from '../../DrawLayerType';
 import FramePointType from '../../components/abstract/FramePointType';
-import GfxTexture from '../../../gfx/Texture';
+import GfxTexture from '../../../gfx/texture/Texture';
 import Region from './Region';
 import RenderBatch from '../../rendering/RenderBatch';
 import Shader from '../../../gfx/Shader';
