@@ -1,4 +1,5 @@
 import { BLP } from '../blp/BLP';
+import fetch from '../../utils/fetch';
 import type Texture from './Texture';
 
 class BLPTexture implements Texture {
@@ -8,8 +9,11 @@ class BLPTexture implements Texture {
   constructor(path: string) {
     this.path = path;
 
-    fetch(`${path}.blp`).then(async (resp) => {
-      const buffer = await resp.arrayBuffer();
+    if (!path.endsWith('.blp')) {
+      path += '.blp';
+    }
+    
+    fetch(path, 'arrayBuffer').then(async (buffer) => {
       if (buffer.byteLength > 0) {
         this.blp = BLP.fromArray(buffer);
       }
