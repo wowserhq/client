@@ -1,3 +1,5 @@
+import { enumRecordFor } from '../../utils';
+
 import {
   LUA_REGISTRYINDEX,
   LUA_TTABLE,
@@ -81,9 +83,7 @@ class ScriptingContext {
     this.recursiveTableHash = luaL_ref(L, LUA_REGISTRYINDEX);
     lua_gc(L, 6, 110);
 
-    this.events = Object.assign({}, ...Object.values(EventType).map((type) => ({
-      [type]: new EventEmitter(type)
-    })));
+    this.events = enumRecordFor(EventType, (type) => new EventEmitter(type));
 
     // TODO: Is this OK, rather than lua_openbase + friends?
     luaL_openlibs(L);
@@ -152,7 +152,7 @@ class ScriptingContext {
     return true;
   }
 
-  executeFunction(functionRef: lua_Ref, thisArg: FrameScriptObject, givenArgsCount: number, _unk?: unknown, event?: EventEmitter) {
+  executeFunction(functionRef: lua_Ref, thisArg: FrameScriptObject | null, givenArgsCount: number, _unk?: unknown, event?: EventEmitter) {
     const L = this.state;
 
     const stackBase = 1 - givenArgsCount + lua_gettop(L);
@@ -236,7 +236,7 @@ class ScriptingContext {
 
     if (lua_type(L, -1) === LUA_TTABLE) {
       lua_rawgeti(L, -1, 0);
-      const object = lua_touserdata(L, -1);
+      const object = lua_touserdata(L, -1) as FrameScriptObject | null;
       lua_settop(L, -3);
       return object;
     } else {
@@ -266,7 +266,7 @@ class ScriptingContext {
       return null;
     }
 
-    let object = null;
+    let object: FrameScriptObject | null = null;
     if (lua_type(L, -1) === LUA_TTABLE) {
       lua_rawgeti(L, -1, 0);
       object = lua_touserdata(L, -1);
@@ -307,7 +307,7 @@ class ScriptingContext {
     }
 
     // Invoke the Lua-side error handler (if any)
-    if (this.errorHandlerFunc) {
+    if (this.errorHandlerFunc !== null) {
       this.handlingError = true;
 
       lua_rawgeti(L, LUA_REGISTRYINDEX, this.errorHandlerFunc);
@@ -353,7 +353,7 @@ class ScriptingContext {
     const L = this.state;
 
     const event = this.events[type];
-    if (!event) {
+    if (!event) { // eslint-disable-line @typescript-eslint/strict-boolean-expressions
       return;
     }
 

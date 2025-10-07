@@ -21,7 +21,7 @@ class FactoryNode {
     this.unique = unique;
   }
 
-  build(parent: Frame | null) {
+  build(parent: Frame | null): Frame | null {
     return new this.ctor(parent);
   }
 }

@@ -35,7 +35,7 @@ class Renderer {
       gl.attachShader(this.program, pixelShader.apiShader!);
       gl.linkProgram(this.program);
 
-      const success = gl.getProgramParameter(this.program, gl.LINK_STATUS);
+      const success = gl.getProgramParameter(this.program, gl.LINK_STATUS) as boolean;
       if (!success) {
         console.error(gl.getProgramInfoLog(this.program));
         gl.deleteProgram(this.program);
@@ -50,7 +50,7 @@ class Renderer {
         const { image } = mesh.texture;
 
         // TODO: Is this correct?
-        if (mesh.blendMode) {
+        if (mesh.blendMode !== null) {
           gl.enable(gl.BLEND);
           gl.blendFunc(constants.blendSources[mesh.blendMode], constants.blendDestinations[mesh.blendMode]);
         } else {
@@ -82,8 +82,8 @@ class Renderer {
 
         if (indexCount) {
           for (let i = 0; i < posCount; ++i) {
-            const [x, y, z] = mesh.position[i];
-            const [u, v] = mesh.textureCoords[i];
+            const [x, y, z] = mesh.position[i]!;
+            const [u, v] = mesh.textureCoords[i]!;
 
             const offset = size * i;
 

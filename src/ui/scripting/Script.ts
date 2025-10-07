@@ -39,12 +39,12 @@ class Script {
     const scripting = ScriptingContext.instance;
     const L = scripting.state;
 
-    if (this.luaRef) {
+    if (this.luaRef !== null) {
       luaL_unref(L, LUA_REGISTRYINDEX, this.luaRef);
       this.luaRef = null;
     }
 
-    if (!node.scriptLuaRef && body) {
+    if (node.scriptLuaRef === null && body) {
       this.source = this.wrapper.replace('$body', body);
 
       const scriptName = `*:${this.name}`;
@@ -65,7 +65,7 @@ class Script {
 
     // Script body reference (e.g. <OnLoad>foo();</OnLoad>)
     // Note: Registered on XML node to allow sharing between template frames
-    } else if (node.scriptLuaRef) {
+    } else if (node.scriptLuaRef !== null) {
       lua_rawgeti(L, LUA_REGISTRYINDEX, node.scriptLuaRef);
       this.luaRef = luaL_ref(L, LUA_REGISTRYINDEX);
     }

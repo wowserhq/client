@@ -18,8 +18,8 @@ export default defineConfig(({ command }) => ({
   },
   plugins: [
     {
+      name: 'Prevent Fengari from loading Node-only libraries',
       transform(src, id) {
-        // Prevent Fengari from loading Node-only libraries
         // See: https://github.com/fengari-lua/fengari/blob/master/src/loslib.js#L480-L489
         if (id.includes('fengari')) {
           return {

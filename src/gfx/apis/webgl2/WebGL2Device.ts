@@ -29,7 +29,7 @@ class WebGL2Device extends Device {
     this.gl.shaderSource(shader, source);
     this.gl.compileShader(shader);
 
-    const success = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS);
+    const success = this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS) as boolean;
     if (success) {
       return shader;
     }

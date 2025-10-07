@@ -10,16 +10,16 @@ declare module '@wowserhq/math' {
   }
 
   class Vector2 extends Float32Array {
-    x: number;
-    y: number;
+    x: number; 0: number;
+    y: number; 1: number;
 
     setElements(x: number, y: number): this;
   }
 
   class Vector3 extends Float32Array {
-    x: number;
-    y: number;
-    z: number;
+    x: number; 0: number;
+    y: number; 1: number;
+    z: number; 2: number;
 
     setElements(x: number, y: number, z: number): this;
   }

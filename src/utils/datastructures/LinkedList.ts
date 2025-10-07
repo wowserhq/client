@@ -5,7 +5,7 @@ const LinkStrategy = {
   BEFORE: 2,
 };
 
-class LinkedList<T> {
+class LinkedList<T extends object> {
   propertyName: keyof T;
 
   sentinel: LinkedListLink<T>;
@@ -69,7 +69,7 @@ class LinkedList<T> {
     this.link(entity, LinkStrategy.BEFORE);
   }
 
-  linkFor(entity: T): LinkedListLink<T> {
+  linkFor(entity: T) {
     return entity[this.propertyName] as LinkedListLink<T>;
   }
 
@@ -79,7 +79,7 @@ class LinkedList<T> {
       link.unlink();
     }
 
-    const target = (other && this.linkFor(other)) || this.sentinel;
+    const target = other ? this.linkFor(other) : this.sentinel;
 
     switch (strategy) {
       case LinkStrategy.BEFORE: {
@@ -130,7 +130,7 @@ class LinkedList<T> {
     };
   }
 
-  static using<T>(propertyName: keyof T) {
+  static using<T extends object>(propertyName: keyof T) {
     return new this<T>(propertyName);
   }
 }

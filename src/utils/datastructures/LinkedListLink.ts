@@ -1,4 +1,4 @@
-class LinkedListLink<T> {
+class LinkedListLink<T extends object> {
   entity?: T;
   prev: LinkedListLink<T> | null;
   next: LinkedListLink<T> | null;
@@ -27,7 +27,7 @@ class LinkedListLink<T> {
     this.next = null;
   }
 
-  static for<T>(entity: T) {
+  static for<T extends object>(entity: T) {
     return new this(entity);
   }
 }

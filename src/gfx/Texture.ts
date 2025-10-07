@@ -16,11 +16,11 @@ class Texture {
   }
 
   get width() {
-    return this.image && this.image.width;
+    return this.image.width;
   }
 
   get height() {
-    return this.image && this.image.height;
+    return this.image.height;
   }
 
   onLoaded() {

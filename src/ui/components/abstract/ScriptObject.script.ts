@@ -19,7 +19,7 @@ export const IsObjectType = () => {
 
 export const GetName = (L: lua_State) => {
   const object = ScriptObject.getObjectFromStack(L);
-  if (object && object.name) {
+  if (object && object.name) { // eslint-disable-line @typescript-eslint/strict-boolean-expressions
     lua_pushstring(L, object.name);
   } else {
     lua_pushnil(L);

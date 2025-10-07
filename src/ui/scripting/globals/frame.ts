@@ -44,7 +44,7 @@ export const CreateFrame = (L: lua_State) => {
   const name = lua_tojsstring(L, 2);
   const inherits = lua_tojsstring(L, 4);
 
-  let parent = null;
+  let parent: Frame | null = null;
 
   // Verify parent argument (if any)
   if (lua_type(L, 3) === LUA_TTABLE) {

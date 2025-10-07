@@ -185,7 +185,7 @@ export const SetPoint = (L: lua_State): number => {
   } else if (lua_type(L, 3) == LUA_TTABLE) {
     lua_rawgeti(L, 3, 0);
 
-    relative = lua_touserdata(L, -1) || null;
+    relative = lua_touserdata(L, -1) as LayoutFrame ?? null;
 
     lua_settop(L, -2);
 
@@ -255,7 +255,7 @@ export const SetAllPoints = (L: lua_State): number => {
   } else if (lua_type(L, 2) == LUA_TTABLE) {
     lua_rawgeti(L, 2, 0);
 
-    relative = lua_touserdata(L, -1) || null;
+    relative = lua_touserdata(L, -1) as LayoutFrame ?? null;
 
     lua_settop(L, -2);
   } else if (lua_type(L, 2) == LUA_TNIL) {
