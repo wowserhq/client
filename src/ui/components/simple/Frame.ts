@@ -56,6 +56,8 @@ class Frame extends ScriptRegion {
   level: number;
   frameScale: number;
 
+  isHighlightLocked: boolean;
+
   layersEnabled: EnumRecord<DrawLayerType, boolean>;
   backdrop: Backdrop | null;
 
@@ -80,6 +82,8 @@ class Frame extends ScriptRegion {
     this.strataType = FrameStrataType.MEDIUM;
     this.level = 0;
     this.frameScale = 1.0;
+
+    this.isHighlightLocked = false;
 
     this.layersEnabled = enumRecordFor(DrawLayerType, (type) => type !== DrawLayerType.HIGHLIGHT);
     this.backdrop = null;
@@ -454,6 +458,16 @@ class Frame extends ScriptRegion {
         ui.createFrame(frame, this, status);
       }
     }
+  }
+
+  disableDrawLayer(drawlayer: DrawLayerType) {
+    this.layersEnabled[drawlayer] = false;
+    this.notifyDrawLayerChanged(drawlayer);
+  }
+
+  enableDrawLayer(drawlayer: DrawLayerType) {
+    this.layersEnabled[drawlayer] = true;
+    this.notifyDrawLayerChanged(drawlayer);
   }
 
   setBackdrop(backdrop: Backdrop | null) {

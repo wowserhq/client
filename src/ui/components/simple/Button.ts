@@ -7,7 +7,7 @@ import { Status } from '../../../utils';
 
 import ButtonState from './ButtonState';
 import FontString from './FontString';
-import Frame from './Frame';
+import Frame, { FrameFlag } from './Frame';
 import Texture from './Texture';
 
 import * as scriptFunctions from './Button.script';
@@ -28,6 +28,7 @@ class Button extends Frame {
   fontString: FontString | null;
 
   state: ButtonState;
+  isStateLocked: boolean;
 
   constructor(parent: Frame | null) {
     super(parent);
@@ -51,6 +52,11 @@ class Button extends Frame {
     this.fontString = null;
 
     this.state = ButtonState.DISABLED;
+    this.isStateLocked = false;
+
+    this.enable(true);
+    // TODO: Enable input events
+    this.setFrameFlag(FrameFlag.Ox10000, true);
   }
 
   loadXML(node: XMLNode, status: Status) {
@@ -93,6 +99,39 @@ class Button extends Frame {
     // TODO: Text, click registration and motion scripts
   }
 
+  enable(enabled: boolean) {
+    if (enabled) {
+      if (this.state !== ButtonState.DISABLED) {
+        return;
+      }
+
+      this.setState(ButtonState.NORMAL, false);
+
+      // TODO: Mouse focus
+
+      if (this.isHighlightLocked) {
+        this.enableDrawLayer(DrawLayerType.HIGHLIGHT);
+      }
+    } else {
+      if (this.state === ButtonState.DISABLED) {
+        return;
+      }
+
+      // TODO: Mouse focus
+
+      this.disableDrawLayer(DrawLayerType.HIGHLIGHT);
+      this.setState(ButtonState.DISABLED, false);
+    }
+
+    this.setFrameFlag(FrameFlag.Ox400, !enabled);
+
+    const script = enabled ? this.scripts.get('OnEnable') : this.scripts.get('OnDisable');
+
+    if (script && script.luaRef !== null && !this.loading) {
+      this.runScript(script);
+    }
+  }
+
   setHighlight(texture: Texture | null, _blendMode: BlendMode | null) {
     if (this.highlightTexture === texture) {
       return;
@@ -108,6 +147,28 @@ class Button extends Frame {
     }
 
     this.highlightTexture = texture;
+  }
+
+  setState(state: ButtonState, locked: boolean) {
+    this.isStateLocked = locked;
+
+    if (state == this.state) {
+      return;
+    }
+
+    if (this.activeTexture && (this.textures[state] || state == ButtonState.NORMAL)) {
+      this.activeTexture.hide();
+      this.activeTexture = null;
+    }
+
+    if (this.textures[state]) {
+      this.activeTexture = this.textures[state];
+      this.activeTexture.show();
+    }
+
+    this.updateTextState(state);
+
+    this.state = state;
   }
 
   setStateTexture(state: ButtonState, texture: Texture | null) {
@@ -134,6 +195,10 @@ class Button extends Frame {
       this.activeTexture = texture;
       texture.show();
     }
+  }
+
+  updateTextState(_state: ButtonState) {
+    // TODO
   }
 }
 

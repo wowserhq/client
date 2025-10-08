@@ -12,11 +12,27 @@ import {
 
 import Button from './Button';
 
-export const Enable = () => {
+export const Enable = (L: lua_State) => {
+  const button = Button.getObjectFromStack(L);
+
+  if (button.protectedFunctionsAllowed) {
+    button.enable(true);
+  } else {
+    // TODO: Disallowed logic
+  }
+
   return 0;
 };
 
-export const Disable = () => {
+export const Disable = (L: lua_State) => {
+  const button = Button.getObjectFromStack(L);
+
+  if (button.protectedFunctionsAllowed) {
+    button.enable(false);
+  } else {
+    // TODO: Disallowed logic
+  }
+
   return 0;
 };
 
