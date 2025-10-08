@@ -6,12 +6,12 @@ import Type from './FramePointType';
 class FramePoint {
   static UNDEFINED = Infinity;
 
-  relative: LayoutFrame;
+  relative: LayoutFrame | null;
   type: Type;
   offset: Vector2;
   flags: number;
 
-  constructor(relative: LayoutFrame, type: Type, offsetX: number, offsetY: number) {
+  constructor(relative: LayoutFrame | null, type: Type, offsetX: number, offsetY: number) {
     this.relative = relative;
     this.type = type;
     this.offset = new Vector2([offsetX, offsetY]);
@@ -21,7 +21,7 @@ class FramePoint {
   }
 
   get relativeRect() {
-    const { relative } = this;
+    const relative = this.relative!;
 
     // TODO: What does this flag signify?
     const initial = this.flags & 0x2;
@@ -75,7 +75,7 @@ class FramePoint {
   markUnused() {
     this.type = Type.TOPLEFT - 1;
     this.offset.setElements(0.0, 0.0);
-    // this.relative = null;
+    this.relative = null;
     this.flags = this.flags & 0x2 ? 0x2 | 0x4 | 0x8 : 0x8;
   }
 

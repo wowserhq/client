@@ -93,7 +93,7 @@ class Button extends Frame {
     // TODO: Text, click registration and motion scripts
   }
 
-  setHighlight(texture: Texture, _blendMode: BlendMode | null) {
+  setHighlight(texture: Texture | null, _blendMode: BlendMode | null) {
     if (this.highlightTexture === texture) {
       return;
     }
@@ -110,7 +110,7 @@ class Button extends Frame {
     this.highlightTexture = texture;
   }
 
-  setStateTexture(state: ButtonState, texture: Texture) {
+  setStateTexture(state: ButtonState, texture: Texture | null) {
     const stored = this.textures[state];
     if (stored === texture) {
       return;

@@ -16,7 +16,7 @@ class Region extends ScriptRegion {
   layerLink: LinkedListLink<this>;
   regionLink: LinkedListLink<this>;
 
-  constructor(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
+  constructor(frame: Frame | null, drawLayerType: DrawLayerType, show: boolean) {
     super();
 
     this.drawLayerType = null;
@@ -42,7 +42,7 @@ class Region extends ScriptRegion {
     // TODO: Implementation
   }
 
-  setFrame(frame: Frame, drawLayerType: DrawLayerType, show: boolean) {
+  setFrame(frame: Frame | null, drawLayerType: DrawLayerType, show: boolean) {
     if (this._parent === frame) {
       if (this.drawLayerType === drawLayerType) {
         if (show !== this.shown) {
@@ -74,7 +74,7 @@ class Region extends ScriptRegion {
 
       if (frame) {
         frame.regions.add(this);
-        this.deferredResize = !!(this._parent.layoutFlags & 0x2);
+        this.deferredResize = !!(this._parent!.layoutFlags & 0x2);
 
         // TODO: Color changed
 

@@ -35,7 +35,7 @@ class FrameStrata {
       }
     }
 
-    const level = this.levels[frame.level];
+    const level = this.levels[frame.level]!;
 
     console.debug(`adding ${frame.name} to strata ${frame.strataType} level ${frame.level}`);
 
@@ -55,7 +55,7 @@ class FrameStrata {
 
   removeFrame(frame: Frame) {
     if (frame.level < this.topLevel) {
-      const level = this.levels[frame.level];
+      const level = this.levels[frame.level]!;
       const batchDirty = level.removeFrame(frame);
       this.batchDirty |= +batchDirty;
       this.levelsDirty = 1;

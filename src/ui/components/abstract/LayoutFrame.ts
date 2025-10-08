@@ -388,11 +388,11 @@ class LayoutFrame {
     if (size) {
       const { x, y } = extractDimensionsFrom(size);
 
-      if (x) {
+      if (x !== undefined) {
         this.width = x;
       }
 
-      if (y) {
+      if (y !== undefined) {
         this.height = y;
       }
     }
@@ -456,7 +456,7 @@ class LayoutFrame {
     }
   }
 
-  onFrameResize() {
+  onFrameResize(): boolean {
     const rect = new Rect();
 
     // TODO: Constantize layout flags
@@ -488,7 +488,7 @@ class LayoutFrame {
 
     this.onFrameSizeChanged(prevRect);
 
-    return this.layoutFlags & 0x1;
+    return (this.layoutFlags & 0x1) !== 0;
   }
 
   onFrameSizeChanged(_prevRect: Rect) {

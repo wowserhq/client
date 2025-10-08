@@ -456,7 +456,7 @@ class Frame extends ScriptRegion {
     }
   }
 
-  setBackdrop(backdrop: Backdrop) {
+  setBackdrop(backdrop: Backdrop | null) {
     if (this.backdrop) {
       // TODO: Destructor
     }
@@ -579,7 +579,7 @@ class Frame extends ScriptRegion {
     // TODO: Constantize frame flag
     if (this.flags & 0x2000) {
       // TODO: Implementation
-    } else if (root && this.visible) {
+    } else if (root && this.visible) { // eslint-disable-line @typescript-eslint/strict-boolean-expressions
       root.notifyFrameLayerChanged(this, drawLayerType);
     }
 

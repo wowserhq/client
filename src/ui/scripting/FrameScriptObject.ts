@@ -93,7 +93,7 @@ class FrameScriptObject {
     const scripting = ScriptingContext.instance;
 
     const event = scripting.events[type];
-    if (!event) {
+    if (!event) { // eslint-disable-line @typescript-eslint/strict-boolean-expressions
       return false;
     }
 
@@ -115,7 +115,7 @@ class FrameScriptObject {
   runScript(name: string, argsCount = 0) {
     // TODO: This needs to be moved to the caller
     const script = this.scripts.get(name);
-    if (script && script.luaRef) {
+    if (script && script.luaRef !== null) {
       // TODO: Pass in remaining arguments
       ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount);
     }
@@ -143,7 +143,7 @@ class FrameScriptObject {
     }
 
     lua_rawgeti(L, 1, 0);
-    const object = lua_touserdata(L, -1);
+    const object = lua_touserdata(L, -1) as FrameScriptObject | null;
     lua_settop(L, -2);
 
     if (!object) {
@@ -164,7 +164,7 @@ class FrameScriptObject {
 
   static get scriptMetaTable() {
     let scriptMetaTable = scriptMetaTables.get(this);
-    if (!scriptMetaTable) {
+    if (scriptMetaTable === undefined) {
       const L = ScriptingContext.instance.state;
 
       lua_createtable(L, 0, 0);
@@ -187,7 +187,7 @@ class FrameScriptObject {
 
   static get objectType() {
     let type = objectTypes.get(this);
-    if (!type) {
+    if (type === undefined) {
       type = objectTypes.size;
       objectTypes.set(this, type);
     }

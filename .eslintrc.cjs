@@ -7,6 +7,9 @@ module.exports = {
     'plugin:import/typescript',
   ],
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: ['./tsconfig.eslint.json'],
+  },
   plugins: ['@typescript-eslint'],
   root: true,
   env: { browser: true, node: true },
@@ -15,6 +18,10 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['error', {
       'argsIgnorePattern': '^_',
       'varsIgnorePattern': '^_'
+    }],
+    '@typescript-eslint/strict-boolean-expressions': ['error', {
+      allowNullableBoolean: true,
+      allowNullableString: true,
     }],
     'camelcase': 'off',
     'no-cond-assign': 'off',

@@ -145,7 +145,7 @@ class Screen {
       gl.attachShader(this.debugProgram, pixelShader.apiShader!);
       gl.linkProgram(this.debugProgram);
 
-      const success = gl.getProgramParameter(this.debugProgram, gl.LINK_STATUS);
+      const success = gl.getProgramParameter(this.debugProgram, gl.LINK_STATUS) as boolean;
       if (!success) {
         console.error(gl.getProgramInfoLog(this.debugProgram));
         gl.deleteProgram(this.debugProgram);

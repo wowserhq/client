@@ -94,7 +94,7 @@ class UIRoot extends LayoutFrame {
 
   notifyFrameLayerChanged(frame: Frame, drawLayerType: DrawLayerType) {
     const strata = this.strata[frame.strataType];
-    const level = strata.levels[frame.level];
+    const level = strata.levels[frame.level]!;
     level.batchDirty |= 1 << drawLayerType;
     strata.batchDirty = 1;
   }

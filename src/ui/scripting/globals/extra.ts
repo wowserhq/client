@@ -104,7 +104,7 @@ export const seterrorhandler = (L: lua_State) => {
   }
 
   const scripting = ScriptingContext.instance;
-  if (scripting.errorHandlerFunc) {
+  if (scripting.errorHandlerFunc !== null) {
     luaL_unref(L, LUA_REGISTRYINDEX, scripting.errorHandlerFunc);
   }
   scripting.errorHandlerFunc = luaL_ref(L, LUA_REGISTRYINDEX);
