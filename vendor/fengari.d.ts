@@ -14,7 +14,7 @@ declare module 'fengari' {
   type lua_String = Uint8Array;
   type lua_InputString = Uint8Array | string;
 
-  type lua_State = unknown
+  type lua_State = object & { __brand: 'lua_State' }
 
   function to_luastring(s: string): lua_String;
   function to_jsstring(s: lua_String): string;
@@ -214,7 +214,7 @@ declare module 'fengari' {
   }
 
   namespace lauxlib {
-    type luaL_Buffer = unknown
+    type luaL_Buffer = object & { __brand: 'luaL_Buffer' }
 
     function luaL_addchar(B: luaL_Buffer, c: number): void;
     function luaL_addlstring(B: luaL_Buffer, s: string, l: number): void;

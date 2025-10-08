@@ -4,5 +4,7 @@ export default {
   OCCLUDED: 0x10,
   MOVABLE: 0x100,
   RESIZABLE: 0x200,
+  Ox400: 0x400,
+  Ox10000: 0x10000,
   DONT_SAVE_POSITION: 0x80000,
 };

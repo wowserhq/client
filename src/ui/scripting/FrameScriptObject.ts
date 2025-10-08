@@ -9,6 +9,7 @@ import {
   lua_State,
   lua_createtable,
   lua_getglobal,
+  lua_pushboolean,
   lua_pushcclosure,
   lua_pushlightuserdata,
   lua_pushnumber,
@@ -28,6 +29,8 @@ import { This, ThisConstructor } from '../../utils';
 
 const scriptMetaTables = new Map<typeof FrameScriptObject, lua_Ref>();
 const objectTypes = new Map<typeof FrameScriptObject, number>();
+
+type ScriptArg = string | number | boolean;
 
 class FrameScriptObject {
   luaRef: lua_Ref | null;
@@ -112,12 +115,37 @@ class FrameScriptObject {
     return true;
   }
 
-  runScript(name: string, argsCount = 0) {
+  runScript(script: Script, ...args: ScriptArg[]): void
+  runScript(name: string, ...args: ScriptArg[]): void
+  runScript(nameOrScript: string | Script, ...args: ScriptArg[]) {
     // TODO: This needs to be moved to the caller
-    const script = this.scripts.get(name);
+    let script: Script | undefined = nameOrScript as Script;
+    if (typeof nameOrScript === 'string') {
+      script = this.scripts.get(nameOrScript);
+    }
+
     if (script && script.luaRef !== null) {
-      // TODO: Pass in remaining arguments
-      ScriptingContext.instance.executeFunction(script.luaRef, this, argsCount);
+      const scripting = ScriptingContext.instance;
+      const L = scripting.state;
+
+      const argsCount = args.length;
+      for (const arg of args) {
+        switch (typeof arg) {
+          case 'string':
+            lua_pushstring(L, arg);
+            break;
+          case 'number':
+            lua_pushnumber(L, arg);
+            break;
+          case 'boolean':
+            lua_pushboolean(L, arg);
+            break;
+          default:
+            throw new Error(`invalid argument ${arg} for script ${name}`);
+        }
+      }
+
+      scripting.executeFunction(script.luaRef, this, argsCount);
     }
   }
 
